@@ -47,11 +47,12 @@ az cognitiveservices account create \
 
 ```bash
 # Embedding model — used by the indexing pipeline and at query time
+# text-embedding-3-large is required: the Cosmos container is created with 3072 dimensions
 az cognitiveservices account deployment create \
   --name hmrc-tax-openai \
   --resource-group hmrc-tax-mcp-rg \
-  --deployment-name text-embedding-3-small \
-  --model-name text-embedding-3-small \
+  --deployment-name text-embedding-3-large \
+  --model-name text-embedding-3-large \
   --model-version "1" \
   --model-format OpenAI \
   --sku-capacity 50 \
@@ -240,19 +241,28 @@ az cosmosdb sql role assignment create \
 
 ## 6. Local Development Authentication
 
-Developers can run the indexing scripts locally without any API keys:
+Developers can run the Cosmos DB indexing scripts locally without any API keys:
 
 ```bash
 az login                    # authenticates DefaultAzureCredential
 az account set --subscription "<your-subscription-id>"
 
-# Run the full pipeline locally (--dry-run skips writes)
-export AZURE_OPENAI_ENDPOINT=https://hmrc-tax-openai.openai.azure.com/
-export COSMOS_URL=https://hmrc-tax-cosmos.documents.azure.com:443/
+export AZURE_OPENAI_ENDPOINT=https://<your-openai-resource>.openai.azure.com/
+export COSMOS_URL=https://<your-cosmos-account>.documents.azure.com:443/
 export COSMOS_DB_NAME=hmrc-guidance
 export COSMOS_CONTAINER=hmrc-chunks
 
-python scripts/indexing/run_pipeline.py --dry-run
+# Step 1: tag rules and build citation map
+python scripts/indexing/tag_rules.py
+
+# Step 2: fetch HMRC manual sections
+python scripts/indexing/fetch_hmrc_sources.py
+
+# Step 3: chunk and embed (--chunks-only skips embedding API calls)
+python scripts/indexing/chunk_and_embed.py
+
+# Step 4: upload to Cosmos DB
+python scripts/indexing/upload_to_cosmos.py
 ```
 
 `DefaultAzureCredential` checks, in order:
@@ -262,43 +272,44 @@ python scripts/indexing/run_pipeline.py --dry-run
 
 ---
 
-## 7. Provisioned Resources (VictoryLap subscription)
+## 7. Provisioned Resources (example shared subscription)
 
-All resources are live in `rg-shared-resources-uks`, subscription `81c7ddc0-db49-4fb3-809c-776e3756f2ea`.
+Replace the placeholders below with the names from your Azure environment. Keep the
+same roles and scopes when applying RBAC.
 
 | Resource | Name | Notes |
 |---|---|---|
-| Resource group | `rg-shared-resources-uks` | UK South |
-| Cosmos DB | `cosmos-llp-uks` | Vector search enabled (`EnableNoSQLVectorSearch`) |
-| Azure OpenAI | `hmrc-tax-openai` | UK South, S0 |
-| OpenAI deployment | `text-embedding-3-large` | Standard SKU, 50K TPM |
-| OpenAI deployment | `gpt-4o-mini` | ⚠️ Pending quota — request via Azure portal |
-| Managed identity | `hmrc-tax-mcp-deployer` | User-assigned |
+| Resource group | `<shared-resource-group>` | UK South |
+| Cosmos DB | `<cosmos-account-name>` | Vector search enabled (`EnableNoSQLVectorSearch`) |
+| Azure OpenAI | `<azure-openai-resource-name>` | UK South, S0 |
+| OpenAI deployment | `<embedding-deployment-name>` | `text-embedding-3-large`, Standard SKU, 50K TPM |
+| OpenAI deployment | `<chat-deployment-name>` | Request quota via Azure portal if required |
+| Managed identity | `<user-assigned-managed-identity-name>` | User-assigned |
 
-### OIDC federated credentials on `hmrc-tax-mcp-deployer`
+### OIDC federated credentials on `<user-assigned-managed-identity-name>`
 
 | Name | Subject |
 |---|---|
-| `github-actions-main` | `repo:durbs182/hmrc-tax-mcp:ref:refs/heads/main` |
-| `github-actions-dispatch` | `repo:durbs182/hmrc-tax-mcp:workflow_dispatch` |
+| `<github-actions-main-credential-name>` | `repo:<github-org>/<github-repo>:ref:refs/heads/main` |
+| `<github-actions-dispatch-credential-name>` | `repo:<github-org>/<github-repo>:workflow_dispatch` |
 
 ### RBAC assignments
 
 | Role | Scope |
 |---|---|
-| Cognitive Services OpenAI User | `hmrc-tax-openai` resource |
-| Cosmos DB Built-in Data Contributor | `cosmos-llp-uks` account |
+| Cognitive Services OpenAI User | `<azure-openai-resource-name>` resource |
+| Cosmos DB Built-in Data Contributor | `<cosmos-account-name>` account |
 
 ## 8. GitHub Actions Variables and Secrets
 
-All values are already configured on `durbs182/hmrc-tax-mcp`.
+Configure the following in your repository's Settings → Actions.
 
 ### Variables (non-sensitive — visible in Settings → Variables → Actions)
 
 | Variable | Value |
 |---|---|
-| `AZURE_OPENAI_ENDPOINT` | `https://uksouth.api.cognitive.microsoft.com/` |
-| `COSMOS_URL` | `https://cosmos-llp-uks.documents.azure.com:443/` |
+| `AZURE_OPENAI_ENDPOINT` | `https://<your-openai-resource>.openai.azure.com/` |
+| `COSMOS_URL` | `https://<your-cosmos-account>.documents.azure.com:443/` |
 | `COSMOS_DB_NAME` | `hmrc-guidance` |
 | `COSMOS_CONTAINER` | `hmrc-chunks` |
 
@@ -306,19 +317,19 @@ All values are already configured on `durbs182/hmrc-tax-mcp`.
 
 | Secret | Description |
 |---|---|
-| `AZURE_CLIENT_ID` | `hmrc-tax-mcp-deployer` managed identity client ID |
+| `AZURE_CLIENT_ID` | Managed identity client ID |
 | `AZURE_TENANT_ID` | Azure AD tenant ID |
-| `AZURE_SUBSCRIPTION_ID` | VictoryLap subscription ID |
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
 
 No API keys, connection strings, or passwords are stored anywhere.
 
 ## 9. Pending: GPT-4o-mini quota
 
-The VictoryLap subscription has 0 quota for `gpt-4o-mini GlobalStandard` in UK South.
-This affects the RAG explain endpoint but not the embedding/indexing pipeline.
+If your subscription has 0 quota for `gpt-4o-mini GlobalStandard`, this affects the RAG
+explain endpoint but not the embedding/indexing pipeline.
 
 To request quota:
-1. Azure portal → **Subscriptions** → VictoryLap → **Usage + quotas**
+1. Azure portal → **Subscriptions** → your subscription → **Usage + quotas**
 2. Filter: `OpenAI`, region `UK South`
 3. Request increase for `OpenAI.GlobalStandard.gpt-4o-mini` to 30K TPM
 
@@ -327,14 +338,14 @@ but identical API surface.
 
 ---
 
-## 8. Estimated Monthly Cost
+## 10. Estimated Monthly Cost
 
 | Resource | SKU | Cost |
 |---|---|---|
-| Azure OpenAI (embeddings, indexing) | text-embedding-3-small | ~£0.50/month |
+| Azure OpenAI (embeddings, indexing) | text-embedding-3-large | ~£2–5/month |
 | Azure OpenAI (chat, runtime) | GPT-4o-mini | ~£2–30/month (usage-dependent) |
 | Cosmos DB | Serverless | ~£10–40/month |
-| **Total (vector search via Cosmos)** | | **~£13–71/month** |
+| **Total (vector search via Cosmos)** | | **~£14–75/month** |
 
 This is approximately £180–240/month cheaper than Azure AI Search Standard S1
 while providing equivalent functionality for this index size (~116MB).
