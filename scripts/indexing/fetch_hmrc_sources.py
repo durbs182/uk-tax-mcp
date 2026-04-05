@@ -60,8 +60,7 @@ CITATION_MAP: dict[str, list[str]] = {
     # Bucket E — Inheritance Tax
     "IHTM04261": ["iht_nil_rate_band"],
     "IHTM46000": ["iht_residence_nil_rate_band", "iht_rnrb_taper"],
-    "IHTM14180": ["iht_annual_gift_exemption"],
-    "IHTM14180": ["iht_small_gifts_exemption"],
+    "IHTM14180": ["iht_annual_gift_exemption", "iht_small_gifts_exemption"],
     "IHTM04057": ["iht_taper_relief"],
     "IHTM04054": ["iht_potentially_exempt_transfer"],
     "IHTM17000": ["iht_business_property_relief"],
@@ -109,14 +108,25 @@ def fetch_section(url: str, ref: str, topic_tags: list[str]) -> dict | None:
     }
 
 
-def fetch_manual(manual_name: str, dry_run: bool = False) -> int:
-    """Fetch all known sections for a manual. Returns count of fetched docs."""
+def fetch_manual(manual_name: str, full: bool = False, dry_run: bool = False) -> int:
+    """Fetch all known sections for a manual. Returns count of fetched docs.
+
+    When *full* is True, existing cached files are deleted and all sections
+    are re-fetched regardless of whether they were previously downloaded.
+    """
     cfg = MANUALS[manual_name]
     base_url = cfg["base_url"]
     topic_tags = cfg["topic_tags"]
 
     out_dir = OUTPUT_DIR / manual_name
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if full and not dry_run:
+        deleted = list(out_dir.glob("*.json"))
+        for f in deleted:
+            f.unlink()
+        if deleted:
+            print(f"  Cleared {len(deleted)} cached sections for {manual_name} (--full).")
 
     # Fetch the manual index to discover all section refs
     print(f"Fetching {manual_name} index from {base_url} …")
@@ -156,13 +166,18 @@ def fetch_manual(manual_name: str, dry_run: bool = False) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manual", choices=list(MANUALS), help="Fetch one manual only")
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Delete cached sections and re-fetch everything (default: skip cached)",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     targets = [args.manual] if args.manual else list(MANUALS)
     total = 0
     for manual in targets:
-        total += fetch_manual(manual, dry_run=args.dry_run)
+        total += fetch_manual(manual, full=args.full, dry_run=args.dry_run)
 
     print(f"\nDone. Fetched {total} new sections.")
 

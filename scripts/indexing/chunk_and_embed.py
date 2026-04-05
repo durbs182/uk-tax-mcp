@@ -17,6 +17,7 @@ import time
 from pathlib import Path
 
 import tiktoken
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from openai import AzureOpenAI
 
 RAW_DIR = Path("data/raw")
@@ -24,14 +25,26 @@ CHUNKED_DIR = Path("data/chunked")
 
 CHUNK_SIZE = 500        # tokens
 CHUNK_OVERLAP = 50      # tokens
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = "text-embedding-3-large"
 EMBED_BATCH_SIZE = 16   # chunks per embedding API call
 
 
 def get_openai_client() -> AzureOpenAI:
+    """
+    Build an AzureOpenAI client using DefaultAzureCredential.
+
+    In GitHub Actions (OIDC) and ACA (Managed Identity) the credential is
+    resolved automatically.  Locally, ``az login`` provides the credential.
+    The AZURE_OPENAI_KEY environment variable is intentionally not used so
+    that no long-lived secrets are required.
+    """
+    credential = DefaultAzureCredential()
+    token_provider = get_bearer_token_provider(
+        credential, "https://cognitiveservices.azure.com/.default"
+    )
     return AzureOpenAI(
         azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-        api_key=os.environ["AZURE_OPENAI_KEY"],
+        azure_ad_token_provider=token_provider,
         api_version="2024-02-01",
     )
 
