@@ -2,8 +2,14 @@
 Upload chunked HMRC documents (with embeddings) to Azure Cosmos DB for NoSQL.
 
 Reads from data/chunked/{manual}/{chunk_id}.json and upserts into the
-hmrc-chunks container. Uses DefaultAzureCredential so it works with both
-Managed Identity (ACA/GitHub Actions OIDC) and local az login.
+hmrc-chunks container.
+
+Authentication priority:
+  1. COSMOS_KEY env var — account master key, used by GitHub Actions where
+     Cosmos DB native RBAC (AAD data-plane) cannot authorise write operations
+     through the OIDC-federated managed identity credential.
+  2. DefaultAzureCredential — used in ACA (Managed Identity via IMDS) and
+     local development (az login).
 
 Usage:
     python upload_to_cosmos.py [--manual PTM] [--ref PTM063300] [--dry-run]
@@ -12,6 +18,7 @@ Environment variables:
     COSMOS_URL         Cosmos DB account endpoint (required)
     COSMOS_DB_NAME     Database name (default: hmrc-guidance)
     COSMOS_CONTAINER   Container name (default: hmrc-chunks)
+    COSMOS_KEY         Account master key (optional — falls back to DefaultAzureCredential)
 """
 
 from __future__ import annotations
@@ -29,14 +36,29 @@ BATCH_SIZE = 50          # Cosmos DB upserts per loop iteration
 VECTOR_DIMENSIONS = 3072  # text-embedding-3-large
 
 
+def _cosmos_client(cosmos_url: str) -> CosmosClient:
+    """
+    Build a CosmosClient using the account key when COSMOS_KEY is set,
+    otherwise fall back to DefaultAzureCredential.
+
+    Key auth is required for GitHub Actions: the OIDC-federated managed
+    identity credential is consistently rejected by Cosmos DB's native RBAC
+    for data-plane writes even when the correct SQL role is assigned.  In ACA
+    the IMDS-backed ManagedIdentityCredential resolves correctly.
+    """
+    cosmos_key = os.environ.get("COSMOS_KEY")
+    if cosmos_key:
+        return CosmosClient(url=cosmos_url, credential=cosmos_key)
+    return CosmosClient(url=cosmos_url, credential=DefaultAzureCredential())
+
+
 def get_cosmos_container():
-    """Return the Cosmos DB container client using DefaultAzureCredential."""
-    credential = DefaultAzureCredential()
+    """Return the Cosmos DB container client."""
     cosmos_url = os.environ["COSMOS_URL"]
     db_name = os.environ.get("COSMOS_DB_NAME", "hmrc-guidance")
     container_name = os.environ.get("COSMOS_CONTAINER", "hmrc-chunks")
 
-    client = CosmosClient(url=cosmos_url, credential=credential)
+    client = _cosmos_client(cosmos_url)
     db = client.get_database_client(db_name)
     return db.get_container_client(container_name)
 
@@ -58,12 +80,11 @@ def ensure_container_exists() -> None:
     If the container already exists without a vector policy you must delete
     and recreate it.
     """
-    credential = DefaultAzureCredential()
     cosmos_url = os.environ["COSMOS_URL"]
     db_name = os.environ.get("COSMOS_DB_NAME", "hmrc-guidance")
     container_name = os.environ.get("COSMOS_CONTAINER", "hmrc-chunks")
 
-    client = CosmosClient(url=cosmos_url, credential=credential)
+    client = _cosmos_client(cosmos_url)
     db = client.get_database_client(db_name)
 
     db.create_container_if_not_exists(
