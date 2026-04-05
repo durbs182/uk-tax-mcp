@@ -36,7 +36,7 @@ MANUAL_URLS: dict[str, str] = {
     "EIM":   "https://www.gov.uk/hmrc-internal-manuals/employment-income-manual",
     "IPTM":  "https://www.gov.uk/hmrc-internal-manuals/insurance-policyholder-taxation-manual",
     "SAIM":  "https://www.gov.uk/hmrc-internal-manuals/savings-and-investment-manual",
-    "SDLTM": "https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax",
+    "SDLTM": "https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual",
     "HS":    "https://www.gov.uk/government/publications",
 }
 
