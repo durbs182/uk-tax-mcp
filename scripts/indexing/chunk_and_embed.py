@@ -15,6 +15,7 @@ import json
 import os
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 import tiktoken
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
@@ -37,13 +38,38 @@ def get_openai_client() -> AzureOpenAI:
     resolved automatically.  Locally, ``az login`` provides the credential.
     The AZURE_OPENAI_KEY environment variable is intentionally not used so
     that no long-lived secrets are required.
+
+    Token-based authentication requires the resource to have a custom subdomain
+    endpoint (https://<name>.openai.azure.com/).  The generic regional endpoint
+    (https://<region>.api.cognitive.microsoft.com/) only supports API keys and
+    will return HTTP 400 when OIDC/Managed Identity tokens are used.
     """
+    endpoint = os.environ["AZURE_OPENAI_ENDPOINT"]
+    parsed = urlparse(endpoint)
+    hostname = parsed.hostname
+    if not hostname:
+        raise ValueError(
+            f"AZURE_OPENAI_ENDPOINT must be a full URL including scheme, got "
+            f"{endpoint!r}. Set it to the resource-specific custom subdomain "
+            "endpoint, e.g. https://<resource-name>.openai.azure.com/."
+        )
+
+    hostname = hostname.lower()
+    if hostname == "api.cognitive.microsoft.com" or hostname.endswith(
+        ".api.cognitive.microsoft.com"
+    ):
+        raise ValueError(
+            f"AZURE_OPENAI_ENDPOINT is set to the generic regional endpoint "
+            f"({endpoint}), which does not support token authentication. "
+            "Set it to the resource-specific custom subdomain endpoint, e.g. "
+            "https://<resource-name>.openai.azure.com/ — see docs/architecture/azure-setup.md."
+        )
     credential = DefaultAzureCredential()
     token_provider = get_bearer_token_provider(
         credential, "https://cognitiveservices.azure.com/.default"
     )
     return AzureOpenAI(
-        azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
+        azure_endpoint=endpoint,
         azure_ad_token_provider=token_provider,
         api_version="2024-02-01",
     )
