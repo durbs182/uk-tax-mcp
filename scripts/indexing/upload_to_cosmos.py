@@ -43,9 +43,16 @@ def get_cosmos_container():
 
 def ensure_container_exists() -> None:
     """
-    Create the database and container with the vector policy if they do not
-    already exist.  Safe to call on every run — create_if_not_exists is
-    idempotent.
+    Create the container with the vector policy if it does not already exist.
+    Safe to call on every run — create_container_if_not_exists is idempotent.
+
+    The database must already exist.  The Cosmos DB Built-in Data Contributor
+    role (00000000-0000-0000-0000-000000000002) does not include
+    Microsoft.DocumentDB/databaseAccounts/sqlDatabases/write, so database
+    creation from the data plane is not permitted.  Create the database once
+    via the management plane:
+        az cosmosdb sql database create --account-name <acct> \
+            --resource-group <rg> --name <db>
 
     NOTE: Vector indexing policy can only be set at container creation time.
     If the container already exists without a vector policy you must delete
@@ -57,7 +64,7 @@ def ensure_container_exists() -> None:
     container_name = os.environ.get("COSMOS_CONTAINER", "hmrc-chunks")
 
     client = CosmosClient(url=cosmos_url, credential=credential)
-    db = client.create_database_if_not_exists(db_name)
+    db = client.get_database_client(db_name)
 
     db.create_container_if_not_exists(
         id=container_name,

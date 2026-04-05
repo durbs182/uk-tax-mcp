@@ -131,19 +131,29 @@ Set as GitHub Actions variable: `COSMOS_CONTAINER` = `hmrc-chunks`
 
 ### Create the database and container
 
-The `upload_to_cosmos.py` script calls `create_database_if_not_exists` and
-`create_container_if_not_exists` automatically on first run, applying the
-DiskANN vector policy.  No manual step is needed beyond account creation.
-
-If you need to create the container manually (e.g. for testing):
+> **Important — RBAC constraint:** The Cosmos DB Built-in Data Contributor role
+> (`00000000-0000-0000-0000-000000000002`) does **not** include
+> `Microsoft.DocumentDB/databaseAccounts/sqlDatabases/write`.  This means the
+> managed identity cannot create the database via the data plane.  Create the
+> database once via the management plane (requires Contributor or higher on the
+> Cosmos DB account):
 
 ```bash
-# Database
+# One-time setup — create the database via management plane
 az cosmosdb sql database create \
-  --account-name hmrc-tax-cosmos \
-  --resource-group hmrc-tax-mcp-rg \
+  --account-name cosmos-llp-uks \
+  --resource-group rg-shared-resources-uks \
   --name hmrc-guidance
+```
 
+The `upload_to_cosmos.py` script will then create the `hmrc-chunks` container
+automatically on first run using `create_container_if_not_exists` (containers
+are within the Data Contributor role's scope).  It will also apply the DiskANN
+vector policy at container creation time.
+
+If you need to create the container manually:
+
+```bash
 # Container — vector policy must be set at creation via the portal or SDK;
 # the CLI does not yet expose vector-specific options directly.
 # Use the Python script: python scripts/indexing/upload_to_cosmos.py --dry-run
