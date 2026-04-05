@@ -53,7 +53,7 @@ MANUALS: dict[str, dict] = {
         "topic_tags": ["savings", "dividends"],
     },
     "SDLTM": {
-        "base_url": "https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax",
+        "base_url": "https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual",
         "topic_tags": ["sdlt", "property"],
     },
 }
@@ -144,8 +144,12 @@ def fetch_manual(
 
     # Fetch the manual index to discover all section refs
     print(f"Fetching {manual_name} index from {base_url} …")
-    resp = httpx.get(base_url, timeout=15, follow_redirects=True)
-    resp.raise_for_status()
+    try:
+        resp = httpx.get(base_url, timeout=15, follow_redirects=True)
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        print(f"  WARN: could not fetch {manual_name} index ({exc}); skipping.")
+        return 0
 
     soup = BeautifulSoup(resp.text, "html.parser")
     links = soup.select("a[href*='/hmrc-internal-manuals/']")
