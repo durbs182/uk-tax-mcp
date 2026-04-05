@@ -40,8 +40,22 @@ az cognitiveservices account create \
   --location uksouth \
   --kind OpenAI \
   --sku S0 \
+  --custom-domain hmrc-tax-openai \
   --yes
 ```
+
+> **Important:** `--custom-domain` sets the resource-specific subdomain endpoint
+> (`https://hmrc-tax-openai.openai.azure.com/`), which is required for token-based
+> authentication (OIDC / Managed Identity).  Resources created without `--custom-domain`
+> receive only the generic regional endpoint (`https://uksouth.api.cognitive.microsoft.com/`),
+> which rejects token credentials with HTTP 400.  If the resource already exists without
+> a custom domain, add it with:
+> ```bash
+> az cognitiveservices account update \
+>   --name hmrc-tax-openai \
+>   --resource-group hmrc-tax-mcp-rg \
+>   --custom-domain hmrc-tax-openai
+> ```
 
 ### Deploy models
 
