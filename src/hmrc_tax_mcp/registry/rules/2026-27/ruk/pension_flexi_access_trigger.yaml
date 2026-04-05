@@ -3,11 +3,7 @@ version: 1.0.0
 tax_year: 2026-27
 jurisdiction: rUK
 title: Pension Flexi-Access Drawdown Trigger — MPAA Trigger Test (rUK 2026-27)
-description: 'Returns true if the type of pension withdrawal triggers the Money Purchase Annual Allowance (MPAA). Withdrawals
-  that trigger MPAA: flexi-access drawdown (FAD), Uncrystallised Fund Pension Lump Sum (UFPLS), flexible annuity payments.
-  Withdrawals that do NOT trigger MPAA: Pension Commencement Lump Sum (PCLS), lifetime annuity, small pot lump sums, capped
-  drawdown (legacy). Input variables: `is_flexi_access_drawdown` — boolean; `is_ufpls` — boolean; `is_flexible_annuity` —
-  boolean. Returns true if MPAA is triggered.
+description: 'Returns true if the type of pension withdrawal triggers the Money Purchase Annual Allowance (MPAA). Withdrawals that trigger MPAA: flexi-access drawdown (FAD), Uncrystallised Fund Pension Lump Sum (UFPLS), flexible annuity payments. Withdrawals that do NOT trigger MPAA: Pension Commencement Lump Sum (PCLS), lifetime annuity, small pot lump sums, capped drawdown (legacy). Input variables: `is_flexi_access_drawdown` — boolean; `is_ufpls` — boolean; `is_flexible_annuity` — boolean. Returns true if MPAA is triggered.
 
   '
 dsl_source: '  return is_flexi_access_drawdown or is_ufpls or is_flexible_annuity
@@ -30,6 +26,8 @@ citations:
   url: https://www.gov.uk/guidance/pension-schemes-money-purchase-annual-allowance
 - label: Finance (No.2) Act 2015 — Flexi-access drawdown
   url: https://www.legislation.gov.uk/ukpga/2015/33
+- label: PTM071200
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm071200
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

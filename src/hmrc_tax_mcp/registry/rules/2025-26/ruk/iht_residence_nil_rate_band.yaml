@@ -3,14 +3,7 @@ version: 1.0.0
 tax_year: 2025-26
 jurisdiction: rUK
 title: Inheritance Tax Residence Nil Rate Band (rUK 2025-26)
-description: 'Returns the maximum Residence Nil Rate Band (RNRB) of £175,000 — the additional IHT threshold available when
-  a qualifying residential property is left to direct descendants (children, grandchildren, step-children etc., including
-  their spouses). The RNRB is applied in addition to the standard NRB (£325,000), giving a combined threshold of up to £500,000
-  for individuals, or £1,000,000 for married couples or civil partners where both NRB and RNRB are transferred. The RNRB is
-  limited to the lower of £175,000 and the net value of the qualifying residence. It is tapered by £1 for every £2 of estate
-  value above £2,000,000 (see iht_rnrb_taper for the tapered amount). Unused RNRB can be transferred to a surviving spouse
-  or civil partner. Frozen at £175,000 until at least 2030. UK-wide — IHT is not devolved. This rule returns the maximum unreduced
-  RNRB; apply the taper separately for large estates.
+description: 'Returns the maximum Residence Nil Rate Band (RNRB) of £175,000 — the additional IHT threshold available when a qualifying residential property is left to direct descendants (children, grandchildren, step-children etc., including their spouses). The RNRB is applied in addition to the standard NRB (£325,000), giving a combined threshold of up to £500,000 for individuals, or £1,000,000 for married couples or civil partners where both NRB and RNRB are transferred. The RNRB is limited to the lower of £175,000 and the net value of the qualifying residence. It is tapered by £1 for every £2 of estate value above £2,000,000 (see iht_rnrb_taper for the tapered amount). Unused RNRB can be transferred to a surviving spouse or civil partner. Frozen at £175,000 until at least 2030. UK-wide — IHT is not devolved. This rule returns the maximum unreduced RNRB; apply the taper separately for large estates.
 
   '
 dsl_source: '  return 175000
@@ -25,6 +18,8 @@ citations:
   url: https://www.gov.uk/guidance/inheritance-tax-and-the-residence-nil-rate-band
 - label: Inheritance Tax Act 1984 s.8D – RNRB
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/8D
+- label: IHTM46000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm46000
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

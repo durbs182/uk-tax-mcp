@@ -3,18 +3,10 @@ version: 1.0.0
 tax_year: 2025-26
 jurisdiction: rUK
 title: Pension Annual Allowance Carry Forward (rUK 2025-26)
-description: 'Computes the total unused Annual Allowance (AA) available to carry forward from the three preceding tax years.
-  In each year, unused AA = max(0, annual_allowance − pension_input_amount). Carry forward can only be used if the member
-  has fully used the current-year AA first. Carry forward is not available if the member was not a member of a registered
-  pension scheme in the relevant year. Input variables: `annual_allowance` — standard AA for the carry-forward years (typically
-  £60,000); `pension_input_y1` — pension input amount 1 year ago; `pension_input_y2` — 2 years ago; `pension_input_y3` — 3
-  years ago. Returns total carry-forward available in pounds.
+description: 'Computes the total unused Annual Allowance (AA) available to carry forward from the three preceding tax years. In each year, unused AA = max(0, annual_allowance − pension_input_amount). Carry forward can only be used if the member has fully used the current-year AA first. Carry forward is not available if the member was not a member of a registered pension scheme in the relevant year. Input variables: `annual_allowance` — standard AA for the carry-forward years (typically £60,000); `pension_input_y1` — pension input amount 1 year ago; `pension_input_y2` — 2 years ago; `pension_input_y3` — 3 years ago. Returns total carry-forward available in pounds.
 
   '
-dsl_source: "  let unused_y1 = if annual_allowance > pension_input_y1 then annual_allowance - pension_input_y1 else 0\n  let\
-  \ unused_y2 = if annual_allowance > pension_input_y2 then annual_allowance - pension_input_y2 else 0\n  let unused_y3 =\
-  \ if annual_allowance > pension_input_y3 then annual_allowance - pension_input_y3 else 0\n  return unused_y1 + unused_y2\
-  \ + unused_y3\n"
+dsl_source: "  let unused_y1 = if annual_allowance > pension_input_y1 then annual_allowance - pension_input_y1 else 0\n  let unused_y2 = if annual_allowance > pension_input_y2 then annual_allowance - pension_input_y2 else 0\n  let unused_y3 = if annual_allowance > pension_input_y3 then annual_allowance - pension_input_y3 else 0\n  return unused_y1 + unused_y2 + unused_y3\n"
 ast:
   node: LET
   bindings:
@@ -92,6 +84,8 @@ citations:
   url: https://www.gov.uk/guidance/pension-schemes-carry-forward-of-unused-annual-allowance
 - label: Finance Act 2011 Sch 17 — Annual allowance carry forward
   url: https://www.legislation.gov.uk/ukpga/2011/11/schedule/17
+- label: PTM055400
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm055400
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

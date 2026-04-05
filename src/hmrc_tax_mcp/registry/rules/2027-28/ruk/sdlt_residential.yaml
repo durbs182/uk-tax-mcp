@@ -3,15 +3,10 @@ version: 1.0.0
 tax_year: 2027-28
 jurisdiction: rUK
 title: Stamp Duty Land Tax — Residential Property (England & NI) (rUK 2027-28)
-description: 'Computes Stamp Duty Land Tax (SDLT) on a residential property purchase in England and Northern Ireland. Applies
-  standard residential rates (2025-26): 0% on the first £250,000; 5% on £250,001-£925,000; 10% on £925,001-£1,500,000; 12%
-  above £1,500,000. SDLT is calculated on a slice basis (not flat rate). For additional dwellings or non-UK residents, use
-  `sdlt_higher_rates` to compute the surcharge separately. SDLT does not apply in Scotland (use `lbtt_residential` — P3) or
-  Wales (LTT). Input variable: `purchase_price` — full property purchase price in pounds. Returns SDLT due in pounds.
+description: 'Computes Stamp Duty Land Tax (SDLT) on a residential property purchase in England and Northern Ireland. Applies standard residential rates (2025-26): 0% on the first £250,000; 5% on £250,001-£925,000; 10% on £925,001-£1,500,000; 12% above £1,500,000. SDLT is calculated on a slice basis (not flat rate). For additional dwellings or non-UK residents, use `sdlt_higher_rates` to compute the surcharge separately. SDLT does not apply in Scotland (use `lbtt_residential` — P3) or Wales (LTT). Input variable: `purchase_price` — full property purchase price in pounds. Returns SDLT due in pounds.
 
   '
-dsl_source: "  let band2 = max(min(purchase_price, 925000) - 250000, 0) * 0.05\n  let band3 = max(min(purchase_price, 1500000)\
-  \ - 925000, 0) * 0.10\n  let band4 = max(purchase_price - 1500000, 0) * 0.12\n  return round(band2 + band3 + band4, 2)\n"
+dsl_source: "  let band2 = max(min(purchase_price, 925000) - 250000, 0) * 0.05\n  let band3 = max(min(purchase_price, 1500000) - 925000, 0) * 0.10\n  let band4 = max(purchase_price - 1500000, 0) * 0.12\n  return round(band2 + band3 + band4, 2)\n"
 ast:
   node: LET
   bindings:
@@ -95,6 +90,8 @@ citations:
   url: https://www.gov.uk/stamp-duty-land-tax/residential-property-rates
 - label: Finance Act 2003 Sch 4ZA — SDLT
   url: https://www.legislation.gov.uk/ukpga/2003/14/schedule/4ZA
+- label: SDLTM22010
+  url: https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax/sdltm22010
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

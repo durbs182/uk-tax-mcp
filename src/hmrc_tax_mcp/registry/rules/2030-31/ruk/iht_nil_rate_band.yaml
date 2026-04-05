@@ -3,12 +3,7 @@ version: 1.0.0
 tax_year: 2030-31
 jurisdiction: rUK
 title: Inheritance Tax Nil Rate Band (rUK 2030-31)
-description: 'Returns the Inheritance Tax (IHT) Nil Rate Band (NRB) of £325,000 — the portion of the death estate on which
-  no IHT is charged. Estates (after debts and reliefs) below the NRB pay no IHT. For amounts above, the standard rate is 40%
-  (or 36% when ≥10% is left to charity). The NRB has been frozen at £325,000 since 2009-10 and is confirmed frozen until at
-  least 2030 (Autumn Budget 2024). Any unused NRB can be transferred to a surviving spouse or civil partner (see iht_transferable_nil_rate_band).
-  An additional Residence Nil Rate Band (RNRB) of up to £175,000 may also apply where a qualifying residence passes to direct
-  descendants (see iht_residence_nil_rate_band). UK-wide — IHT is not devolved.
+description: 'Returns the Inheritance Tax (IHT) Nil Rate Band (NRB) of £325,000 — the portion of the death estate on which no IHT is charged. Estates (after debts and reliefs) below the NRB pay no IHT. For amounts above, the standard rate is 40% (or 36% when ≥10% is left to charity). The NRB has been frozen at £325,000 since 2009-10 and is confirmed frozen until at least 2030 (Autumn Budget 2024). Any unused NRB can be transferred to a surviving spouse or civil partner (see iht_transferable_nil_rate_band). An additional Residence Nil Rate Band (RNRB) of up to £175,000 may also apply where a qualifying residence passes to direct descendants (see iht_residence_nil_rate_band). UK-wide — IHT is not devolved.
 
   '
 dsl_source: '  return 325000
@@ -23,6 +18,8 @@ citations:
   url: https://www.gov.uk/government/publications/rates-and-allowances-inheritance-tax/inheritance-tax-thresholds-and-nil-rate-band
 - label: Inheritance Tax Act 1984 s.7 – Rate of charge
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/7
+- label: IHTM04261
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm04261
 provenance: manual
 published_at: '2030-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

@@ -16,6 +16,8 @@ citations:
   url: "https://www.legislation.gov.uk/ukpga/2012/14/schedule/33"
 - label: "HMRC IHT430"
   url: "https://www.gov.uk/government/publications/inheritance-tax-reduced-rate-of-inheritance-tax-iht430"
+- label: IHTM45000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm45000
 provenance: "manual"
 published_at: "2026-04-04"
-reviewed_by: null
+reviewed_by:

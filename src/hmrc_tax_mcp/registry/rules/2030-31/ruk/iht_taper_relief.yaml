@@ -3,16 +3,10 @@ version: 1.0.0
 tax_year: 2030-31
 jurisdiction: rUK
 title: IHT Taper Relief Percentage on Gifts (rUK 2030-31)
-description: 'Returns the taper relief percentage reduction applied to IHT on gifts made between 3 and 7 years before death.
-  Gifts made within 3 years attract no relief (0%). Between 3-4 years: 20% reduction. 4-5 years: 40% reduction. 5-6 years:
-  60% reduction. 6-7 years: 80% reduction. Gifts surviving 7+ years are fully exempt (100% reduction — effectively PET becomes
-  IHT-free). Note: taper relief reduces the IHT due on the excess above the nil-rate band — it does not reduce the transfer
-  value. Input variable: `years_since_gift` — complete years elapsed since the gift was made. Returns the relief percentage
-  (0, 20, 40, 60, 80, or 100).
+description: 'Returns the taper relief percentage reduction applied to IHT on gifts made between 3 and 7 years before death. Gifts made within 3 years attract no relief (0%). Between 3-4 years: 20% reduction. 4-5 years: 40% reduction. 5-6 years: 60% reduction. 6-7 years: 80% reduction. Gifts surviving 7+ years are fully exempt (100% reduction — effectively PET becomes IHT-free). Note: taper relief reduces the IHT due on the excess above the nil-rate band — it does not reduce the transfer value. Input variable: `years_since_gift` — complete years elapsed since the gift was made. Returns the relief percentage (0, 20, 40, 60, 80, or 100).
 
   '
-dsl_source: '  return if years_since_gift >= 7 then 100 else if years_since_gift >= 6 then 80 else if years_since_gift >=
-  5 then 60 else if years_since_gift >= 4 then 40 else if years_since_gift >= 3 then 20 else 0
+dsl_source: '  return if years_since_gift >= 7 then 100 else if years_since_gift >= 6 then 80 else if years_since_gift >= 5 then 60 else if years_since_gift >= 4 then 40 else if years_since_gift >= 3 then 20 else 0
 
   '
 ast:
@@ -84,6 +78,8 @@ citations:
   url: https://www.gov.uk/inheritance-tax/gifts
 - label: Inheritance Tax Act 1984 s.7(4) — Taper relief
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/7
+- label: IHTM04057
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm04057
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

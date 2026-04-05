@@ -3,11 +3,7 @@ version: 1.0.0
 tax_year: 2028-29
 jurisdiction: rUK
 title: Effective Pension Annual Allowance — Standard / Tapered / MPAA (rUK 2028-29)
-description: 'Returns the lowest applicable Annual Allowance given the member''s circumstances: the standard AA, the tapered
-  AA (if threshold income > £200,000), or the Money Purchase Annual Allowance (if MPAA has been triggered). Caller should
-  supply the correct pre-computed values from `pension_tapered_annual_allowance` and `money_purchase_annual_allowance`. Input
-  variables: `standard_annual_allowance` — standard AA (£60,000); `tapered_annual_allowance` — tapered AA (£10,000-£60,000);
-  `mpaa_limit` — MPAA (£10,000 if triggered, else supply £60,000). Returns the effective AA in pounds.
+description: 'Returns the lowest applicable Annual Allowance given the member''s circumstances: the standard AA, the tapered AA (if threshold income > £200,000), or the Money Purchase Annual Allowance (if MPAA has been triggered). Caller should supply the correct pre-computed values from `pension_tapered_annual_allowance` and `money_purchase_annual_allowance`. Input variables: `standard_annual_allowance` — standard AA (£60,000); `tapered_annual_allowance` — tapered AA (£10,000-£60,000); `mpaa_limit` — MPAA (£10,000 if triggered, else supply £60,000). Returns the effective AA in pounds.
 
   '
 dsl_source: '  return min(standard_annual_allowance, min(tapered_annual_allowance, mpaa_limit))
@@ -32,6 +28,8 @@ citations:
   url: https://www.gov.uk/guidance/pension-schemes-annual-allowance
 - label: HMRC — Money purchase annual allowance
   url: https://www.gov.uk/guidance/pension-schemes-money-purchase-annual-allowance
+- label: PTM056000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm056000
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

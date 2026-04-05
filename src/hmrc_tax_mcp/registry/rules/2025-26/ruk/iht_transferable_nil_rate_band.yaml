@@ -3,14 +3,7 @@ version: 1.0.0
 tax_year: 2025-26
 jurisdiction: rUK
 title: IHT Transferable Nil Rate Band — Surviving Spouse (rUK 2025-26)
-description: 'Computes the total Nil Rate Band (NRB) available to a surviving spouse or civil partner, including any proportion
-  transferred from the first death. Where the first spouse/civil partner did not use all of their NRB at death (e.g. they
-  left everything to the surviving spouse, or the estate was below the NRB), the unused proportion can be transferred and
-  claimed against the survivor''s estate. The maximum combined NRB is 2 × £325,000 = £650,000 when 100% is transferred. The
-  NRB at the time of the second death (£325,000, frozen to 2030) is used for the calculation regardless of what the NRB was
-  at first death. Input: `unused_nrb_fraction` — the proportion of the first spouse''s NRB that was unused at their death
-  (0.0 = fully used, 1.0 = none used). Returns the total NRB available to the survivor''s estate in pounds. Note: a separate
-  transferable RNRB of up to £175,000 may also be available.
+description: 'Computes the total Nil Rate Band (NRB) available to a surviving spouse or civil partner, including any proportion transferred from the first death. Where the first spouse/civil partner did not use all of their NRB at death (e.g. they left everything to the surviving spouse, or the estate was below the NRB), the unused proportion can be transferred and claimed against the survivor''s estate. The maximum combined NRB is 2 × £325,000 = £650,000 when 100% is transferred. The NRB at the time of the second death (£325,000, frozen to 2030) is used for the calculation regardless of what the NRB was at first death. Input: `unused_nrb_fraction` — the proportion of the first spouse''s NRB that was unused at their death (0.0 = fully used, 1.0 = none used). Returns the total NRB available to the survivor''s estate in pounds. Note: a separate transferable RNRB of up to £175,000 may also be available.
 
   '
 dsl_source: '  return 325000 * (1 + unused_nrb_fraction)
@@ -33,6 +26,8 @@ citations:
   url: https://www.gov.uk/guidance/inheritance-tax-transfer-unused-threshold
 - label: Inheritance Tax Act 1984 s.8A – Transfer of unused NRB
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/8A
+- label: IHTM43000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm43000
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:
