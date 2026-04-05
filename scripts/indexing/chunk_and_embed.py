@@ -47,7 +47,17 @@ def get_openai_client() -> AzureOpenAI:
     endpoint = os.environ["AZURE_OPENAI_ENDPOINT"]
     parsed = urlparse(endpoint)
     hostname = parsed.hostname
-    if hostname == "api.cognitive.microsoft.com":
+    if not hostname:
+        raise ValueError(
+            f"AZURE_OPENAI_ENDPOINT must be a full URL including scheme, got "
+            f"{endpoint!r}. Set it to the resource-specific custom subdomain "
+            "endpoint, e.g. https://<resource-name>.openai.azure.com/."
+        )
+
+    hostname = hostname.lower()
+    if hostname == "api.cognitive.microsoft.com" or hostname.endswith(
+        ".api.cognitive.microsoft.com"
+    ):
         raise ValueError(
             f"AZURE_OPENAI_ENDPOINT is set to the generic regional endpoint "
             f"({endpoint}), which does not support token authentication. "
