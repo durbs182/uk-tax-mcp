@@ -1,0 +1,161 @@
+name: Index HMRC Content
+
+# Populates the Azure Cosmos DB hmrc-chunks container with vectorised HMRC
+# manual sections, and back-fills citations into rule YAML files.
+#
+# Triggers:
+#   schedule       weekly Sunday 03:00 UTC — picks up HMRC manual updates
+#   workflow_dispatch — manual run after a Budget / Finance Bill
+#   push           rule YAML change — re-tag + sync citations only (no fetch)
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      full_reindex:
+        description: 'Force full re-index (ignore cached sections)'
+        type: boolean
+        default: false
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/hmrc_tax_mcp/registry/rules/**/*.yaml'
+
+permissions:
+  # id-token: write is required for OIDC authentication with Azure
+  id-token: write
+  # contents: write is required to commit updated rule YAMLs back to main
+  contents: write
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Build citation_map.json from rule YAMLs — always runs
+  # ---------------------------------------------------------------------------
+  tag-rules:
+    name: Build citation map
+    runs-on: ubuntu-latest
+    outputs:
+      map_sha: ${{ steps.tag.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install indexing dependencies
+        run: pip install -e ".[indexing]" --quiet
+
+      - name: Generate citation_map.json
+        id: tag
+        run: |
+          python scripts/indexing/tag_rules.py
+          echo "sha=$(sha256sum scripts/indexing/citation_map.json | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: citation-map
+          path: scripts/indexing/citation_map.json
+          retention-days: 1
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Fetch → chunk → embed → upload to Cosmos DB
+  # Skipped when the trigger is a rule YAML push (citation sync only)
+  # ---------------------------------------------------------------------------
+  fetch-chunk-embed-upload:
+    name: Fetch, chunk, embed and upload
+    needs: tag-rules
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install indexing dependencies
+        run: pip install -e ".[indexing]" --quiet
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: citation-map
+          path: scripts/indexing/
+
+      # Authenticate to Azure using OIDC (no long-lived secrets)
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch HMRC manual sections
+        run: |
+          python scripts/indexing/fetch_hmrc_sources.py \
+            ${{ github.event.inputs.full_reindex == 'true' && '--full' || '' }}
+
+      - name: Chunk and embed
+        env:
+          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+        run: python scripts/indexing/chunk_and_embed.py
+
+      - name: Upload chunks to Cosmos DB
+        env:
+          COSMOS_URL: ${{ vars.COSMOS_URL }}
+          COSMOS_DB_NAME: ${{ vars.COSMOS_DB_NAME }}
+          COSMOS_CONTAINER: ${{ vars.COSMOS_CONTAINER }}
+        run: python scripts/indexing/upload_to_cosmos.py
+
+  # ---------------------------------------------------------------------------
+  # Job 3: Sync citations back into rule YAMLs and commit
+  # Always runs if tag-rules succeeded, even when fetch is skipped
+  # ---------------------------------------------------------------------------
+  sync-citations:
+    name: Sync citations into rule YAMLs
+    needs: [tag-rules, fetch-chunk-embed-upload]
+    # Run if tag-rules passed; fetch job may have been skipped — that's fine
+    if: >
+      always() &&
+      needs.tag-rules.result == 'success' &&
+      (needs.fetch-chunk-embed-upload.result == 'success' ||
+       needs.fetch-chunk-embed-upload.result == 'skipped')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Use the default GITHUB_TOKEN for the commit; contents: write above grants access
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install indexing dependencies
+        run: pip install -e ".[indexing]" --quiet
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: citation-map
+          path: scripts/indexing/
+
+      - name: Sync citations into rule YAMLs
+        run: >
+          python scripts/indexing/sync_citations.py
+          --citation-map scripts/indexing/citation_map.json
+
+      # Commit any changed rule YAMLs back to main.
+      # [skip ci] prevents this commit from re-triggering the workflow.
+      - name: Commit updated rule YAMLs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: sync HMRC citations into rule YAMLs [skip ci]"
+          file_pattern: |
+            src/hmrc_tax_mcp/registry/rules/**/*.yaml
+            scripts/indexing/citation_map.json

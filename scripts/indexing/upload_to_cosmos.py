@@ -1,0 +1,164 @@
+"""
+Upload chunked HMRC documents (with embeddings) to Azure Cosmos DB for NoSQL.
+
+Reads from data/chunked/{manual}/{chunk_id}.json and upserts into the
+hmrc-chunks container. Uses DefaultAzureCredential so it works with both
+Managed Identity (ACA/GitHub Actions OIDC) and local az login.
+
+Usage:
+    python upload_to_cosmos.py [--manual PTM] [--ref PTM063300] [--dry-run]
+
+Environment variables:
+    COSMOS_URL         Cosmos DB account endpoint (required)
+    COSMOS_DB_NAME     Database name (default: hmrc-guidance)
+    COSMOS_CONTAINER   Container name (default: hmrc-chunks)
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+
+from azure.cosmos import CosmosClient, PartitionKey, exceptions
+from azure.identity import DefaultAzureCredential
+
+CHUNKED_DIR = Path("data/chunked")
+BATCH_SIZE = 50          # Cosmos DB upserts per loop iteration
+VECTOR_DIMENSIONS = 1536
+
+
+def get_cosmos_container():
+    """Return the Cosmos DB container client using DefaultAzureCredential."""
+    credential = DefaultAzureCredential()
+    cosmos_url = os.environ["COSMOS_URL"]
+    db_name = os.environ.get("COSMOS_DB_NAME", "hmrc-guidance")
+    container_name = os.environ.get("COSMOS_CONTAINER", "hmrc-chunks")
+
+    client = CosmosClient(url=cosmos_url, credential=credential)
+    db = client.get_database_client(db_name)
+    return db.get_container_client(container_name)
+
+
+def ensure_container_exists() -> None:
+    """
+    Create the database and container with the vector policy if they do not
+    already exist.  Safe to call on every run — create_if_not_exists is
+    idempotent.
+
+    NOTE: Vector indexing policy can only be set at container creation time.
+    If the container already exists without a vector policy you must delete
+    and recreate it.
+    """
+    credential = DefaultAzureCredential()
+    cosmos_url = os.environ["COSMOS_URL"]
+    db_name = os.environ.get("COSMOS_DB_NAME", "hmrc-guidance")
+    container_name = os.environ.get("COSMOS_CONTAINER", "hmrc-chunks")
+
+    client = CosmosClient(url=cosmos_url, credential=credential)
+    db = client.create_database_if_not_exists(db_name)
+
+    db.create_container_if_not_exists(
+        id=container_name,
+        partition_key=PartitionKey(path="/manual_ref"),
+        # Vector embedding policy — must be set at creation
+        vector_embedding_policy={
+            "vectorEmbeddings": [
+                {
+                    "path": "/embedding",
+                    "dataType": "float32",
+                    "dimensions": VECTOR_DIMENSIONS,
+                    "distanceFunction": "cosine",
+                }
+            ]
+        },
+        # Indexing policy — DiskANN for scalable ANN; use "flat" for <10K docs
+        indexing_policy={
+            "vectorIndexes": [
+                {"path": "/embedding", "type": "diskANN"}
+            ]
+        },
+    )
+    print(f"Container '{container_name}' ready in database '{db_name}'.")
+
+
+def upsert_chunks(chunks: list[dict], container, dry_run: bool = False) -> None:
+    """Upsert a list of chunk dicts into the container."""
+    for i in range(0, len(chunks), BATCH_SIZE):
+        batch = chunks[i : i + BATCH_SIZE]
+        if dry_run:
+            print(f"  [dry-run] would upsert {len(batch)} chunks")
+            continue
+        for chunk in batch:
+            try:
+                container.upsert_item(chunk)
+            except exceptions.CosmosHttpResponseError as exc:
+                raise RuntimeError(
+                    f"Failed to upsert chunk {chunk.get('id')}: {exc}"
+                ) from exc
+        print(f"  Upserted chunks {i + 1}–{min(i + BATCH_SIZE, len(chunks))}")
+
+
+def upload_manual(
+    manual_name: str,
+    ref_filter: str | None,
+    container,
+    dry_run: bool = False,
+) -> int:
+    """Upload all chunks for a manual, optionally filtered to one ref."""
+    chunked_dir = CHUNKED_DIR / manual_name
+    if not chunked_dir.exists():
+        print(f"  No chunked data for {manual_name} — run chunk_and_embed.py first.")
+        return 0
+
+    paths = list(chunked_dir.glob("*.json"))
+    if ref_filter:
+        paths = [p for p in paths if p.name.startswith(ref_filter.upper())]
+
+    chunks = [json.loads(p.read_text()) for p in paths]
+    if not chunks:
+        print(f"  No chunks to upload for {manual_name} {ref_filter or ''}.")
+        return 0
+
+    print(f"Uploading {len(chunks)} chunks for {manual_name} …")
+    upsert_chunks(chunks, container, dry_run=dry_run)
+    return len(chunks)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--manual", help="Upload one manual only (e.g. PTM)")
+    parser.add_argument("--ref", help="Upload one section only (e.g. PTM063300)")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print what would be uploaded without writing to Cosmos DB",
+    )
+    parser.add_argument(
+        "--skip-ensure-container",
+        action="store_true",
+        help="Skip container creation check (use when container already exists)",
+    )
+    args = parser.parse_args()
+
+    if not args.skip_ensure_container:
+        ensure_container_exists()
+
+    container = get_cosmos_container()
+
+    if args.ref:
+        manual = "".join(c for c in args.ref if c.isalpha()).upper()
+        upload_manual(manual, args.ref, container, dry_run=args.dry_run)
+    elif args.manual:
+        upload_manual(args.manual, None, container, dry_run=args.dry_run)
+    else:
+        manuals = [d.name for d in CHUNKED_DIR.iterdir() if d.is_dir()]
+        total = 0
+        for manual in sorted(manuals):
+            total += upload_manual(manual, None, container, dry_run=args.dry_run)
+        print(f"\nDone. Total upserted: {total} chunks.")
+
+
+if __name__ == "__main__":
+    main()
