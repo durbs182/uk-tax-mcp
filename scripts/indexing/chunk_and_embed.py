@@ -15,6 +15,7 @@ import json
 import os
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 import tiktoken
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
@@ -44,7 +45,9 @@ def get_openai_client() -> AzureOpenAI:
     will return HTTP 400 when OIDC/Managed Identity tokens are used.
     """
     endpoint = os.environ["AZURE_OPENAI_ENDPOINT"]
-    if "api.cognitive.microsoft.com" in endpoint:
+    parsed = urlparse(endpoint)
+    hostname = parsed.hostname
+    if hostname == "api.cognitive.microsoft.com":
         raise ValueError(
             f"AZURE_OPENAI_ENDPOINT is set to the generic regional endpoint "
             f"({endpoint}), which does not support token authentication. "
