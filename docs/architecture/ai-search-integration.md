@@ -427,7 +427,7 @@ export async function POST(req: Request) {
 
   // Stream grounded explanation
   return streamText({
-    model: azure('gpt-4o-mini'),
+    model: azure('gpt-4-1-mini'),
     system: SYSTEM_PROMPT,
     messages: [{ role: 'user', content: buildPrompt(userQuestion, taxResult, guidance) }],
   }).toDataStreamResponse();

@@ -76,9 +76,9 @@ az cognitiveservices account deployment create \
 az cognitiveservices account deployment create \
   --name hmrc-tax-openai \
   --resource-group hmrc-tax-mcp-rg \
-  --deployment-name gpt-4o-mini \
-  --model-name gpt-4o-mini \
-  --model-version "2024-07-18" \
+  --deployment-name gpt-4-1-mini \
+  --model-name gpt-4.1-mini \
+  --model-version "2025-04-14" \
   --model-format OpenAI \
   --sku-capacity 30 \
   --sku-name Standard
@@ -347,18 +347,24 @@ Configure the following in your repository's Settings → Actions.
 
 No API keys, connection strings, or passwords are stored anywhere.
 
-## 9. Pending: GPT-4o-mini quota
+## 9. Chat Model Choice
 
-If your subscription has 0 quota for `gpt-4o-mini GlobalStandard`, this affects the RAG
-explain endpoint but not the embedding/indexing pipeline.
+Recommended chat deployment:
 
-To request quota:
-1. Azure portal → **Subscriptions** → your subscription → **Usage + quotas**
-2. Filter: `OpenAI`, region `UK South`
-3. Request increase for `OpenAI.GlobalStandard.gpt-4o-mini` to 30K TPM
+- model: `gpt-4.1-mini`
+- deployment type: `Standard`
+- capacity: `30` (30K TPM)
 
-Alternatively use `gpt-4o` (Standard SKU) which has quota available — more expensive
-but identical API surface.
+Reasoning:
+
+- `gpt-4.1-mini` is the newer low-cost chat model
+- it avoids older Global Standard mini-model quota issues on subscriptions where
+  that quota is still `0`
+- it keeps the same role in the architecture: explanation and RAG synthesis only
+
+If your subscription cannot deploy `gpt-4.1-mini`, use the Azure quota view to confirm
+that the Standard quota entry for `gpt-4.1-mini` has non-zero capacity in your region
+before creating the deployment.
 
 ---
 
@@ -367,7 +373,7 @@ but identical API surface.
 | Resource | SKU | Cost |
 |---|---|---|
 | Azure OpenAI (embeddings, indexing) | text-embedding-3-large | ~£2–5/month |
-| Azure OpenAI (chat, runtime) | GPT-4o-mini | ~£2–30/month (usage-dependent) |
+| Azure OpenAI (chat, runtime) | GPT-4.1-mini | ~£2–30/month (usage-dependent) |
 | Cosmos DB | Serverless | ~£10–40/month |
 | **Total (vector search via Cosmos)** | | **~£14–75/month** |
 
