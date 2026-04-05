@@ -363,8 +363,8 @@ Reasoning:
 - it keeps the same role in the architecture: explanation and RAG synthesis only
 
 If your subscription cannot deploy `gpt-4.1-mini`, use the Azure quota view to confirm
-that `OpenAI.Standard.gpt4.1-mini` has non-zero capacity in your region before creating
-the deployment.
+that the Standard quota entry for `gpt-4.1-mini` has non-zero capacity in your region
+before creating the deployment.
 
 ---
 
