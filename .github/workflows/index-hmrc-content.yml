@@ -112,6 +112,7 @@ jobs:
           COSMOS_URL: ${{ vars.COSMOS_URL }}
           COSMOS_DB_NAME: ${{ vars.COSMOS_DB_NAME }}
           COSMOS_CONTAINER: ${{ vars.COSMOS_CONTAINER }}
+          COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
         run: python scripts/indexing/upload_to_cosmos.py
 
   # ---------------------------------------------------------------------------
