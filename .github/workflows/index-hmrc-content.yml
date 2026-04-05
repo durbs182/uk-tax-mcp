@@ -24,10 +24,7 @@ on:
       - 'src/hmrc_tax_mcp/registry/rules/**/*.yaml'
 
 permissions:
-  # id-token: write is required for OIDC authentication with Azure
-  id-token: write
-  # contents: write is required to commit updated rule YAMLs back to main
-  contents: write
+  contents: read  # default for all jobs; overridden at job level where needed
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -36,12 +33,14 @@ jobs:
   tag-rules:
     name: Build citation map
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       map_sha: ${{ steps.tag.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.12'
 
@@ -54,7 +53,7 @@ jobs:
           python scripts/indexing/tag_rules.py
           echo "sha=$(sha256sum scripts/indexing/citation_map.json | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: citation-map
           path: scripts/indexing/citation_map.json
@@ -68,28 +67,31 @@ jobs:
     name: Fetch, chunk, embed and upload
     needs: tag-rules
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # required for OIDC authentication with Azure
     if: >
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.12'
 
       - name: Install indexing dependencies
         run: pip install -e ".[indexing]" --quiet
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: citation-map
           path: scripts/indexing/
 
       # Authenticate to Azure using OIDC (no long-lived secrets)
       - name: Azure login (OIDC)
-        uses: azure/login@v2
+        uses: azure/login@eec3c95657c1536435858eda1f3ff5437fee8474 # v2.3.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -126,21 +128,23 @@ jobs:
       (needs.fetch-chunk-embed-upload.result == 'success' ||
        needs.fetch-chunk-embed-upload.result == 'skipped')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # required to commit updated rule YAMLs back to main
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # Use the default GITHUB_TOKEN for the commit; contents: write above grants access
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.12'
 
       - name: Install indexing dependencies
         run: pip install -e ".[indexing]" --quiet
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: citation-map
           path: scripts/indexing/
@@ -153,7 +157,7 @@ jobs:
       # Commit any changed rule YAMLs back to main.
       # [skip ci] prevents this commit from re-triggering the workflow.
       - name: Commit updated rule YAMLs
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5.2.0
         with:
           commit_message: "chore: sync HMRC citations into rule YAMLs [skip ci]"
           file_pattern: |
