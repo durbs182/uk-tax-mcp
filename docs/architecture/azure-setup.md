@@ -262,26 +262,68 @@ python scripts/indexing/run_pipeline.py --dry-run
 
 ---
 
-## 7. Summary of GitHub Actions Variables and Secrets
+## 7. Provisioned Resources (VictoryLap subscription)
 
-### Variables (non-sensitive, set under repo Settings → Variables → Actions)
+All resources are live in `rg-shared-resources-uks`, subscription `81c7ddc0-db49-4fb3-809c-776e3756f2ea`.
 
-| Variable | Example value |
+| Resource | Name | Notes |
+|---|---|---|
+| Resource group | `rg-shared-resources-uks` | UK South |
+| Cosmos DB | `cosmos-llp-uks` | Vector search enabled (`EnableNoSQLVectorSearch`) |
+| Azure OpenAI | `hmrc-tax-openai` | UK South, S0 |
+| OpenAI deployment | `text-embedding-3-large` | Standard SKU, 50K TPM |
+| OpenAI deployment | `gpt-4o-mini` | ⚠️ Pending quota — request via Azure portal |
+| Managed identity | `hmrc-tax-mcp-deployer` | User-assigned |
+
+### OIDC federated credentials on `hmrc-tax-mcp-deployer`
+
+| Name | Subject |
 |---|---|
-| `AZURE_OPENAI_ENDPOINT` | `https://hmrc-tax-openai.openai.azure.com/` |
-| `COSMOS_URL` | `https://hmrc-tax-cosmos.documents.azure.com:443/` |
+| `github-actions-main` | `repo:durbs182/hmrc-tax-mcp:ref:refs/heads/main` |
+| `github-actions-dispatch` | `repo:durbs182/hmrc-tax-mcp:workflow_dispatch` |
+
+### RBAC assignments
+
+| Role | Scope |
+|---|---|
+| Cognitive Services OpenAI User | `hmrc-tax-openai` resource |
+| Cosmos DB Built-in Data Contributor | `cosmos-llp-uks` account |
+
+## 8. GitHub Actions Variables and Secrets
+
+All values are already configured on `durbs182/hmrc-tax-mcp`.
+
+### Variables (non-sensitive — visible in Settings → Variables → Actions)
+
+| Variable | Value |
+|---|---|
+| `AZURE_OPENAI_ENDPOINT` | `https://uksouth.api.cognitive.microsoft.com/` |
+| `COSMOS_URL` | `https://cosmos-llp-uks.documents.azure.com:443/` |
 | `COSMOS_DB_NAME` | `hmrc-guidance` |
 | `COSMOS_CONTAINER` | `hmrc-chunks` |
 
-### Secrets (sensitive, set under repo Settings → Secrets → Actions)
+### Secrets (Settings → Secrets → Actions)
 
 | Secret | Description |
 |---|---|
-| `AZURE_CLIENT_ID` | Managed identity client ID |
+| `AZURE_CLIENT_ID` | `hmrc-tax-mcp-deployer` managed identity client ID |
 | `AZURE_TENANT_ID` | Azure AD tenant ID |
-| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
+| `AZURE_SUBSCRIPTION_ID` | VictoryLap subscription ID |
 
 No API keys, connection strings, or passwords are stored anywhere.
+
+## 9. Pending: GPT-4o-mini quota
+
+The VictoryLap subscription has 0 quota for `gpt-4o-mini GlobalStandard` in UK South.
+This affects the RAG explain endpoint but not the embedding/indexing pipeline.
+
+To request quota:
+1. Azure portal → **Subscriptions** → VictoryLap → **Usage + quotas**
+2. Filter: `OpenAI`, region `UK South`
+3. Request increase for `OpenAI.GlobalStandard.gpt-4o-mini` to 30K TPM
+
+Alternatively use `gpt-4o` (Standard SKU) which has quota available — more expensive
+but identical API surface.
 
 ---
 

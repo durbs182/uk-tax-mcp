@@ -60,8 +60,7 @@ CITATION_MAP: dict[str, list[str]] = {
     # Bucket E — Inheritance Tax
     "IHTM04261": ["iht_nil_rate_band"],
     "IHTM46000": ["iht_residence_nil_rate_band", "iht_rnrb_taper"],
-    "IHTM14180": ["iht_annual_gift_exemption"],
-    "IHTM14180": ["iht_small_gifts_exemption"],
+    "IHTM14180": ["iht_annual_gift_exemption", "iht_small_gifts_exemption"],
     "IHTM04057": ["iht_taper_relief"],
     "IHTM04054": ["iht_potentially_exempt_transfer"],
     "IHTM17000": ["iht_business_property_relief"],

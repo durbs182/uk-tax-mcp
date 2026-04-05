@@ -26,7 +26,7 @@ from azure.identity import DefaultAzureCredential
 
 CHUNKED_DIR = Path("data/chunked")
 BATCH_SIZE = 50          # Cosmos DB upserts per loop iteration
-VECTOR_DIMENSIONS = 1536
+VECTOR_DIMENSIONS = 3072  # text-embedding-3-large
 
 
 def get_cosmos_container():

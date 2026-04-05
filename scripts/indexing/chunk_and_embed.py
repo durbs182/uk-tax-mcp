@@ -25,7 +25,7 @@ CHUNKED_DIR = Path("data/chunked")
 
 CHUNK_SIZE = 500        # tokens
 CHUNK_OVERLAP = 50      # tokens
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = "text-embedding-3-large"
 EMBED_BATCH_SIZE = 16   # chunks per embedding API call
 
 
