@@ -14,10 +14,12 @@ ast:
   value: 3000
 checksum: "a8c6f62735d3589c82ca38eba8a3406d7b4393aa43ce6666dde686269d4616ab"
 citations:
-  - label: "HMRC – Capital Gains Tax rates and allowances"
-    url: "https://www.gov.uk/capital-gains-tax/allowances"
-  - label: "HMRC – Rates and allowances: Capital Gains Tax"
-    url: "https://www.gov.uk/government/publications/rates-and-allowances-capital-gains-tax/capital-gains-tax-rates-and-annual-tax-on-enveloped-dwellings"
+- label: "HMRC – Capital Gains Tax rates and allowances"
+  url: "https://www.gov.uk/capital-gains-tax/allowances"
+- label: "HMRC – Rates and allowances: Capital Gains Tax"
+  url: "https://www.gov.uk/government/publications/rates-and-allowances-capital-gains-tax/capital-gains-tax-rates-and-annual-tax-on-enveloped-dwellings"
+- label: CG18000
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg18000
 provenance: manual
 published_at: "2026-04-06T00:00:00Z"
-reviewed_by: null
+reviewed_by:

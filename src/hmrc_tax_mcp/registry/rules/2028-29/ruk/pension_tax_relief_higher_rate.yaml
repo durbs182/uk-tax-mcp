@@ -3,12 +3,7 @@ version: 1.0.0
 tax_year: 2028-29
 jurisdiction: rUK
 title: Pension Tax Relief — Additional Higher/Additional Rate Relief (rUK 2028-29)
-description: 'Computes the additional income tax relief on personal pension contributions for higher-rate or additional-rate
-  taxpayers, claimed via Self Assessment. Basic-rate relief (20%) is automatically added by the pension provider on personal
-  contributions. Higher-rate payers (40%) can claim an additional 20%; additional-rate payers (45%) can claim 25%. Formula:
-  additional relief = (marginal_rate − 0.20) × gross_contribution. Input variables: `marginal_rate` — taxpayer''s marginal
-  rate (e.g. 0.40 or 0.45); `gross_contribution` — gross pension contribution (employee net contribution grossed up by 20%).
-  Returns additional tax relief due in pounds.
+description: 'Computes the additional income tax relief on personal pension contributions for higher-rate or additional-rate taxpayers, claimed via Self Assessment. Basic-rate relief (20%) is automatically added by the pension provider on personal contributions. Higher-rate payers (40%) can claim an additional 20%; additional-rate payers (45%) can claim 25%. Formula: additional relief = (marginal_rate − 0.20) × gross_contribution. Input variables: `marginal_rate` — taxpayer''s marginal rate (e.g. 0.40 or 0.45); `gross_contribution` — gross pension contribution (employee net contribution grossed up by 20%). Returns additional tax relief due in pounds.
 
   '
 dsl_source: '  return round((marginal_rate - 0.20) * gross_contribution, 2)
@@ -36,6 +31,8 @@ citations:
   url: https://www.gov.uk/tax-on-your-private-pension/pension-tax-relief
 - label: ITEPA 2003 s.188 — Employer and employee pension contributions
   url: https://www.legislation.gov.uk/ukpga/2003/1/section/188
+- label: PTM044000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm044000
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

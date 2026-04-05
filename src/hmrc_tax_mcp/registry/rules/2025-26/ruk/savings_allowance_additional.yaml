@@ -14,10 +14,12 @@ ast:
   value: 0
 checksum: "82f934f547e5da82b60c09fa32890153d40d7bfaaff3664fc87d5fbf79e4e217"
 citations:
-  - label: "HMRC – Tax on savings interest"
-    url: "https://www.gov.uk/apply-tax-free-interest-on-savings"
-  - label: "HMRC – Savings rates and allowances 2025-26"
-    url: "https://www.gov.uk/government/publications/rates-and-allowances-income-tax/income-tax-rates-and-allowances-current-and-past"
+- label: "HMRC – Tax on savings interest"
+  url: "https://www.gov.uk/apply-tax-free-interest-on-savings"
+- label: "HMRC – Savings rates and allowances 2025-26"
+  url: "https://www.gov.uk/government/publications/rates-and-allowances-income-tax/income-tax-rates-and-allowances-current-and-past"
+- label: SAIM2050
+  url: https://www.gov.uk/hmrc-internal-manuals/savings-and-investment-manual/saim2050
 provenance: manual
 published_at: "2025-04-06T00:00:00Z"
-reviewed_by: null
+reviewed_by:

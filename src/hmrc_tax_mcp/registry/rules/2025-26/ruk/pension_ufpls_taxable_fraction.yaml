@@ -14,10 +14,12 @@ ast:
   value: 0.75
 checksum: "ac43b9902ac8c5856a181d2f60bc4557cd4ac0f22be7355a9ac2f85e8398e65d"
 citations:
-  - label: "HMRC – Tax on your private pension contributions"
-    url: "https://www.gov.uk/tax-on-pension"
-  - label: "HMRC – Pension schemes rates (UFPLS)"
-    url: "https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates"
+- label: "HMRC – Tax on your private pension contributions"
+  url: "https://www.gov.uk/tax-on-pension"
+- label: "HMRC – Pension schemes rates (UFPLS)"
+  url: "https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates"
+- label: PTM072000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm072000
 provenance: manual
 published_at: "2025-04-06T00:00:00Z"
-reviewed_by: null
+reviewed_by:

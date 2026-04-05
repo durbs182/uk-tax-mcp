@@ -3,14 +3,7 @@ version: 1.0.0
 tax_year: 2026-27
 jurisdiction: rUK
 title: Inheritance Tax Due on Death Estate (rUK 2026-27)
-description: 'Computes Inheritance Tax (IHT) payable on a death estate at the standard 40% rate. IHT is charged at 40% on
-  the net estate value above the combined available Nil Rate Band (NRB) and Residence Nil Rate Band (RNRB). The net estate
-  value should be after debts, funeral expenses, and applicable reliefs (business property relief, agricultural property relief).
-  Input variables: `estate_value` — net estate value in pounds; `nrb_available` — Nil Rate Band available (use iht_nil_rate_band
-  or iht_transferable_nil_rate_band for surviving spouses); `rnrb_available` — Residence NRB available (use iht_residence_nil_rate_band,
-  adjusted by iht_rnrb_taper for large estates; 0 if no qualifying residence). Returns IHT due in pounds, rounded to 2 decimal
-  places. Note: the reduced 36% rate for charitable estates (≥10% of estate to charity) is not implemented here — see iht_charity_reduced_rate
-  (P3).
+description: 'Computes Inheritance Tax (IHT) payable on a death estate at the standard 40% rate. IHT is charged at 40% on the net estate value above the combined available Nil Rate Band (NRB) and Residence Nil Rate Band (RNRB). The net estate value should be after debts, funeral expenses, and applicable reliefs (business property relief, agricultural property relief). Input variables: `estate_value` — net estate value in pounds; `nrb_available` — Nil Rate Band available (use iht_nil_rate_band or iht_transferable_nil_rate_band for surviving spouses); `rnrb_available` — Residence NRB available (use iht_residence_nil_rate_band, adjusted by iht_rnrb_taper for large estates; 0 if no qualifying residence). Returns IHT due in pounds, rounded to 2 decimal places. Note: the reduced 36% rate for charitable estates (≥10% of estate to charity) is not implemented here — see iht_charity_reduced_rate (P3).
 
   '
 dsl_source: '  return round(max(estate_value - nrb_available - rnrb_available, 0) * 0.40, 2)
@@ -49,6 +42,8 @@ citations:
   url: https://www.gov.uk/government/publications/rates-and-allowances-inheritance-tax/inheritance-tax-thresholds-and-nil-rate-band
 - label: Inheritance Tax Act 1984 s.7
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/7
+- label: IHTM30000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm30000
 provenance: manual
 published_at: '2026-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

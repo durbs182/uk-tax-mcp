@@ -14,6 +14,8 @@ citations:
   url: "https://www.legislation.gov.uk/ukpga/1984/51/part/V/chapter/I"
 - label: "HMRC — Business relief for Inheritance Tax"
   url: "https://www.gov.uk/business-relief-inheritance-tax"
+- label: IHTM17000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm17000
 provenance: "manual"
 published_at: "2026-04-04"
-reviewed_by: null
+reviewed_by:

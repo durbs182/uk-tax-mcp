@@ -3,11 +3,7 @@ version: 1.0.0
 tax_year: 2028-29
 jurisdiction: rUK
 title: IHT Annual Gift Exemption (rUK 2028-29)
-description: 'Returns the IHT Annual Gift Exemption available in the tax year. Each individual can give away up to £3,000
-  per year free of IHT. If the exemption was not fully used in the previous tax year, the unused amount can be carried forward
-  for one year only (maximum £6,000 combined). Once used, the prior-year carry-forward is lost; you cannot accumulate more
-  than one year''s carry-forward. Input variable: `prior_year_unused` — boolean, true if the full £3,000 exemption was unused
-  in the prior year. Returns the total exemption available in pounds (£3,000 or £6,000).
+description: 'Returns the IHT Annual Gift Exemption available in the tax year. Each individual can give away up to £3,000 per year free of IHT. If the exemption was not fully used in the previous tax year, the unused amount can be carried forward for one year only (maximum £6,000 combined). Once used, the prior-year carry-forward is lost; you cannot accumulate more than one year''s carry-forward. Input variable: `prior_year_unused` — boolean, true if the full £3,000 exemption was unused in the prior year. Returns the total exemption available in pounds (£3,000 or £6,000).
 
   '
 dsl_source: '  return if prior_year_unused then 6000 else 3000
@@ -30,6 +26,8 @@ citations:
   url: https://www.gov.uk/inheritance-tax/gifts
 - label: Inheritance Tax Act 1984 s.19 — Annual exemption
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/19
+- label: IHTM14180
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm14180
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

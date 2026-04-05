@@ -1,0 +1,139 @@
+{
+  "CG10200": [
+    "cgt_due"
+  ],
+  "CG10230": [
+    "cgt_rates"
+  ],
+  "CG18000": [
+    "cgt_exempt"
+  ],
+  "CG51560": [
+    "gia_disposal_gain"
+  ],
+  "CG57200": [
+    "investment_bond_chargeable_gain"
+  ],
+  "CG64200": [
+    "private_residence_relief"
+  ],
+  "CG64700": [
+    "prr_letting_relief"
+  ],
+  "EIM01530": [
+    "blind_persons_allowance"
+  ],
+  "IHTM04054": [
+    "iht_potentially_exempt_transfer"
+  ],
+  "IHTM04057": [
+    "iht_taper_relief"
+  ],
+  "IHTM04261": [
+    "iht_nil_rate_band"
+  ],
+  "IHTM14180": [
+    "iht_annual_gift_exemption"
+  ],
+  "IHTM14181": [
+    "iht_small_gifts_exemption"
+  ],
+  "IHTM14231": [
+    "iht_normal_expenditure_income"
+  ],
+  "IHTM17000": [
+    "iht_business_property_relief"
+  ],
+  "IHTM30000": [
+    "iht_due"
+  ],
+  "IHTM43000": [
+    "iht_transferable_nil_rate_band"
+  ],
+  "IHTM45000": [
+    "iht_charity_reduced_rate"
+  ],
+  "IHTM46000": [
+    "iht_residence_nil_rate_band"
+  ],
+  "IHTM46010": [
+    "iht_rnrb_taper"
+  ],
+  "IHTM46050": [
+    "iht_rnrb_downsizing_addition"
+  ],
+  "IPTM3820": [
+    "investment_bond_time_apportionment",
+    "investment_bond_top_slicing_relief"
+  ],
+  "PIM4017": [
+    "rent_a_room_allowance"
+  ],
+  "PIM4600": [
+    "property_allowance"
+  ],
+  "PTM042000": [
+    "pension_employer_contribution"
+  ],
+  "PTM044000": [
+    "pension_tax_relief_higher_rate"
+  ],
+  "PTM044200": [
+    "pension_net_pay_arrangement"
+  ],
+  "PTM055000": [
+    "pension_annual_allowance"
+  ],
+  "PTM055400": [
+    "pension_carry_forward"
+  ],
+  "PTM056000": [
+    "pension_annual_allowance_effective"
+  ],
+  "PTM056500": [
+    "money_purchase_annual_allowance"
+  ],
+  "PTM057200": [
+    "pension_tapered_annual_allowance"
+  ],
+  "PTM063100": [
+    "pension_commencement_lump_sum",
+    "pension_lsa",
+    "pension_lsa_remaining"
+  ],
+  "PTM063200": [
+    "pension_commencement_excess_lump_sum"
+  ],
+  "PTM063300": [
+    "pension_serious_ill_health_lump_sum"
+  ],
+  "PTM063700": [
+    "pension_small_pot_lump_sum"
+  ],
+  "PTM071200": [
+    "pension_flexi_access_trigger"
+  ],
+  "PTM072000": [
+    "pension_ufpls_tax_free_fraction",
+    "pension_ufpls_taxable_fraction"
+  ],
+  "PTM073000": [
+    "pension_death_benefit_lump_sum",
+    "pension_estate_inclusion_2027"
+  ],
+  "SAIM2050": [
+    "savings_allowance_additional",
+    "savings_allowance_basic",
+    "savings_allowance_higher",
+    "savings_allowance_starter"
+  ],
+  "SAIM5010": [
+    "dividend_allowance"
+  ],
+  "SDLTM09845": [
+    "sdlt_higher_rates"
+  ],
+  "SDLTM22010": [
+    "sdlt_residential"
+  ]
+}

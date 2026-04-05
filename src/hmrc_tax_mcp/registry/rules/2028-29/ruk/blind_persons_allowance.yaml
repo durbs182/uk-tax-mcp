@@ -3,10 +3,7 @@ version: 1.0.0
 tax_year: 2028-29
 jurisdiction: rUK
 title: Blind Person's Allowance (rUK 2028-29)
-description: 'Returns the Blind Person''s Allowance (BPA) for the tax year. BPA is an additional income tax allowance available
-  to registered blind persons (or those with severe sight impairment in Scotland and other regions). It is added to the Personal
-  Allowance, giving a higher income threshold before tax is payable. Unused BPA can be transferred to a spouse or civil partner
-  if the blind person cannot use it all. BPA is £3,070 for 2025-26 (frozen). Returns allowance in pounds.
+description: 'Returns the Blind Person''s Allowance (BPA) for the tax year. BPA is an additional income tax allowance available to registered blind persons (or those with severe sight impairment in Scotland and other regions). It is added to the Personal Allowance, giving a higher income threshold before tax is payable. Unused BPA can be transferred to a spouse or civil partner if the blind person cannot use it all. BPA is £3,070 for 2025-26 (frozen). Returns allowance in pounds.
 
   '
 dsl_source: '  return 3070
@@ -21,6 +18,8 @@ citations:
   url: https://www.gov.uk/blind-persons-allowance
 - label: HMRC — Income Tax rates and Personal Allowances
   url: https://www.gov.uk/income-tax-rates
+- label: EIM01530
+  url: https://www.gov.uk/hmrc-internal-manuals/employment-income-manual/eim01530
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

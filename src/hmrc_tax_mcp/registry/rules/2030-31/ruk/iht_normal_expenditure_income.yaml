@@ -3,13 +3,7 @@ version: 1.0.0
 tax_year: 2030-31
 jurisdiction: rUK
 title: IHT Normal Expenditure Out of Income Exemption (rUK 2030-31)
-description: 'Returns true if a gift qualifies as exempt under the ''normal expenditure out of income'' exemption. To qualify,
-  the gift must: (1) form part of a habitual pattern of giving — not a one-off; (2) be paid from income (not capital); and
-  (3) leave the donor with sufficient income to maintain their normal standard of living. All three conditions must be satisfied.
-  There is no upper limit on gifts qualifying under this exemption if all conditions are met. Input variables: `is_habitual`
-  — boolean, gifts form part of an established pattern; `paid_from_income` — boolean, gift comes from income not capital;
-  `leaves_adequate_living_standard` — boolean, donor retains enough income for their lifestyle. Returns true if the gift is
-  immediately IHT-exempt.
+description: 'Returns true if a gift qualifies as exempt under the ''normal expenditure out of income'' exemption. To qualify, the gift must: (1) form part of a habitual pattern of giving — not a one-off; (2) be paid from income (not capital); and (3) leave the donor with sufficient income to maintain their normal standard of living. All three conditions must be satisfied. There is no upper limit on gifts qualifying under this exemption if all conditions are met. Input variables: `is_habitual` — boolean, gifts form part of an established pattern; `paid_from_income` — boolean, gift comes from income not capital; `leaves_adequate_living_standard` — boolean, donor retains enough income for their lifestyle. Returns true if the gift is immediately IHT-exempt.
 
   '
 dsl_source: '  return is_habitual and paid_from_income and leaves_adequate_living_standard
@@ -32,6 +26,8 @@ citations:
   url: https://www.gov.uk/inheritance-tax/gifts
 - label: Inheritance Tax Act 1984 s.21 — Normal expenditure out of income
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/21
+- label: IHTM14231
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm14231
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

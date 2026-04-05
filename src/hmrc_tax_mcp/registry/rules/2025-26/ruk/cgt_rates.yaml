@@ -23,10 +23,12 @@ ast:
     value: 18
 checksum: "03c10751e2fa1f8ed0d7c29000c7b7c2181fa4bc46da9a2c0af6221e1297bab8"
 citations:
-  - label: "HMRC – Capital Gains Tax rates and allowances"
-    url: "https://www.gov.uk/capital-gains-tax/allowances"
-  - label: "Autumn Budget 2024 – CGT rate changes"
-    url: "https://www.gov.uk/government/publications/autumn-budget-2024"
+- label: "HMRC – Capital Gains Tax rates and allowances"
+  url: "https://www.gov.uk/capital-gains-tax/allowances"
+- label: "Autumn Budget 2024 – CGT rate changes"
+  url: "https://www.gov.uk/government/publications/autumn-budget-2024"
+- label: CG10230
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg10230
 provenance: manual
 published_at: "2025-04-06T00:00:00Z"
-reviewed_by: null
+reviewed_by:

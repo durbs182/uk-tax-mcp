@@ -3,9 +3,7 @@ version: 1.0.0
 tax_year: 2026-27
 jurisdiction: rUK
 title: IHT Small Gifts Exemption — Per-Recipient Limit (rUK 2026-27)
-description: 'Returns the per-recipient IHT small gifts exemption limit (£250 per person per year). You can give up to £250
-  to as many different people as you like each tax year, completely free of IHT. This exemption cannot be combined with the
-  annual gift exemption for the same recipient. No input variables required. Returns the per-recipient limit in pounds.
+description: 'Returns the per-recipient IHT small gifts exemption limit (£250 per person per year). You can give up to £250 to as many different people as you like each tax year, completely free of IHT. This exemption cannot be combined with the annual gift exemption for the same recipient. No input variables required. Returns the per-recipient limit in pounds.
 
   '
 dsl_source: '  return 250
@@ -20,6 +18,8 @@ citations:
   url: https://www.gov.uk/inheritance-tax/gifts
 - label: Inheritance Tax Act 1984 s.20 — Small gifts
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/20
+- label: IHTM14181
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm14181
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

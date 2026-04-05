@@ -14,10 +14,12 @@ ast:
   value: 500
 checksum: "3f40c4c688f2ee8b0ba105c433db2277b86930168c39a68d3096bdc7f4aa07a2"
 citations:
-  - label: "HMRC – Tax on dividends"
-    url: "https://www.gov.uk/tax-on-dividends"
-  - label: "HMRC – Dividend allowance factsheet"
-    url: "https://www.gov.uk/government/publications/dividend-allowance-factsheet"
+- label: "HMRC – Tax on dividends"
+  url: "https://www.gov.uk/tax-on-dividends"
+- label: "HMRC – Dividend allowance factsheet"
+  url: "https://www.gov.uk/government/publications/dividend-allowance-factsheet"
+- label: SAIM5010
+  url: https://www.gov.uk/hmrc-internal-manuals/savings-and-investment-manual/saim5010
 provenance: manual
 published_at: "2026-04-06T00:00:00Z"
-reviewed_by: null
+reviewed_by:

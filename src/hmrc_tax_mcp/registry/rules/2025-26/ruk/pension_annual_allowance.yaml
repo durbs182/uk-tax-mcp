@@ -3,11 +3,7 @@ version: 1.0.0
 tax_year: 2025-26
 jurisdiction: rUK
 title: Standard Pension Annual Allowance (rUK 2025-26)
-description: 'Returns the standard Pension Annual Allowance of £60,000 — the maximum combined pension input amount (employer
-  + employee contributions plus DB accrual) permitted per tax year where neither the Tapered Annual Allowance (TAA) nor the
-  Money Purchase Annual Allowance (MPAA) applies. Effective from 6 April 2023 (Finance (No. 2) Act 2023 s.18, increased from
-  £40,000). Use pension_tapered_annual_allowance when threshold income exceeds £200,000, or money_purchase_annual_allowance
-  when flexible access has been triggered.
+description: 'Returns the standard Pension Annual Allowance of £60,000 — the maximum combined pension input amount (employer + employee contributions plus DB accrual) permitted per tax year where neither the Tapered Annual Allowance (TAA) nor the Money Purchase Annual Allowance (MPAA) applies. Effective from 6 April 2023 (Finance (No. 2) Act 2023 s.18, increased from £40,000). Use pension_tapered_annual_allowance when threshold income exceeds £200,000, or money_purchase_annual_allowance when flexible access has been triggered.
 
   '
 dsl_source: '  return 60000
@@ -22,6 +18,8 @@ citations:
   url: https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates
 - label: Finance (No. 2) Act 2023 s.18 – Annual allowance increased to £60,000
   url: https://www.legislation.gov.uk/ukpga/2023/30/section/18
+- label: PTM055000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm055000
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
-reviewed_by: null
+reviewed_by:

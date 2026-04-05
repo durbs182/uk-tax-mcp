@@ -17,51 +17,53 @@ dsl_source: |
 ast:
   node: LET
   bindings:
-    - - taxable_gain
-      - node: CALL
-        name: max
+  - - taxable_gain
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
         args:
-          - node: SUB
-            args:
-              - node: VAR
-                name: capital_gain
-              - node: CONST
-                value: 3000
-          - node: CONST
-            value: 0
-    - - rate
-      - node: IF
-        cond:
-          node: VAR
-          name: is_higher_rate_taxpayer
-        then:
-          node: CONST
-          value: 24
-        else:
-          node: CONST
-          value: 18
+        - node: VAR
+          name: capital_gain
+        - node: CONST
+          value: 3000
+      - node: CONST
+        value: 0
+  - - rate
+    - node: IF
+      cond:
+        node: VAR
+        name: is_higher_rate_taxpayer
+      then:
+        node: CONST
+        value: 24
+      else:
+        node: CONST
+        value: 18
   body:
     node: CALL
     name: round
     args:
-      - node: CALL
-        name: percent
-        args:
-          - node: VAR
-            name: taxable_gain
-          - node: VAR
-            name: rate
-      - node: CONST
-        value: 2
+    - node: CALL
+      name: percent
+      args:
+      - node: VAR
+        name: taxable_gain
+      - node: VAR
+        name: rate
+    - node: CONST
+      value: 2
 checksum: "5c23ead756a880f5e46a9767b0f2931fea4c88fc0aa3a06900b6c0c749be0eb2"
 citations:
-  - label: "HMRC – Capital Gains Tax rates and allowances"
-    url: "https://www.gov.uk/capital-gains-tax/allowances"
-  - label: "Autumn Budget 2024 – CGT rate changes"
-    url: "https://www.gov.uk/government/publications/autumn-budget-2024"
-  - label: "HMRC – Rates and allowances: Capital Gains Tax"
-    url: "https://www.gov.uk/government/publications/rates-and-allowances-capital-gains-tax/capital-gains-tax-rates-and-annual-tax-on-enveloped-dwellings"
+- label: "HMRC – Capital Gains Tax rates and allowances"
+  url: "https://www.gov.uk/capital-gains-tax/allowances"
+- label: "Autumn Budget 2024 – CGT rate changes"
+  url: "https://www.gov.uk/government/publications/autumn-budget-2024"
+- label: "HMRC – Rates and allowances: Capital Gains Tax"
+  url: "https://www.gov.uk/government/publications/rates-and-allowances-capital-gains-tax/capital-gains-tax-rates-and-annual-tax-on-enveloped-dwellings"
+- label: CG10200
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg10200
 provenance: manual
 published_at: "2025-04-06T00:00:00Z"
-reviewed_by: null
+reviewed_by:
 monetary_output: true
