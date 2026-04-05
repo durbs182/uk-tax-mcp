@@ -22,7 +22,7 @@ import json
 import re
 from pathlib import Path
 
-import yaml
+from ruamel.yaml import YAML
 
 RULES_DIR = Path("src/hmrc_tax_mcp/registry/rules")
 CITATION_MAP = Path("scripts/indexing/citation_map.json")
@@ -52,25 +52,37 @@ def load_citation_map(path: Path) -> dict[str, list[str]]:
     return json.loads(path.read_text())
 
 
+REF_PATTERN = re.compile(r"\b([A-Z]{2,6}\d{4,})\b")
+
+_yaml = YAML()
+_yaml.preserve_quotes = True
+_yaml.width = 10000  # prevent line wrapping
+
+
 def load_rule_yaml(path: Path) -> dict:
-    return yaml.safe_load(path.read_text())
+    return _yaml.load(path)
 
 
 def dump_rule_yaml(data: dict, path: Path) -> None:
-    """Write a rule dict back to YAML, preserving key order."""
-    path.write_text(
-        yaml.dump(data, allow_unicode=True, sort_keys=False, default_flow_style=False)
-    )
+    """Write a rule dict back to YAML preserving existing formatting."""
+    with path.open("w", encoding="utf-8") as fh:
+        _yaml.dump(data, fh)
 
 
 def existing_refs(rule: dict) -> set[str]:
-    """Return the set of manual section refs already in the rule's citations."""
+    """Return the set of manual section refs already in the rule's citations.
+
+    Extracts refs from both the ``label`` and ``url`` of each existing
+    citation so that entries like ``label: 'HMRC PTM063300'`` or a URL
+    containing the ref are recognised and not duplicated.
+    """
     refs: set[str] = set()
     for citation in rule.get("citations", []):
         if isinstance(citation, dict):
-            refs.add(citation.get("label", ""))
-        elif isinstance(citation, str):
-            refs.add(citation)
+            text = f"{citation.get('label', '')} {citation.get('url', '')}"
+        else:
+            text = str(citation)
+        refs.update(REF_PATTERN.findall(text.upper()))
     return refs
 
 
