@@ -176,3 +176,21 @@ percent(50000, 20)
 | Python version | >=3.9 (dev), 3.11 (CI) | System constraint; mcp package needs 3.10+ |
 | Packaging | git-dep initially | PyPI when stable |
 | LLM for NL extractor | Anthropic Claude | Already used in later-life-planner |
+
+## Recent changes (2026-04-06)
+
+- Merged `feat/current-tax-year` into `main` (commit d6f4b80).
+  - Adds `src/hmrc_tax_mcp/registry/tax_year.py` with `tax_year_for_date()` and
+    `current_tax_year()` helpers.
+  - `current_tax_year()` is timezone-aware (Europe/London) and returns the
+    current UK tax year string (e.g. "2026-27").
+  - MCP server tool handlers now default `tax_year` to `current_tax_year()` when
+    callers omit it, preventing accidental use of future-year rules.
+  - Unit tests added (tests/unit/test_tax_year.py) and the full unit suite passes.
+
+Next steps:
+- Monitor Copilot MCP tool connections; restart the client if the stdio proxy
+  loses its connection after a local server reinstall.
+- Consider adding an endpoint `GET /api/tax-year/current` for clients that want
+  to display the currently-applied tax year.
+
