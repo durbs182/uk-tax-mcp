@@ -20,6 +20,7 @@ from hmrc_tax_mcp.evaluator import EvaluationError, Evaluator
 from hmrc_tax_mcp.explainer import explain_rule as _explain_rule
 from hmrc_tax_mcp.extractor.nl_extractor import NLExtractor
 from hmrc_tax_mcp.registry.store import get_rule, get_rule_snapshot, list_rules
+from hmrc_tax_mcp.registry.tax_year import current_tax_year
 from hmrc_tax_mcp.validation.pipeline import validate_rule as _validate_rule
 
 MCPServer: Any = None
@@ -93,7 +94,7 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Required when version is explicit "
+                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). Required when version is explicit "
                             "and multiple tax years share the same version."
                         ),
                     },
@@ -119,7 +120,7 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Required when version is explicit "
+                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). Required when version is explicit "
                             "and multiple tax years share the same version."
                         ),
                     },
@@ -183,7 +184,7 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Required when version is explicit "
+                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). Required when version is explicit "
                             "and multiple tax years share the same version."
                         ),
                     },
@@ -213,7 +214,7 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Required when version is explicit "
+                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). Required when version is explicit "
                             "and multiple tax years share the same version."
                         ),
                     },
@@ -240,7 +241,7 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Required when version is explicit "
+                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). Required when version is explicit "
                             "and multiple tax years share the same version."
                         ),
                     },
@@ -300,7 +301,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[Any]:
                 arguments["rule_id"],
                 arguments.get("version", "latest"),
                 jurisdiction=arguments.get("jurisdiction"),
-                tax_year=arguments.get("tax_year"),
+                tax_year=arguments.get("tax_year") or current_tax_year(),
             )
         except ValueError as exc:
             return [TextContent(type="text", text=_json({"error": str(exc)}))]
@@ -314,7 +315,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[Any]:
                 arguments["rule_id"],
                 arguments.get("version", "latest"),
                 jurisdiction=arguments.get("jurisdiction"),
-                tax_year=arguments.get("tax_year"),
+                tax_year=arguments.get("tax_year") or current_tax_year(),
             )
         except ValueError as exc:
             return [TextContent(type="text", text=_json({"error": str(exc)}))]
@@ -366,7 +367,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[Any]:
                 arguments["rule_id"],
                 arguments.get("version", "latest"),
                 jurisdiction=arguments.get("jurisdiction"),
-                tax_year=arguments.get("tax_year"),
+                tax_year=arguments.get("tax_year") or current_tax_year(),
             )
         except ValueError as exc:
             return [TextContent(type="text", text=_json({"error": str(exc)}))]
@@ -395,7 +396,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[Any]:
                 arguments["rule_id"],
                 arguments.get("version", "latest"),
                 jurisdiction=arguments.get("jurisdiction"),
-                tax_year=arguments.get("tax_year"),
+                tax_year=arguments.get("tax_year") or current_tax_year(),
             )
         except ValueError as exc:
             return [TextContent(type="text", text=_json({"error": str(exc)}))]
@@ -410,7 +411,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[Any]:
                 arguments["rule_id"],
                 arguments.get("version", "latest"),
                 jurisdiction=arguments.get("jurisdiction"),
-                tax_year=arguments.get("tax_year"),
+                tax_year=arguments.get("tax_year") or current_tax_year(),
             )
         except ValueError as exc:
             return [TextContent(type="text", text=_json({"error": str(exc)}))]
