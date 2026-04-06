@@ -94,9 +94,8 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). "
-                            "Required when version is explicit "
-                            "and multiple tax years share the same version."
+                            "e.g. '2025-26'. Defaults to the current UK tax year "
+                            "(6 Apr – 5 Apr) when omitted."
                         ),
                     },
                 },
@@ -121,9 +120,8 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). "
-                            "Required when version is explicit "
-                            "and multiple tax years share the same version."
+                            "e.g. '2025-26'. Defaults to the current UK tax year "
+                            "(6 Apr – 5 Apr) when omitted."
                         ),
                     },
                     "inputs": {
@@ -186,9 +184,8 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). "
-                            "Required when version is explicit "
-                            "and multiple tax years share the same version."
+                            "e.g. '2025-26'. Defaults to the current UK tax year "
+                            "(6 Apr – 5 Apr) when omitted."
                         ),
                     },
                 },
@@ -217,9 +214,8 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). "
-                            "Required when version is explicit "
-                            "and multiple tax years share the same version."
+                            "e.g. '2025-26'. Defaults to the current UK tax year "
+                            "(6 Apr – 5 Apr) when omitted."
                         ),
                     },
                 },
@@ -245,9 +241,8 @@ async def handle_list_tools() -> list[Any]:
                     "tax_year": {
                         "type": "string",
                         "description": (
-                            "e.g. '2025-26'. Omit to use the current UK tax year (6 Apr – 5 Apr). "
-                            "Required when version is explicit "
-                            "and multiple tax years share the same version."
+                            "e.g. '2025-26'. Defaults to the current UK tax year "
+                            "(6 Apr – 5 Apr) when omitted."
                         ),
                     },
                     "inputs": {

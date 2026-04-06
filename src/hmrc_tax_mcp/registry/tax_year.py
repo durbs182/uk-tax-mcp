@@ -12,6 +12,9 @@ following calendar year.  For example:
 from __future__ import annotations
 
 import datetime
+import zoneinfo
+
+_LONDON = zoneinfo.ZoneInfo("Europe/London")
 
 
 def tax_year_for_date(d: datetime.date) -> str:
@@ -24,9 +27,10 @@ def tax_year_for_date(d: datetime.date) -> str:
     else:
         start = d.year - 1
     end = start + 1
-    return f"{start}-{str(end)[2:]}"
+    return f"{start}-{end % 100:02d}"
 
 
 def current_tax_year() -> str:
-    """Return the UK tax year string for today's date (e.g. '2025-26')."""
-    return tax_year_for_date(datetime.date.today())
+    """Return the current UK tax year string (Europe/London timezone, e.g. '2025-26')."""
+    today = datetime.datetime.now(tz=_LONDON).date()
+    return tax_year_for_date(today)

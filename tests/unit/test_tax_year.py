@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import datetime
+import zoneinfo
 
 import pytest
 
 from hmrc_tax_mcp.registry.tax_year import current_tax_year, tax_year_for_date
+
+_LONDON = zoneinfo.ZoneInfo("Europe/London")
 
 
 @pytest.mark.parametrize(
@@ -37,8 +40,8 @@ def test_tax_year_for_date(date_str: str, expected: str) -> None:
 
 
 def test_current_tax_year_uses_today() -> None:
-    """current_tax_year() must agree with tax_year_for_date(today)."""
-    today = datetime.date.today()
+    """current_tax_year() must agree with tax_year_for_date(today in Europe/London)."""
+    today = datetime.datetime.now(tz=_LONDON).date()
     assert current_tax_year() == tax_year_for_date(today)
 
 
