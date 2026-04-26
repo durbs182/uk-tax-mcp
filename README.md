@@ -1,4 +1,4 @@
-# hmrc-tax-mcp
+# uk-tax-mcp
 
 A deterministic, auditable HMRC UK tax rule engine exposed via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io).
 
@@ -29,7 +29,7 @@ AI agents (Claude, Copilot, Codex) should orchestrate and explain tax strategies
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 pytest                # 405 tests
-hmrc-tax-mcp          # starts MCP server on stdio (requires Python ≥3.10 + pip install -e ".[server]")
+uk-tax-mcp          # starts MCP server on stdio (requires Python ≥3.10 + pip install -e ".[server]")
 ```
 
 ## MCP Tools

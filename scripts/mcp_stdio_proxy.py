@@ -153,7 +153,7 @@ def handle(msg: dict) -> dict | None:
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "hmrc-tax-mcp", "version": "1.0.0"},
+                "serverInfo": {"name": "uk-tax-mcp", "version": "1.0.0"},
             },
         }
 

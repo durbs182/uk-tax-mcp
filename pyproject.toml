@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hmrc-tax-mcp"
+name = "uk-tax-mcp"
 version = "0.1.0"
 description = "Deterministic HMRC tax rule engine exposed via Model Context Protocol"
 requires-python = ">=3.9"
@@ -39,7 +39,7 @@ indexing = [
 ]
 
 [project.scripts]
-hmrc-tax-mcp = "hmrc_tax_mcp.server:main"
+uk-tax-mcp = "hmrc_tax_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hmrc_tax_mcp"]

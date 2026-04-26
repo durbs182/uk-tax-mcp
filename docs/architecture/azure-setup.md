@@ -23,7 +23,7 @@ az account set --subscription "<your-subscription-id>"
 
 ```bash
 az group create \
-  --name hmrc-tax-mcp-rg \
+  --name uk-tax-mcp-rg \
   --location uksouth
 ```
 
@@ -36,7 +36,7 @@ az group create \
 ```bash
 az cognitiveservices account create \
   --name hmrc-tax-openai \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --location uksouth \
   --kind OpenAI \
   --sku S0 \
@@ -53,7 +53,7 @@ az cognitiveservices account create \
 > ```bash
 > az cognitiveservices account update \
 >   --name hmrc-tax-openai \
->   --resource-group hmrc-tax-mcp-rg \
+>   --resource-group uk-tax-mcp-rg \
 >   --custom-domain hmrc-tax-openai
 > ```
 
@@ -64,7 +64,7 @@ az cognitiveservices account create \
 # text-embedding-3-large is required: the Cosmos container is created with 3072 dimensions
 az cognitiveservices account deployment create \
   --name hmrc-tax-openai \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --deployment-name text-embedding-3-large \
   --model-name text-embedding-3-large \
   --model-version "1" \
@@ -75,7 +75,7 @@ az cognitiveservices account deployment create \
 # Chat model — used by the explain / RAG endpoint
 az cognitiveservices account deployment create \
   --name hmrc-tax-openai \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --deployment-name gpt-4-1-mini \
   --model-name gpt-4.1-mini \
   --model-version "2025-04-14" \
@@ -89,7 +89,7 @@ az cognitiveservices account deployment create \
 ```bash
 az cognitiveservices account show \
   --name hmrc-tax-openai \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --query properties.endpoint -o tsv
 # → https://hmrc-tax-openai.openai.azure.com/
 ```
@@ -106,7 +106,7 @@ Set this as a GitHub Actions **variable** (not secret — it is not sensitive):
 ```bash
 az cosmosdb create \
   --name hmrc-tax-cosmos \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --locations regionName=uksouth failoverPriority=0 isZoneRedundant=false \
   --default-consistency-level Session \
   --capabilities EnableNoSQLVectorSearch
@@ -120,7 +120,7 @@ az cosmosdb create \
 ```bash
 az cosmosdb show \
   --name hmrc-tax-cosmos \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --query documentEndpoint -o tsv
 # → https://hmrc-tax-cosmos.documents.azure.com:443/
 ```
@@ -169,16 +169,16 @@ OIDC lets GitHub Actions authenticate to Azure without storing any credentials.
 
 ```bash
 az identity create \
-  --name hmrc-tax-mcp-deployer \
-  --resource-group hmrc-tax-mcp-rg
+  --name uk-tax-mcp-deployer \
+  --resource-group uk-tax-mcp-rg
 ```
 
 ### Get the identity details
 
 ```bash
 az identity show \
-  --name hmrc-tax-mcp-deployer \
-  --resource-group hmrc-tax-mcp-rg \
+  --name uk-tax-mcp-deployer \
+  --resource-group uk-tax-mcp-rg \
   --query '{clientId:clientId, principalId:principalId, tenantId:tenantId}' \
   -o json
 ```
@@ -196,10 +196,10 @@ Add the three values as GitHub Actions **secrets**:
 ```bash
 az identity federated-credential create \
   --name github-actions-indexing \
-  --identity-name hmrc-tax-mcp-deployer \
-  --resource-group hmrc-tax-mcp-rg \
+  --identity-name uk-tax-mcp-deployer \
+  --resource-group uk-tax-mcp-rg \
   --issuer https://token.actions.githubusercontent.com \
-  --subject repo:durbs182/hmrc-tax-mcp:ref:refs/heads/main \
+  --subject repo:durbs182/uk-tax-mcp:ref:refs/heads/main \
   --audiences api://AzureADTokenExchange
 ```
 
@@ -208,10 +208,10 @@ For `workflow_dispatch` from any branch, add a second credential:
 ```bash
 az identity federated-credential create \
   --name github-actions-indexing-dispatch \
-  --identity-name hmrc-tax-mcp-deployer \
-  --resource-group hmrc-tax-mcp-rg \
+  --identity-name uk-tax-mcp-deployer \
+  --resource-group uk-tax-mcp-rg \
   --issuer https://token.actions.githubusercontent.com \
-  --subject repo:durbs182/hmrc-tax-mcp:environment:indexing \
+  --subject repo:durbs182/uk-tax-mcp:environment:indexing \
   --audiences api://AzureADTokenExchange
 ```
 
@@ -226,12 +226,12 @@ Grant the managed identity the minimum permissions it needs.
 ```bash
 OPENAI_ID=$(az cognitiveservices account show \
   --name hmrc-tax-openai \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --query id -o tsv)
 
 PRINCIPAL_ID=$(az identity show \
-  --name hmrc-tax-mcp-deployer \
-  --resource-group hmrc-tax-mcp-rg \
+  --name uk-tax-mcp-deployer \
+  --resource-group uk-tax-mcp-rg \
   --query principalId -o tsv)
 
 az role assignment create \
@@ -247,12 +247,12 @@ Cosmos DB uses its own RBAC system (separate from Azure RBAC):
 ```bash
 COSMOS_ID=$(az cosmosdb show \
   --name hmrc-tax-cosmos \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --query id -o tsv)
 
 az cosmosdb sql role assignment create \
   --account-name hmrc-tax-cosmos \
-  --resource-group hmrc-tax-mcp-rg \
+  --resource-group uk-tax-mcp-rg \
   --role-definition-id 00000000-0000-0000-0000-000000000002 \
   --principal-id "$PRINCIPAL_ID" \
   --scope "$COSMOS_ID"

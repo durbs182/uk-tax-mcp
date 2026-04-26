@@ -5,7 +5,7 @@ Converts HMRC prose → a draft DSL string using Anthropic Claude.
 The output is ALWAYS flagged as unreviewed — it must pass human review
 before being committed to the rule registry.
 
-Requires: pip install hmrc-tax-mcp[extractor]
+Requires: pip install uk-tax-mcp[extractor]
 """
 from __future__ import annotations
 
@@ -105,7 +105,7 @@ class NLExtractor:
     """
     LLM-assisted HMRC prose → DSL extractor.
 
-    Requires the ``anthropic`` package (install with ``pip install hmrc-tax-mcp[extractor]``).
+    Requires the ``anthropic`` package (install with ``pip install uk-tax-mcp[extractor]``).
     The ANTHROPIC_API_KEY environment variable must be set.
 
     All results are marked ``reviewed_by: null`` — publication is blocked until
@@ -128,7 +128,7 @@ class NLExtractor:
         except ImportError as exc:
             raise ImportError(
                 "The 'anthropic' package is required for NLExtractor. "
-                "Install it with: pip install hmrc-tax-mcp[extractor]"
+                "Install it with: pip install uk-tax-mcp[extractor]"
             ) from exc
         return anthropic.Anthropic(api_key=self._api_key)
 

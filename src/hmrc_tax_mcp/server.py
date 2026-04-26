@@ -56,7 +56,7 @@ else:
         description: str
         inputSchema: dict[str, Any]
 
-app = MCPServer("hmrc-tax-mcp") if _MCP_AVAILABLE else None
+app = MCPServer("uk-tax-mcp") if _MCP_AVAILABLE else None
 
 
 def _json(data: Any) -> str:
@@ -494,7 +494,7 @@ async def _run() -> None:
     if MCPStdioServer is None or app is None:
         raise RuntimeError(
             "MCP server requires Python >=3.10. "
-            "Install with: pip install 'hmrc-tax-mcp[server]'"
+            "Install with: pip install 'uk-tax-mcp[server]'"
         )
     async with MCPStdioServer() as (read_stream, write_stream):
         await app.run(
@@ -506,7 +506,7 @@ def main() -> None:
     if not _MCP_AVAILABLE:
         raise RuntimeError(
             "MCP server requires Python >=3.10. "
-            "Install with: pip install 'hmrc-tax-mcp[server]'"
+            "Install with: pip install 'uk-tax-mcp[server]'"
         )
     asyncio.run(_run())
 

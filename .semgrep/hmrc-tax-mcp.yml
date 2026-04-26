@@ -1,26 +1,26 @@
 rules:
-  - id: hmrc-tax-mcp.python-hardcoded-db-uri
+  - id: uk-tax-mcp.python-hardcoded-db-uri
     languages:
       - python
     severity: ERROR
     message: Hardcoded database URI with embedded credentials.
     pattern-regex: '(?i)\b\w+\s*=\s*["''](?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis)://[^"'']+["'']'
 
-  - id: hmrc-tax-mcp.python-inline-string-built-sql-query
+  - id: uk-tax-mcp.python-inline-string-built-sql-query
     languages:
       - python
     severity: ERROR
     message: SQL query is built with string interpolation instead of query parameters.
     pattern-regex: '(?is)\.\s*execute\(\s*(?:f["''][^"'']*["'']|["''][^"'']*["'']\s*%|["''][^"'']*["'']\.format\([^)]*\))'
 
-  - id: hmrc-tax-mcp.python-assigned-string-built-sql-query
+  - id: uk-tax-mcp.python-assigned-string-built-sql-query
     languages:
       - python
     severity: ERROR
     message: SQL query is built with string interpolation instead of query parameters.
     pattern-regex: '(?is)(?:query|sql)\s*=\s*(?:f["''][^"'']*["'']|["''][^"'']*["'']\s*%|["''][^"'']*["'']\.format\([^)]*\)).{0,200}\.execute\(\s*\w+'
 
-  - id: hmrc-tax-mcp.python-untrusted-filename-write
+  - id: uk-tax-mcp.python-untrusted-filename-write
     languages:
       - python
     severity: ERROR

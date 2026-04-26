@@ -1,21 +1,21 @@
-# Integration Guide — `hmrc-tax-mcp` with `later-life-planner`
+# Integration Guide — `uk-tax-mcp` with `later-life-planner`
 
 **Status:** Active  
 **Owner:** NxLap Ltd  
-**Repo:** [`durbs182/hmrc-tax-mcp`](https://github.com/durbs182/hmrc-tax-mcp)  
+**Repo:** [`durbs182/uk-tax-mcp`](https://github.com/durbs182/uk-tax-mcp)  
 **Target client:** [`pauldurbin/later-life-planner`](https://github.com/pauldurbin/later-life-planner)
 
 ---
 
 ## 1. Purpose
 
-`hmrc-tax-mcp` provides a **deterministic, auditable HMRC tax rule engine** exposed
+`uk-tax-mcp` provides a **deterministic, auditable HMRC tax rule engine** exposed
 via the Model Context Protocol (MCP). `later-life-planner` is a UK retirement planning
 SaaS that currently embeds simplified tax constants directly in TypeScript.
 
 This guide documents how to:
 
-- Wire `hmrc-tax-mcp` as an MCP server to the `later-life-planner` AI layer
+- Wire `uk-tax-mcp` as an MCP server to the `later-life-planner` AI layer
 - Replace hardcoded `financialConstants.ts` values with live MCP tool calls
 - Use `execute_rule` to power the withdrawal waterfall
 - Use `explain_rule` and `trace_execution` to generate user-facing audit narratives
@@ -38,7 +38,7 @@ This guide documents how to:
            │                         │
            └─────────────────────────▼
                     ┌────────────────────────┐
-                    │    hmrc-tax-mcp        │
+                    │    uk-tax-mcp        │
                     │  (stdio MCP server)    │
                     │                        │
                     │  • execute_rule        │
@@ -67,16 +67,16 @@ There are **two integration surfaces**:
 
 ```bash
 python >=3.10
-pip install 'hmrc-tax-mcp[server]'       # installs mcp[cli] transport
+pip install 'uk-tax-mcp[server]'       # installs mcp[cli] transport
 # For NL extraction:
-pip install 'hmrc-tax-mcp[server,extractor]'
+pip install 'uk-tax-mcp[server,extractor]'
 export ANTHROPIC_API_KEY=sk-...
 ```
 
 ### Start the server (stdio transport)
 
 ```bash
-hmrc-tax-mcp
+uk-tax-mcp
 # or:
 python -m hmrc_tax_mcp.server
 ```
@@ -92,7 +92,7 @@ Add to your MCP client config (e.g. `~/.config/claude/claude_desktop_config.json
 {
   "mcpServers": {
     "hmrc-tax": {
-      "command": "hmrc-tax-mcp",
+      "command": "uk-tax-mcp",
       "env": {
         "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
       }
@@ -113,7 +113,7 @@ const response = await client.messages.create({
   model: "claude-3-5-sonnet-20241022",
   max_tokens: 2048,
   tools: [...existingTools],
-  // hmrc-tax-mcp tools are injected here by the MCP host
+  // uk-tax-mcp tools are injected here by the MCP host
 });
 ```
 
@@ -510,5 +510,5 @@ Remaining personal allowance: **£7,570** (tapered from £12,570)
 - [HMRC — Tax on dividends](https://www.gov.uk/tax-on-dividends)
 - [HMRC — Capital Gains Tax rates](https://www.gov.uk/capital-gains-tax/rates)
 - [Model Context Protocol specification](https://modelcontextprotocol.io/docs)
-- [`hmrc-tax-mcp` README](../../README.md)
+- [`uk-tax-mcp` README](../../README.md)
 - [`later-life-planner` design doc](../../../later-life-planner/docs/withdrawal-optimizer-mcp-design.md)

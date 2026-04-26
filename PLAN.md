@@ -1,7 +1,7 @@
-# PLAN.md — hmrc-tax-mcp
+# PLAN.md — uk-tax-mcp
 
 Deterministic HMRC UK tax rule engine exposed via the Model Context Protocol.  
-Owner: NxLap Ltd | Repo: `durbs182/hmrc-tax-mcp` (private)
+Owner: NxLap Ltd | Repo: `durbs182/uk-tax-mcp` (private)
 
 ---
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # setup_macos_py311.sh
-# macOS setup script for hmrc-tax-mcp development environment.
+# macOS setup script for uk-tax-mcp development environment.
 # Installs Homebrew (if missing prompt), pyenv via Homebrew, Python 3.11.6,
 # creates a virtualenv (.venv311) in the repo, installs server extras and
 # starts the MCP stdio dev server.
