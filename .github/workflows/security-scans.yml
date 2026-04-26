@@ -53,7 +53,7 @@ jobs:
           set +e
           semgrep scan \
             --config p/python \
-            --config .semgrep/hmrc-tax-mcp.yml \
+            --config .semgrep/uk-tax-mcp.yml \
             --error \
             --sarif \
             --output semgrep.sarif
