@@ -13,6 +13,8 @@ from typing import Any
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+_DISCLAIMER = "This is a deterministic calculation, not tax advice."
+
 app = FastAPI()
 
 # Safe JSON helper to convert Decimal -> str for JSON transport
@@ -138,6 +140,7 @@ async def call_tool(req: CallReq) -> Any:
             "rule_id": rule.rule_id,
             "version": rule.version,
             "output": output,
+            "disclaimer": _DISCLAIMER,
         }
         if trace_flag:
             # attempt to return trace steps if available
@@ -203,6 +206,8 @@ async def call_tool(req: CallReq) -> Any:
             raise HTTPException(status_code=404, detail="Rule not found")
         try:
             explanation = explain_rule_internal(rule.model_dump())
+            if isinstance(explanation, dict):
+                explanation["disclaimer"] = _DISCLAIMER
             return _json_serializable(explanation)
         except Exception as exc:
             raise HTTPException(status_code=500, detail=str(exc))

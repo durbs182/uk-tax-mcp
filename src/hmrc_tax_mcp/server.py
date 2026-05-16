@@ -60,6 +60,9 @@ else:
 app = MCPServer("uk-tax-mcp") if _MCP_AVAILABLE else None
 
 
+_DISCLAIMER = "This is a deterministic calculation, not tax advice."
+
+
 def _json(data: Any) -> str:
     def _default(obj: Any) -> Any:
         if isinstance(obj, Decimal):
@@ -69,14 +72,19 @@ def _json(data: Any) -> str:
     return json.dumps(data, default=_default, indent=2)
 
 
+def _tool(name: str, description: str, inputSchema: dict[str, Any]) -> Any:
+    """Construct a Tool with the standard disclaimer appended to its description."""
+    return Tool(name=name, description=f"{description} {_DISCLAIMER}", inputSchema=inputSchema)
+
+
 async def handle_list_tools() -> list[Any]:
     return [
-        Tool(
+        _tool(
             name="list_rules",
             description="List all available HMRC tax rule IDs and versions.",
             inputSchema={"type": "object", "properties": {}, "required": []},
         ),
-        Tool(
+        _tool(
             name="get_rule",
             description="Get DSL source, AST, and metadata for a specific rule.",
             inputSchema={
@@ -103,7 +111,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["rule_id"],
             },
         ),
-        Tool(
+        _tool(
             name="execute_rule",
             description=(
                 "Execute a tax rule with given inputs and return the result. "
@@ -138,7 +146,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["rule_id", "inputs"],
             },
         ),
-        Tool(
+        _tool(
             name="tax_get_rule_snapshot",
             description="Return the complete rule set for a given tax year and jurisdiction.",
             inputSchema={
@@ -150,7 +158,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["tax_year", "jurisdiction"],
             },
         ),
-        Tool(
+        _tool(
             name="compile_dsl",
             description=(
                 "Compile DSL text to a canonical AST, returning the AST and its SHA-256 checksum."
@@ -163,7 +171,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["dsl"],
             },
         ),
-        Tool(
+        _tool(
             name="validate_rule",
             description=(
                 "Run the 6-stage validation pipeline on a rule (by ID or as a raw dict). "
@@ -193,7 +201,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["rule_id"],
             },
         ),
-        Tool(
+        _tool(
             name="explain_rule",
             description=(
                 "Return a structured, human-readable explanation of a tax rule: "
@@ -223,7 +231,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["rule_id"],
             },
         ),
-        Tool(
+        _tool(
             name="trace_execution",
             description=(
                 "Execute a tax rule and return a full step-by-step audit trace showing "
@@ -254,7 +262,7 @@ async def handle_list_tools() -> list[Any]:
                 "required": ["rule_id", "inputs"],
             },
         ),
-        Tool(
+        _tool(
             name="extract_rule",
             description=(
                 "Submit HMRC legislative prose to Claude and receive a draft DSL rule. "

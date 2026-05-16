@@ -20,9 +20,9 @@ Host the uk-tax-mcp project as a reliable, secure, and scalable online MCP (micr
 - ~~Run and fix tests; add integration tests for rule execution and upload~~
 - ~~Add configuration for production (logging, metrics, environment variables)~~
 - ~~Add Dockerfile and a small example compose for local testing~~
-- **[Added]** Add `"This is a deterministic calculation, not tax advice"` disclaimer to all MCP tool descriptions and HTTP API response envelopes — must ship before any external user is onboarded
-- **[Added]** Create `RULES_CHANGELOG.md` with a defined entry format: Budget date · affected rule IDs · what changed · HMRC source reference · who updated — establishes the rule ops paper trail from day one
-- **[Added]** Document Budget change process in `CONTRIBUTING.md`: how a rule author detects a relevant Budget announcement, drafts a rule update, runs validation, and gets it merged within 24 hours of HMRC publication
+- ~~**[Added]** Add `"This is a deterministic calculation, not tax advice"` disclaimer to all MCP tool descriptions and HTTP API response envelopes~~
+- ~~**[Added]** Create `RULES_CHANGELOG.md` with a defined entry format: Budget date · affected rule IDs · what changed · HMRC source reference · who updated~~
+- ~~**[Added]** Document Budget change process in `CONTRIBUTING.md`: how a rule author detects a relevant Budget announcement, drafts a rule update, runs validation, and gets it merged within 24 hours of HMRC publication~~
 
 ### Phase B — Packaging & CI/CD ✅
 - ~~Build GitHub Actions to run tests, build docker image, run linting~~
@@ -101,8 +101,8 @@ Host the uk-tax-mcp project as a reliable, secure, and scalable online MCP (micr
 - ⬜ API key system live and tied to Stripe subscription
 
 **Product & compliance**
-- ⬜ "Not tax advice" disclaimer in all server responses
-- ⬜ `RULES_CHANGELOG.md` created and Budget change process documented
+- ✓ "Not tax advice" disclaimer in all server responses
+- ✓ `RULES_CHANGELOG.md` created and Budget change process documented
 - ⬜ Scotland rule coverage expanded to match rUK for current and next tax year
 - ⬜ HMRC MTD software recognition application submitted
 - ⬜ FCA Supercharged Sandbox application evaluated
