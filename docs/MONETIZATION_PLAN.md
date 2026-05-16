@@ -197,6 +197,133 @@ The whitespace is clear: **a UK-specific, HMRC-rule-faithful, MCP-native calcula
 | **Regulatory legitimacy** | FCA Supercharged Sandbox participation (launched June 2025; partnered with Nvidia) or HMRC software recognition creates trust signals commodity LLMs cannot claim. |
 | **Liability framing** | B2B API sales to regulated professionals who apply their own judgment substantially reduces direct regulatory exposure under FCA and CIOT frameworks — but requires rigorous disclaimers and terms of service. |
 
+### 6a. Gap Analysis — Current State vs. Competitive Moat
+
+*Audit date: May 2026. Based on codebase state at commit `dfdb659`.*
+
+The following section scores each moat dimension against what actually exists in the codebase today, identifies the specific gaps, and assigns a delivery priority.
+
+---
+
+#### Moat 1 — Rule Maintenance Velocity
+
+| | Detail |
+|---|---|
+| **Current state** | **6 tax years covered** (2025-26 through 2030-31). **406 YAML rule files** across rUK and Scotland jurisdictions. **76 distinct rule IDs** covering income tax, CGT, IHT, pension, ISA, care, property, and Scotland-specific bands. All rules carry semver `version` and ISO 8601 `published_at` timestamps. Provenance field (`manual` / `nl_extracted` / `migrated`) enables source tracking. |
+| **rUK rule count by year** | 2025-26: 70 rules · 2026-27: 71 · 2027-28: 58 · 2028-29: 58 · 2029-30: 58 · 2030-31: 58 |
+| **Scotland rule count by year** | 2025-26: 8 · 2026-27: 9 · 2027-28: 4 · 2028-29: 4 · 2029-30: 4 · 2030-31: 4 |
+| **Gap 1** | **No automated Budget detection.** `scripts/indexing/` contains HMRC source fetchers (`fetch_hmrc_sources.py`) and citation tools (`sync_citations.py`) but no logic to detect Budget publications, parse Finance Act changes, or auto-draft rule updates. Every rule change today requires manual intervention. |
+| **Gap 2** | **No CHANGELOG or rule change history.** There is no CHANGELOG.md, no per-rule audit log, and no git-tag convention for Budget events. When rules change, there is no durable record of *what changed, when, and why*. |
+| **Gap 3** | **Scotland coverage is thin.** rUK has 58–71 rules per year; Scotland has 4–9. Scottish income tax bands diverge materially from rUK — this is a sales blocker for any Scottish accountancy practice. |
+| **Gap 4** | **No rule staleness detection.** No tooling to flag rules that have not been reviewed since the most recent Budget date, even when the numeric values are unchanged. |
+| **Priority** | 🔴 **Critical** — Rule freshness is the primary moat. Without a Budget tracking process and CHANGELOG, the moat is asserted but not operational. |
+
+---
+
+#### Moat 2 — HMRC Citation Depth
+
+| | Detail |
+|---|---|
+| **Current state** | **All 406 rules carry citations.** Citation quality is high: rules reference specific Act sections (`ITEPA 2003 s.35`, `IHTA 1984 ss.103-114`, `ITA 2007 s.10`, `TCGA 1992`, `IHTM30000` manual refs) alongside GOV.UK URLs. This is genuine legislative-grade citation, not generic hyperlinks. |
+| **Gap 1** | **Citation content is not validated.** Stage 2 (Semantic) of the validation pipeline (`validation/pipeline.py`) checks that a `citations` list is *present* and *non-empty*, but does not inspect label content, verify URLs are reachable, or require legislative section references. A rule with `label: "HMRC website"` passes the same check as one citing `"ITEPA 2003 s.35"`. |
+| **Gap 2** | **No citation staleness check.** Budget changes can render citations stale (GOV.UK pages are updated; legislation sections are renumbered). No tooling verifies that cited URLs still resolve or that referenced section numbers remain accurate. |
+| **Gap 3** | **No machine-readable citation schema.** Citations are free-text `label` + `url` pairs. There is no structured field for legislation act, section number, or amendment date — making it impossible to programmatically query "which rules cite TCGA 1992" or detect when a repealed provision is still cited. |
+| **Priority** | 🟡 **Medium** — The underlying citation content is strong. The gap is in tooling to validate and maintain it at scale. This becomes critical as the rule library grows past 100+ rules. |
+
+---
+
+#### Moat 3 — Audit Trail / Calculation Explainer
+
+| | Detail |
+|---|---|
+| **Current state** | **Full trace support exists and is production-ready.** `evaluator.py` captures `TraceStep(node, inputs, output)` for every AST node. The `trace_execution` MCP tool returns a numbered JSON array of steps. The `explain_rule` tool (`explainer.py`, 231 lines) walks the AST and produces plain-English descriptions of what each rule computes, the variables it requires, HMRC citations, and DSL source. Both tools are exposed in the MCP server and the HTTP dev wrapper. This is the strongest-built moat dimension. |
+| **Gap 1** | **Trace output lacks audit-grade metadata.** Trace steps do not include: timestamp of execution, rule version at time of execution, input hash, or output precision/rounding detail. A professional audit trail requires all of these to be immutable and co-produced with the result. |
+| **Gap 2** | **No human-readable audit report formatter.** Trace output is JSON. There is no tool to render a calculation trace as a formatted PDF/markdown report (e.g. "Income Tax Calculation — John Smith — 2025-26 — Produced by uk-tax-mcp v1.0.1 at 14:32 UTC"). Regulated firms need this for client files. |
+| **Gap 3** | **LET binding traces lack intermediate variable names.** For rules with multiple `let` bindings, the trace records each inner evaluator's steps but does not label them with the binding variable name, making the trace hard to follow for complex rules. |
+| **Priority** | 🟢 **Low** — The foundation is excellent. Gaps are polish items that improve professional usability but do not block sales. |
+
+---
+
+#### Moat 4 — MTD API Integration
+
+| | Detail |
+|---|---|
+| **Current state** | **Zero.** No code anywhere in the repository references HMRC's MTD API, the Making Tax Digital submission format, OAuth2 with HMRC, or any HMRC API endpoint (`api.service.hmrc.gov.uk`). The existing `scripts/indexing/` pipeline fetches HMRC *documentation* pages but does not interact with HMRC *transactional* APIs. |
+| **Gap** | The entire MTD integration layer is absent: no OAuth2 client for HMRC authentication, no MTD ITSA submission serialiser, no quarterly update format, no HMRC test sandbox integration. This is a complete build-from-scratch effort. |
+| **Why this matters** | MTD ITSA from April 2026 requires software to *submit* calculations to HMRC in a specific JSON format via the MTD API. An engine that calculates correctly but cannot submit is not MTD-compatible and cannot be sold to accountancy practices as MTD software. However: MTD *submission* is a separate concern from MTD *calculation accuracy*. The immediate commercial path is to be the calculation back-end for MTD-compatible front-ends — not to build the MTD submission layer ourselves. |
+| **Priority** | 🟡 **Medium** — Not a blocker for early B2B sales (calculation accuracy is the product; clients handle submission). Becomes critical for direct MTD software certification and for the payroll/enterprise segment. |
+
+---
+
+#### Moat 5 — Network Effects / Integrations
+
+| | Detail |
+|---|---|
+| **Current state** | Two interfaces exist: the **MCP stdio server** (production) and the **HTTP dev wrapper** (`http_dev.py`). The HTTP wrapper exposes `/health` and `/call` endpoints with no authentication, no rate limiting, and is explicitly marked "for local dev and testing only". No OpenAPI spec is auto-generated (FastAPI's `/docs` would work if the app were configured to expose it). No API key system, webhooks, SDKs, or marketplace listings exist. |
+| **Gap 1** | **No production HTTP API.** The `http_dev.py` wrapper is not production-grade: no auth, no rate limiting, no versioned routes (`/v1/call`), no error envelopes. Fintech customers need a stable, versioned REST API — they will not integrate via MCP stdio. |
+| **Gap 2** | **No API authentication or key management.** Every commercial API has API keys or OAuth2. Without this, usage cannot be metered, customers cannot be billed, and access cannot be revoked. This is a hard prerequisite for any paid tier. |
+| **Gap 3** | **No OpenAPI specification.** FastAPI auto-generates an OpenAPI spec, but `http_dev.py` does not enable the `/docs` or `/openapi.json` routes for external consumption. Without a spec, integrations cannot be auto-generated and SDK generation is impossible. |
+| **Gap 4** | **No SDK or client library.** There is no Python or TypeScript SDK. Customers must hand-craft HTTP requests or MCP tool calls, which is a friction barrier for fintech integration. |
+| **Gap 5** | **No marketplace presence.** The MCP server is not listed in any MCP server registry, Anthropic's partner directory, or accountancy software marketplaces. |
+| **Priority** | 🔴 **Critical** — For any paid commercial product, authentication + a production API are non-negotiable. These must be built before a single paying customer can be onboarded. |
+
+---
+
+#### Moat 6 — Regulatory Legitimacy
+
+| | Detail |
+|---|---|
+| **Current state** | **Zero formal compliance infrastructure.** The README contains no disclaimers, no "not tax advice" statement, no liability limitation, and no regulatory status notice. No Terms of Service, Privacy Policy, or acceptable use policy exists anywhere in the repository. No FCA registration, HMRC software recognition, or CIOT endorsement is claimed or in progress. |
+| **Gap 1** | **No "not tax advice" disclaimer.** Every response from the engine — whether via MCP or HTTP — should carry or be accompanied by a statement that outputs are deterministic calculations, not professional tax advice, and that users remain responsible for interpretation. Without this, the product risks being characterised as providing unregulated tax advice under FSMA 2000 or the CIOT/ATT licensing frameworks. |
+| **Gap 2** | **No Terms of Service or Privacy Policy.** These are prerequisites for any commercial relationship. Enterprise procurement teams will not sign contracts without them. |
+| **Gap 3** | **No HMRC MTD software recognition.** HMRC maintains a public list of recognised MTD software. Recognition requires passing HMRC's technical API compliance tests. Without recognition, the product cannot be marketed as MTD-compatible to accountancy practices. |
+| **Gap 4** | **No FCA engagement.** The FCA Supercharged Sandbox (October 2025, Nvidia partnership) provides an accessible route for early-stage AI tools in financial services. No application has been made. |
+| **Priority** | 🔴 **Critical** — The disclaimer and ToS gaps are legal risks that must be resolved before any external users are onboarded, paid or otherwise. HMRC software recognition is a medium-term commercial necessity. |
+
+---
+
+#### Moat 7 — Liability Framing
+
+| | Detail |
+|---|---|
+| **Current state** | **Partial.** The `extract_rule` tool description in `server.py` explicitly states outputs are "ALWAYS marked unreviewed" and "must be validated by a human engineer." The README enforces a human review gate before rules can be published. The `reviewed_by` field is `null` on all 406 rules — a deliberate publication block. These are correct internal process controls. |
+| **Gap 1** | **No response-level disclaimer.** MCP tool responses and HTTP API responses contain no disclaimer text. A user of the `execute_rule` tool receives a numeric output with no statement that this is a calculation, not advice. The burden of framing currently falls entirely on the consuming application. |
+| **Gap 2** | **No liability cap or indemnification language.** There is no enforceable limit on damages from incorrect calculations. For enterprise B2B, a liability cap (typically capped at 12 months of fees paid) and mutual indemnification clause are standard. |
+| **Gap 3** | **"Not for production use" warning on HTTP wrapper is implicit.** `http_dev.py` carries a docstring comment but no runtime warning. A developer could deploy it in production without realising it lacks auth, rate limiting, and compliance controls. |
+| **Priority** | 🟡 **Medium** — Internal framing is correct. External framing (responses, ToS, API documentation) needs to be added before commercial launch. |
+
+---
+
+#### Gap Analysis Summary
+
+| Moat Dimension | Current Score | Priority | Key Gap |
+|---|---|---|---|
+| Rule maintenance velocity | **40%** | 🔴 Critical | No automated Budget tracking; no CHANGELOG; thin Scotland coverage |
+| HMRC citation depth | **70%** | 🟡 Medium | No citation content validation in pipeline; no staleness checks |
+| Audit trail / explainer | **80%** | 🟢 Low | Missing audit-grade metadata on trace; no rendered report output |
+| MTD API integration | **0%** | 🟡 Medium | Entire layer absent; near-term path is calculation back-end for MTD front-ends |
+| Network effects / integrations | **20%** | 🔴 Critical | No production API, no auth/API keys, no OpenAPI spec, no marketplace presence |
+| Regulatory legitimacy | **10%** | 🔴 Critical | No disclaimer, no ToS, no HMRC recognition, no FCA engagement |
+| Liability framing | **50%** | 🟡 Medium | Internal controls exist; no response-level disclaimers or enforceable liability cap |
+
+**Overall moat readiness: 39%** — strong foundations in the areas that are hardest to replicate (rule coverage, citation quality, audit trail), but three critical gaps that must be closed before any commercial onboarding: production API with auth, regulatory disclaimers/ToS, and a Budget change management process.
+
+#### Recommended Action Sequence
+
+| Sprint | Action | Moat Dimension(s) |
+|---|---|---|
+| 1 | Add disclaimer text to all server tool descriptions and HTTP responses; draft Terms of Service | Regulatory legitimacy, Liability framing |
+| 1 | Create `RULES_CHANGELOG.md` with entry format: Budget date · rule_id · what changed · HMRC source | Rule maintenance velocity |
+| 2 | Build production HTTP API (`/v1/`) with API key authentication and rate limiting | Network effects |
+| 2 | Enable FastAPI OpenAPI spec at `/v1/openapi.json` | Network effects |
+| 3 | Add citation content validation to Stage 2 of the validation pipeline (check for Act/section reference pattern) | HMRC citation depth |
+| 3 | Expand Scotland rule coverage to match rUK breadth for 2026-27 and 2027-28 | Rule maintenance velocity |
+| 4 | Build Budget detection script: watch HMRC publications RSS / GOV.UK API, flag rule IDs affected | Rule maintenance velocity |
+| 4 | Add audit metadata to trace output (timestamp, rule_id@version, input_hash) | Audit trail |
+| 5 | Apply for HMRC MTD software recognition | Regulatory legitimacy |
+| 5 | Evaluate FCA Supercharged Sandbox application | Regulatory legitimacy |
+| 6 | Investigate MTD ITSA calculation back-end partnership with an existing MTD front-end vendor | MTD API integration |
+
 ### 7. Target Buyer Personas and Willingness to Pay
 
 **A. Accountancy Practices** *(primary, near-term)*
