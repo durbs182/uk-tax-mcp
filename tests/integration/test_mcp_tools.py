@@ -15,8 +15,6 @@ import asyncio
 import json
 from decimal import Decimal
 
-import pytest
-
 from hmrc_tax_mcp import server
 
 
