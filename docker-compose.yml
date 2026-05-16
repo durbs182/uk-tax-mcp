@@ -23,6 +23,7 @@ services:
       SERVICE_NAME: uk-tax-mcp-dev
       LOG_LEVEL: DEBUG
       LOG_FORMAT: text
+      CORS_ORIGINS: "*"
     healthcheck:
       test: ["CMD", "python", "-c",
              "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]

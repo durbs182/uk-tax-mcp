@@ -6,6 +6,7 @@ auto-generated OpenAPI documentation at /v1/openapi.json.
 from __future__ import annotations
 
 import json
+import os
 from decimal import Decimal
 from typing import Any
 
@@ -26,6 +27,10 @@ from hmrc_tax_mcp.validation.pipeline import validate_rule as _validate_rule
 # App setup
 # ---------------------------------------------------------------------------
 
+# CORS_ORIGINS env var: comma-separated list of allowed origins.
+# Defaults to localhost only; set to "*" in dev environments that need wildcard.
+_cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost").split(",")]
+
 app = FastAPI(
     title="uk-tax-mcp",
     description="Deterministic HMRC tax rule engine — production HTTP API",
@@ -37,7 +42,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
