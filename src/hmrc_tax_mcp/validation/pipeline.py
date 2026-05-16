@@ -16,6 +16,9 @@ and returned as SKIPPED results.
 
 from __future__ import annotations
 
+import re
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from decimal import Decimal
 from enum import Enum
@@ -39,6 +42,38 @@ _REQUIRED_FIELDS = {
 }
 
 _VALID_PROVENANCES = {"manual", "nl_extracted", "migrated"}
+
+# D3: at least one citation label must reference a known legislative source.
+# Matches statute abbreviations (ITEPA 2003), spelled-out Act references
+# (Finance Act 2016, Pensions Act 2014), Statutory Instruments (SI 2006/572),
+# Finance Bills, HMRC manual codes (CG18000, IHTM12345, SAIM2050, SDLTM09845),
+# and LBTT (Scottish stamp duty).
+_LEGISLATIVE_REF_RE = re.compile(
+    # Common statute abbreviations
+    r"ITEPA\s+\d{4}"
+    r"|TCGA\s+\d{4}"
+    r"|IHTA\s+\d{4}"
+    r"|ITA\s+\d{4}"
+    r"|ITTOIA\s+\d{4}"
+    r"|FA\s+\d{4}"
+    # Spelled-out "X Act YYYY" references (Finance Act 2016, Pensions Act 2014, Care Act 2014 …)
+    r"|Act\s+\d{4}"
+    # Finance Bills (pre-Royal-Assent references are legitimate)
+    r"|Finance Bill"
+    # Statutory Instruments — SI YYYY/NNN
+    r"|SI\s+\d{4}/\d+"
+    # HMRC manual codes
+    r"|IHTM\d+"
+    r"|CG\d+"
+    r"|PTM\d+"
+    r"|EIM\d+"
+    r"|HS\d+"
+    r"|SAIM\d+"
+    r"|SDLTM\d+"
+    r"|NIM\d+"
+    # Scottish stamp duty
+    r"|LBTT"
+)
 
 
 def _is_literal_two(arg: Any) -> bool:
@@ -233,6 +268,34 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
                 details={"citation_index": i, "citation": cit},
             )
 
+    # D3: require at least one citation label that references a known legislative source.
+    if not any(_LEGISLATIVE_REF_RE.search(cit.get("label", "")) for cit in citations):
+        labels = [cit.get("label", "") for cit in citations]
+        return ValidationResult(
+            stage=ValidationStage.SEMANTIC,
+            passed=False,
+            message=(
+                "No citation references a known legislative source. "
+                "Include at least one label matching a statute (e.g. 'TCGA 1992 s.3'), "
+                "Finance Act (e.g. 'FA 2004'), or HMRC manual reference "
+                "(e.g. 'CG18000', 'IHTM12082', 'PTM011000')."
+            ),
+            details={"citation_labels": labels},
+        )
+
+    # D4: warn (non-blocking) about GOV.UK citations that return non-200 responses.
+    stale_urls: list[str] = []
+    for cit in citations:
+        url: str = cit.get("url", "")
+        if not url.startswith("https://www.gov.uk"):
+            continue
+        try:
+            with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310
+                if resp.status != 200:
+                    stale_urls.append(url)
+        except (urllib.error.URLError, OSError):
+            stale_urls.append(url)
+
     if rule.get("monetary_output"):
         ast = rule.get("ast") or {}
         if not _final_result_is_rounded(ast):
@@ -246,10 +309,15 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
                 ),
             )
 
+    semantic_details: dict[str, Any] = {}
+    if stale_urls:
+        semantic_details["stale_urls"] = stale_urls
+
     return ValidationResult(
         stage=ValidationStage.SEMANTIC,
         passed=True,
         message="All required fields present and valid",
+        details=semantic_details,
     )
 
 

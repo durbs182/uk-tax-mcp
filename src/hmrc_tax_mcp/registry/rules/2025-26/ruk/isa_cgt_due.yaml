@@ -20,6 +20,8 @@ checksum: 82f934f547e5da82b60c09fa32890153d40d7bfaaff3664fc87d5fbf79e4e217
 citations:
 - label: 'HMRC – ISAs: how they work (CGT exemption)'
   url: https://www.gov.uk/individual-savings-accounts/how-isas-work
+- label: "TCGA 1992 s.151 — exemptions for ISAs"
+  url: "https://www.legislation.gov.uk/ukpga/1992/12/section/151"
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
 reviewed_by: null

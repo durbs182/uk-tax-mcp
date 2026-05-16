@@ -45,8 +45,8 @@ Legend: ✅ Done · ⬜ Not started · 🔄 In progress
 |---|---|---|---|
 | D1 | Provision managed Postgres for registry/metadata | ⬜ | |
 | D2 | Set up object storage (S3/Blob) for uploaded rule artifacts if needed | ⬜ | |
-| D3 | Extend Stage 2 (Semantic) validation to enforce citation content quality: require at least one citation whose `label` matches a known legislative reference pattern (`ITEPA 2003`, `TCGA 1992`, `IHTA 1984`, `ITA 2007`, `IHTM\d+`) | ⬜ | Rejects `"HMRC website"` as sole citation |
-| D4 | Add citation URL reachability check as a non-blocking warning in Stage 2: flag (not fail) citations whose GOV.UK URLs return non-200 | ⬜ | Surfaces stale links before they reach production |
+| D3 | Extend Stage 2 (Semantic) validation to enforce citation content quality: require at least one citation whose `label` matches a known legislative reference pattern (`ITEPA 2003`, `TCGA 1992`, `IHTA 1984`, `ITA 2007`, `IHTM\d+`) | ✅ | `_LEGISLATIVE_REF_RE` in `validation/pipeline.py`; expanded to cover Acts, Finance Bills, SI references, and HMRC manual codes; 33 rule files updated to add missing legislative citations |
+| D4 | Add citation URL reachability check as a non-blocking warning in Stage 2: flag (not fail) citations whose GOV.UK URLs return non-200 | ✅ | `stale_urls` list in `_stage_semantic()`; GOV.UK-only, 5s timeout, `urllib.request`; surfaced in `details` without failing the stage |
 
 ---
 

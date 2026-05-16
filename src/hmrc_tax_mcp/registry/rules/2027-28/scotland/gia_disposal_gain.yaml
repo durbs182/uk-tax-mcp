@@ -70,6 +70,8 @@ citations:
   url: https://www.gov.uk/capital-gains-tax/selling-investments
 - label: HMRC – Matching rules for shares and securities
   url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg51560
+- label: "TCGA 1992 s.1 — capital gains tax"
+  url: "https://www.legislation.gov.uk/ukpga/1992/12/section/1"
 provenance: manual
 published_at: '2027-04-06T00:00:00Z'
 reviewed_by: null

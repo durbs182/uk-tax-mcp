@@ -111,6 +111,56 @@ class TestStageSemantic:
         results = validate_rule(rule)
         assert not results[1].passed
 
+    # D3: citation label quality
+    def test_generic_only_citation_fails(self) -> None:
+        rule = _rule_dict("cgt_exempt")
+        rule["citations"] = [{"label": "HMRC website", "url": "https://www.gov.uk"}]
+        results = validate_rule(rule)
+        assert not results[1].passed
+        assert "legislative" in results[1].message.lower()
+
+    def test_legislative_citation_passes(self) -> None:
+        rule = _rule_dict("cgt_exempt")
+        rule["citations"] = [
+            {"label": "HMRC website", "url": "https://www.gov.uk"},
+            {"label": "TCGA 1992 s.3", "url": "https://www.legislation.gov.uk/ukpga/1992/12"},
+        ]
+        results = validate_rule(rule)
+        assert results[1].passed
+
+    def test_hmrc_manual_ref_citation_passes(self) -> None:
+        # CG-prefixed HMRC manual references should satisfy D3
+        rule = _rule_dict("cgt_exempt")
+        rule["citations"] = [
+            {"label": "CG18000", "url": "https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg18000"},
+        ]
+        results = validate_rule(rule)
+        assert results[1].passed
+
+    # D4: stale URL warning (non-blocking)
+    def test_stale_govuk_url_warns_but_passes(self) -> None:
+        rule = _rule_dict("cgt_exempt")
+        # Use a GOV.UK URL that is unlikely to resolve (deliberately broken path)
+        rule["citations"] = [
+            {"label": "CG18000", "url": "https://www.gov.uk/this-page-does-not-exist-xyzzy-404"},
+        ]
+        results = validate_rule(rule)
+        # Stage should still pass (D4 is non-blocking)
+        assert results[1].passed
+        # But stale_urls should be reported in details
+        stale = results[1].details.get("stale_urls", [])
+        assert len(stale) == 1
+
+    def test_non_govuk_url_not_checked(self) -> None:
+        rule = _rule_dict("cgt_exempt")
+        # Non-GOV.UK URL should not be checked at all — no stale_urls entry
+        rule["citations"] = [
+            {"label": "TCGA 1992", "url": "https://www.legislation.gov.uk/ukpga/1992/12"},
+        ]
+        results = validate_rule(rule)
+        assert results[1].passed
+        assert "stale_urls" not in results[1].details
+
 
 # ---------------------------------------------------------------------------
 # Stage 3 – Canonicalisation

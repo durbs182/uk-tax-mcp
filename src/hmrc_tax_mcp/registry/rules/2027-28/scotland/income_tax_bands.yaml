@@ -46,6 +46,8 @@ citations:
   url: https://www.gov.uk/scottish-income-tax
 - label: Scotland Act 2016 s.13 – Scottish rate of income tax
   url: https://www.legislation.gov.uk/ukpga/2016/11/section/13
+- label: "ITA 2007 s.10 — income charged at the basic, higher and additional rates"
+  url: "https://www.legislation.gov.uk/ukpga/2007/3/section/10"
 provenance: manual
 published_at: '2027-04-06T00:00:00Z'
 reviewed_by: null

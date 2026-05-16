@@ -23,6 +23,8 @@ citations:
   url: https://www.gov.uk/individual-savings-accounts
 - label: HMRC – ISA statistics and limits
   url: https://www.gov.uk/government/collections/isa-statistics
+- label: "Individual Savings Account Regulations 1998 (SI 1998/1870)"
+  url: "https://www.legislation.gov.uk/uksi/1998/1870/contents"
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
 reviewed_by: null
