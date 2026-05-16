@@ -302,12 +302,14 @@ class TestStageWorkedExamples:
 
 class TestStageHumanReview:
     def test_unreviewed_rule_fails(self) -> None:
-        # All current rules have reviewed_by=None
+        # All current rules have review=None and reviewed_by=None
         results = _run("income_tax_bands")
         assert not results[5].passed
         assert "not been reviewed" in results[5].message
 
-    def test_reviewed_rule_passes(self) -> None:
+    # ---- Deprecated reviewed_by path (backwards compatibility) ----
+
+    def test_deprecated_reviewed_by_still_passes(self) -> None:
         rule = _rule_dict("income_tax_bands")
         rule["reviewed_by"] = "tax-expert@example.com"
         ex = WorkedExample(
@@ -318,6 +320,75 @@ class TestStageHumanReview:
         results = validate_rule(rule, worked_examples=[ex])
         assert results[5].passed
         assert "tax-expert@example.com" in results[5].message
+        # Deprecated path must carry a migration hint in details
+        assert "migration" in results[5].details
+
+    # ---- New structured review block ----
+
+    def test_review_block_passes(self) -> None:
+        rule = _rule_dict("income_tax_bands")
+        rule["review"] = {
+            "reviewer": "durbs182",
+            "pr": 42,
+            "approved_at": "2026-05-16T15:30:00Z",
+        }
+        ex = WorkedExample(
+            description="Smoke test",
+            inputs={"taxable_income": 30000},
+            expected=3486,
+        )
+        results = validate_rule(rule, worked_examples=[ex])
+        assert results[5].passed
+        assert "@durbs182" in results[5].message
+        assert "PR #42" in results[5].message
+
+    def test_review_block_with_validation_run_passes(self) -> None:
+        rule = _rule_dict("income_tax_bands")
+        rule["review"] = {
+            "reviewer": "durbs182",
+            "pr": 99,
+            "approved_at": "2026-05-16T15:30:00Z",
+            "validation_run": "25965821214",
+        }
+        ex = WorkedExample(
+            description="Smoke test",
+            inputs={"taxable_income": 30000},
+            expected=3486,
+        )
+        results = validate_rule(rule, worked_examples=[ex])
+        assert results[5].passed
+        assert results[5].details["review"]["validation_run"] == "25965821214"
+
+    def test_review_block_missing_reviewer_fails(self) -> None:
+        rule = _rule_dict("income_tax_bands")
+        rule["review"] = {"reviewer": "", "pr": 42, "approved_at": "2026-05-16T15:30:00Z"}
+        ex = WorkedExample(description="smoke", inputs={"taxable_income": 30000}, expected=3486)
+        results = validate_rule(rule, worked_examples=[ex])
+        assert not results[5].passed
+        assert "reviewer" in results[5].message
+
+    def test_review_block_missing_pr_fails(self) -> None:
+        rule = _rule_dict("income_tax_bands")
+        rule["review"] = {"reviewer": "durbs182", "approved_at": "2026-05-16T15:30:00Z"}
+        ex = WorkedExample(description="smoke", inputs={"taxable_income": 30000}, expected=3486)
+        results = validate_rule(rule, worked_examples=[ex])
+        assert not results[5].passed
+        assert "pr" in results[5].message.lower()
+
+    def test_review_block_takes_precedence_over_reviewed_by(self) -> None:
+        """review block is used even when deprecated reviewed_by is also present."""
+        rule = _rule_dict("income_tax_bands")
+        rule["review"] = {
+            "reviewer": "durbs182",
+            "pr": 42,
+            "approved_at": "2026-05-16T15:30:00Z",
+        }
+        rule["reviewed_by"] = "old-reviewer@example.com"
+        ex = WorkedExample(description="smoke", inputs={"taxable_income": 30000}, expected=3486)
+        results = validate_rule(rule, worked_examples=[ex])
+        assert results[5].passed
+        assert "@durbs182" in results[5].message
+        assert "old-reviewer" not in results[5].message
 
 
 # ---------------------------------------------------------------------------
@@ -332,7 +403,22 @@ class TestEndToEnd:
         expected_stages = list(ValidationStage)
         assert stages == expected_stages
 
-    def test_full_pass_with_reviewed_by_and_examples(self) -> None:
+    def test_full_pass_with_review_block_and_examples(self) -> None:
+        rule = _rule_dict("income_tax_bands")
+        rule["review"] = {
+            "reviewer": "auditor",
+            "pr": 1,
+            "approved_at": "2026-05-16T00:00:00Z",
+        }
+        examples = load_worked_examples(
+            WORKED_EXAMPLES_DIR / "income_tax_bands.yaml"
+        )
+        results = validate_rule(rule, worked_examples=examples)
+        assert _all_pass(results), [
+            f"{r.stage}: {r.message}" for r in results if not r.passed
+        ]
+
+    def test_full_pass_with_deprecated_reviewed_by_and_examples(self) -> None:
         rule = _rule_dict("income_tax_bands")
         rule["reviewed_by"] = "auditor@hmrc.example"
         examples = load_worked_examples(

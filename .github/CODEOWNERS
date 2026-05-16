@@ -1,0 +1,5 @@
+# Any change to rule YAML files requires approval from a designated tax reviewer.
+# Combined with the required status check (validate-rules) and required review
+# settings, this makes the GitHub PR approval the canonical audit record for
+# each rule update — no manual reviewed_by commit needed.
+src/hmrc_tax_mcp/registry/rules/ @durbs182

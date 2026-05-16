@@ -1,0 +1,41 @@
+name: Rule Review Populate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/hmrc_tax_mcp/registry/rules/**/*.yaml"
+
+jobs:
+  populate-review:
+    name: Populate review block
+    runs-on: ubuntu-latest
+    # Skip commits that this workflow itself creates to avoid infinite loops.
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    permissions:
+      contents: write       # push the review-block commit back to main
+      pull-requests: read   # read PR reviews to identify the approver
+      actions: read         # look up the validate-rules check run ID
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Need push access; GITHUB_TOKEN is used for authentication.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Fetch full history so the script can diff against the merge parent.
+          fetch-depth: 2
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e ".[dev,server,http]"
+
+      - name: Populate review block and update changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: python scripts/populate_review_block.py

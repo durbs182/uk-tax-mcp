@@ -20,6 +20,7 @@ import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from pathlib import Path
@@ -528,19 +529,69 @@ def _stage_worked_examples(
 
 
 def _stage_human_review(rule: dict[str, Any]) -> ValidationResult:
-    """Stage 6: Rule must have a non-null reviewed_by field to be publication-ready."""
-    reviewed_by = rule.get("reviewed_by")
-    if not reviewed_by:
+    """Stage 6: Rule must carry a verifiable review record to be publication-ready.
+
+    Accepts the new structured `review` block (reviewer, pr, approved_at) populated
+    automatically by the CI pipeline, or falls back to the deprecated `reviewed_by`
+    string for backwards compatibility with rules predating the new pipeline.
+    """
+    review = rule.get("review")
+    if review and isinstance(review, dict):
+        reviewer = review.get("reviewer", "")
+        pr = review.get("pr")
+        approved_at = review.get("approved_at")
+
+        errors: list[str] = []
+        if not reviewer:
+            errors.append("reviewer (GitHub username or email)")
+        if not isinstance(pr, int) or pr <= 0:
+            errors.append("pr (positive integer GitHub PR number)")
+        if not approved_at:
+            errors.append("approved_at (ISO 8601 timestamp)")
+
+        if errors:
+            return ValidationResult(
+                stage=ValidationStage.HUMAN_REVIEW,
+                passed=False,
+                message=f"review block is incomplete — missing or invalid: {', '.join(errors)}",
+                details={"review": review},
+            )
+
+        if isinstance(approved_at, datetime):
+            date_str = approved_at.strftime("%Y-%m-%d")
+        else:
+            date_str = str(approved_at)[:10]
+
         return ValidationResult(
             stage=ValidationStage.HUMAN_REVIEW,
-            passed=False,
-            message="Rule has not been reviewed (reviewed_by is null) — not yet publication-ready",
+            passed=True,
+            message=f"Reviewed by @{reviewer} via PR #{pr} on {date_str}",
+            details={"review": review},
         )
+
+    # Backwards-compatible fallback: accept the deprecated reviewed_by string.
+    reviewed_by = rule.get("reviewed_by")
+    if reviewed_by:
+        return ValidationResult(
+            stage=ValidationStage.HUMAN_REVIEW,
+            passed=True,
+            message=f"Rule reviewed by: {reviewed_by}",
+            details={
+                "reviewed_by": reviewed_by,
+                "migration": (
+                    "reviewed_by is deprecated — the automated review pipeline now "
+                    "populates a structured review: block with GitHub PR traceability"
+                ),
+            },
+        )
+
     return ValidationResult(
         stage=ValidationStage.HUMAN_REVIEW,
-        passed=True,
-        message=f"Rule reviewed by: {reviewed_by}",
-        details={"reviewed_by": reviewed_by},
+        passed=False,
+        message=(
+            "Rule has not been reviewed — open a PR, get it approved by a designated "
+            "reviewer, and the post-merge CI will populate the review: block automatically"
+        ),
     )
 
 

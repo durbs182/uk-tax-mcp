@@ -1,0 +1,70 @@
+name: Rule Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/hmrc_tax_mcp/registry/rules/**/*.yaml"
+
+concurrency:
+  group: rule-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-rules:
+    name: validate-rules
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write  # needed to post PR comment
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0  # full history so we can diff against the base branch
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e ".[dev,server,http]"
+
+      - name: Detect changed rule files
+        id: changed
+        run: |
+          # List YAML files under rules/ that differ from the base branch.
+          files=$(git diff --name-only "origin/${{ github.base_ref }}" HEAD \
+            -- 'src/hmrc_tax_mcp/registry/rules/**/*.yaml' \
+            | tr '\n' ' ')
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Run stage 1–5 validation
+        id: validate
+        # Exit code 1 means one or more rules failed stages 1–5.
+        # We capture the report for the PR comment regardless of outcome.
+        run: |
+          if [ -z "${{ steps.changed.outputs.files }}" ]; then
+            echo "No changed rule files — skipping validation."
+            echo "No changed rule files detected." > report.md
+            exit 0
+          fi
+          python scripts/validate_changed_rules.py ${{ steps.changed.outputs.files }} \
+            > report.md || echo "VALIDATION_FAILED=1" >> "$GITHUB_ENV"
+
+      - name: Post validation report as PR comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/post_pr_comment.py \
+            "${{ github.event.pull_request.number }}" \
+            "${{ github.run_id }}" \
+            < report.md
+
+      - name: Fail if any rule failed stages 1–5
+        if: env.VALIDATION_FAILED == '1'
+        run: |
+          echo "::error::One or more rule files failed stages 1–5. See the PR comment for details."
+          exit 1

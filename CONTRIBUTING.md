@@ -54,12 +54,12 @@ For each changed threshold, rate, or limit:
 
 ### Step 3 — Draft the rule update
 
-Each rule lives in `rules/<jurisdiction>/<tax_year>/<rule_id>.yaml`. Update the relevant fields:
+Each rule lives in `src/hmrc_tax_mcp/registry/rules/<jurisdiction>/<tax_year>/<rule_id>.yaml`. Update the relevant fields:
 
 - Change the numeric value(s) that the Budget altered.
 - Bump the `version` field (semver patch: `1.0.0` → `1.0.1`, or minor: `1.0.0` → `1.1.0` for structural changes).
 - Update `published_at` to today's ISO 8601 date.
-- Add or update `citations` to reference the new HMRC source:
+- Add or update `citations` to reference the new HMRC source. At least one citation must carry a legislative reference (Act name, SI number, or HMRC manual code):
   ```yaml
   citations:
     - label: "ITEPA 2003 s.57 as amended by FA 2026 s.12"
@@ -67,63 +67,36 @@ Each rule lives in `rules/<jurisdiction>/<tax_year>/<rule_id>.yaml`. Update the 
     - label: "HMRC — Income Tax rates and Personal Allowances"
       url: "https://www.gov.uk/income-tax-rates"
   ```
-- Leave `reviewed_by: null` — the review gate is enforced by the validation pipeline.
+- Do **not** set `reviewed_by` or `review` — the post-merge CI populates the review block automatically after the PR is approved.
 
-### Step 4 — Validate the change
-
-Run the full validation pipeline against each updated rule:
-
-```bash
-# Via the MCP server directly
-python -c "
-import asyncio
-from hmrc_tax_mcp.server import handle_call_tool
-result = asyncio.run(handle_call_tool('validate_rule', {
-    'rule_id': 'income_tax_bands',
-    'tax_year': '2026-27',
-    'jurisdiction': 'rUK',
-}))
-print(result[0].text)
-"
-
-# Or run the full test suite (integration tests exercise rule execution)
-pytest tests/
-```
-
-All 6 validation stages must pass before submitting the PR. Fix any failures before proceeding.
-
-### Step 5 — Update RULES_CHANGELOG.md
-
-Add an entry at the top of `RULES_CHANGELOG.md` using the defined format:
-
-```markdown
-## YYYY-MM-DD — <Budget or Finance Act name>
-
-| Field | Value |
-|---|---|
-| **Budget / Finance Act date** | YYYY-MM-DD |
-| **HMRC publication** | e.g. Spring Statement 2026 |
-| **Affected rule IDs** | `income_tax_bands.2026-27`, `pa.taper.2026-27` |
-| **Jurisdictions** | rUK |
-| **What changed** | Personal allowance frozen at £12,570 for 2026-27; basic rate limit increased from £37,700 to £38,200 per Finance Act 2026. |
-| **HMRC source** | https://www.gov.uk/... |
-| **Legislation reference** | ITA 2007 s.10, FA 2026 s.5 |
-| **Updated by** | your-github-handle |
-| **PR** | #<PR number> |
-```
-
-### Step 6 — Submit the PR
+### Step 4 — Open the PR
 
 - Title format: `rules: update <rule_ids> for <Budget/Finance Act name> (<date>)`
+- Fill in the PR template (HMRC source URL, what changed, legislation reference). The template checklist forms part of the permanent audit trail.
 - Link to the GitHub issue opened in Step 1.
-- Include a brief description of what changed and the HMRC source.
-- Assign to a reviewer with tax domain knowledge.
+
+CI will automatically run stages 1–5 of the validation pipeline and post a report as a PR comment. Fix any failures flagged in the comment before requesting review.
 
 The PR must be reviewed, approved, and merged within **24 hours of HMRC publication** for time-sensitive changes (rate changes effective from the start of a new tax year must be published before 6 April).
 
-### Step 7 — Set reviewed_by after merge
+### Step 5 — Reviewer approves (GitHub UI only)
 
-After the PR is reviewed and the reviewer confirms the values match the HMRC source, update the rule YAML to set `reviewed_by` to the reviewer's name or email. This lifts the publication block and marks the rule as production-ready.
+The designated tax reviewer:
+
+1. Reads the automated validation report comment (stages 1–5 pass/fail per rule).
+2. Reviews the PR diff — exactly which values changed.
+3. Opens the HMRC source URL from the PR description and confirms the values match.
+4. Clicks **Approve** in the GitHub review UI. No terminal, no YAML editing required.
+
+### Step 6 — Post-merge automation
+
+After the PR is merged, CI automatically:
+
+- Populates the `review:` block in each changed rule YAML (reviewer, PR number, approval timestamp, validation run ID).
+- Prepends an entry to `RULES_CHANGELOG.md`.
+- Commits both changes directly to `main` with `[skip ci]`.
+
+No manual post-merge steps are needed.
 
 ---
 
@@ -138,7 +111,7 @@ tax_year: "2026-27"
 jurisdiction: rUK
 published_at: "2026-05-16"
 provenance: manual
-reviewed_by: null          # set after human review; null blocks publication
+# review: block is populated automatically by CI after PR approval — do not set manually
 citations:
   - label: "ITA 2007 s.10"
     url: "https://www.legislation.gov.uk/ukpga/2007/3/section/10"
