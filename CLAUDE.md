@@ -45,6 +45,7 @@ Only create inline review comments for `P0`, `P1`, and `P2`. Put `P3` and `Nit` 
 - Prefer official `actions/*` and well-maintained third-party actions.
 - Minimize `permissions:` blocks (principle of least privilege).
 - Reuse existing trigger patterns (`on:`), job naming, and status check conventions.
+- All actions must run on Node.js 24 or later. When adding or updating an action, verify its latest release supports Node.js 24 before pinning. Pin every action ref to a full commit SHA (not a mutable tag), with the version tag as a comment, e.g. `uses: actions/checkout@<sha> # v6.0.2`.
 
 ## Documentation and Comments
 
