@@ -1,0 +1,78 @@
+rule_id: iht_rnrb_taper
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: IHT Residence Nil Rate Band Taper for Large Estates (Scotland 2026-27)
+description: 'Computes the effective Residence Nil Rate Band (RNRB) after applying the large-estate taper. For estates above
+  £2,000,000, the RNRB is reduced by £1 for every £2 of estate value above that threshold, down to £0. Input variable: `estate_value`
+  — net estate value in pounds (after debts and reliefs). Returns the tapered RNRB in pounds (£0 to £175,000), rounded to
+  2 decimal places. For estates at or below £2,000,000 the full RNRB of £175,000 is returned. Use this rule to compute `rnrb_available`
+  before passing it into `iht_due`. Threshold frozen until at least 2030.
+
+  '
+dsl_source: "  let estate_excess = if estate_value > 2000000 then estate_value - 2000000 else 0\n  let raw_rnrb = 175000 -\
+  \ estate_excess / 2\n  return round(if raw_rnrb > 0 then raw_rnrb else 0, 2)\n"
+ast:
+  node: LET
+  bindings:
+  - - estate_excess
+    - node: IF
+      cond:
+        node: GT
+        args:
+        - node: VAR
+          name: estate_value
+        - node: CONST
+          value: 2000000
+      then:
+        node: SUB
+        args:
+        - node: VAR
+          name: estate_value
+        - node: CONST
+          value: 2000000
+      else:
+        node: CONST
+        value: 0
+  - - raw_rnrb
+    - node: SUB
+      args:
+      - node: CONST
+        value: 175000
+      - node: DIV
+        args:
+        - node: VAR
+          name: estate_excess
+        - node: CONST
+          value: 2
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: IF
+      cond:
+        node: GT
+        args:
+        - node: VAR
+          name: raw_rnrb
+        - node: CONST
+          value: 0
+      then:
+        node: VAR
+        name: raw_rnrb
+      else:
+        node: CONST
+        value: 0
+    - node: CONST
+      value: 2
+checksum: 3fb16fef7c4f466e9e7a69c712fb6f367452f385e10dcde9dc1dbeab658626c6
+citations:
+- label: HMRC – Inheritance Tax and the residence nil rate band
+  url: https://www.gov.uk/guidance/inheritance-tax-and-the-residence-nil-rate-band
+- label: Inheritance Tax Act 1984 s.8D – RNRB tapering
+  url: https://www.legislation.gov.uk/ukpga/1984/51/section/8D
+- label: IHTM46010
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm46010
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

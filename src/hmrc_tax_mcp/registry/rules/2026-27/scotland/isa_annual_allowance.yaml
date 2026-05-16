@@ -1,0 +1,28 @@
+rule_id: isa_annual_allowance
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: ISA Annual Subscription Limit (Scotland 2026-27)
+description: 'Returns the maximum total amount that can be subscribed to Individual Savings Accounts (ISAs) in the tax year:
+  £20,000. This limit applies across all ISA types held by the same individual (cash ISA, stocks and shares ISA, innovative
+  finance ISA, and Lifetime ISA). The Lifetime ISA subscription is capped separately at £4,000/year (within the £20,000).
+  Subscriptions above this limit are void and HMRC can recover the excess. The £20,000 limit has been unchanged since 2017-18
+  and is confirmed frozen through 2030-31. All income and gains within an ISA are exempt from UK income tax and CGT. Applies
+  UK-wide (ISA rules are HMRC-set, not devolved).
+
+  '
+dsl_source: '  return 20000
+
+  '
+ast:
+  node: CONST
+  value: 20000
+checksum: dbb20f7a32b72b43ca002a8ac22fa4772ab8a23e97b8bd1edc392ce3bf2633ce
+citations:
+- label: HMRC – Individual Savings Accounts (ISAs)
+  url: https://www.gov.uk/individual-savings-accounts
+- label: HMRC – ISA statistics and limits
+  url: https://www.gov.uk/government/collections/isa-statistics
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null

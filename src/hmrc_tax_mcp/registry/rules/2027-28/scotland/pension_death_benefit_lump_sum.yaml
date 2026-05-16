@@ -1,0 +1,71 @@
+rule_id: pension_death_benefit_lump_sum
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Death Benefit Lump Sum Tax
+description: 'Tax on a lump-sum death benefit paid from a pension. If the member died before age 75, the lump sum is tax-free
+  up to the remaining Lump Sum and Death Benefit Allowance (LSDBA); excess is taxed at the recipient''s marginal rate. If
+  the member was 75 or over, the full amount is taxed at the recipient''s marginal rate.
+
+  '
+dsl_source: 'let taxable = if age_at_death >= 75 then lump_sum_amount else if lump_sum_amount > lsa_remaining then lump_sum_amount
+  - lsa_remaining else 0
+
+  return round(taxable * marginal_rate, 2)
+
+  '
+ast:
+  node: LET
+  bindings:
+  - - taxable
+    - node: IF
+      cond:
+        node: GTE
+        args:
+        - node: VAR
+          name: age_at_death
+        - node: CONST
+          value: 75
+      then:
+        node: VAR
+        name: lump_sum_amount
+      else:
+        node: IF
+        cond:
+          node: GT
+          args:
+          - node: VAR
+            name: lump_sum_amount
+          - node: VAR
+            name: lsa_remaining
+        then:
+          node: SUB
+          args:
+          - node: VAR
+            name: lump_sum_amount
+          - node: VAR
+            name: lsa_remaining
+        else:
+          node: CONST
+          value: 0
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: MUL
+      args:
+      - node: VAR
+        name: taxable
+      - node: VAR
+        name: marginal_rate
+    - node: CONST
+      value: 2
+checksum: 4a504f5fdface774c783ba9bdae0dcf60775696603d8b7c4394846b49f4de153
+citations:
+- label: ITEPA 2003 s.636B
+  url: https://www.legislation.gov.uk/ukpga/2003/1/section/636B
+- label: HMRC PTM073000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm073000
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

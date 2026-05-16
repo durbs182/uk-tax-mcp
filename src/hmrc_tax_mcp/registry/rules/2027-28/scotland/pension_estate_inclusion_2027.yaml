@@ -1,0 +1,35 @@
+rule_id: pension_estate_inclusion_2027
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Estate Inclusion from April 2027
+description: 'From 6 April 2027, uncrystallised pension funds and drawdown funds remaining on death will be included in the
+  member''s IHT estate. Returns the pension fund value to be added to the taxable estate when is_2027_or_later is true; returns
+  zero for earlier tax years.
+
+  '
+dsl_source: 'return if is_2027_or_later then pension_pot_value else 0
+
+  '
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: is_2027_or_later
+  then:
+    node: VAR
+    name: pension_pot_value
+  else:
+    node: CONST
+    value: 0
+checksum: 01803f4978d5fbc7daf512a4230cdcc8a9384352fcdd9928eb1114919818ff2c
+citations:
+- label: FA 2025 (prospective)
+  url: https://www.gov.uk/government/collections/autumn-budget-2024
+- label: HMRC — Inheritance Tax on Pensions consultation
+  url: https://www.gov.uk/government/consultations/inheritance-tax-on-pensions-liability-reporting-and-payment
+- label: PTM073000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm073000
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

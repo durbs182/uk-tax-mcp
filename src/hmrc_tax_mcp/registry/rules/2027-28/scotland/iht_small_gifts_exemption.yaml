@@ -1,0 +1,27 @@
+rule_id: iht_small_gifts_exemption
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: IHT Small Gifts Exemption — Per-Recipient Limit (Scotland 2027-28)
+description: 'Returns the per-recipient IHT small gifts exemption limit (£250 per person per year). You can give up to £250
+  to as many different people as you like each tax year, completely free of IHT. This exemption cannot be combined with the
+  annual gift exemption for the same recipient. No input variables required. Returns the per-recipient limit in pounds.
+
+  '
+dsl_source: '  return 250
+
+  '
+ast:
+  node: CONST
+  value: 250
+checksum: 1152263e49bb7766e3ee45eb3cb07c583be49e353bbc68799c13af245ff5fc34
+citations:
+- label: HMRC — IHT small gifts exemption
+  url: https://www.gov.uk/inheritance-tax/gifts
+- label: Inheritance Tax Act 1984 s.20 — Small gifts
+  url: https://www.legislation.gov.uk/ukpga/1984/51/section/20
+- label: IHTM14181
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm14181
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

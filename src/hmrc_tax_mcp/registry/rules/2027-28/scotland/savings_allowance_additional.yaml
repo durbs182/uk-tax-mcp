@@ -1,0 +1,26 @@
+rule_id: savings_allowance_additional
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Personal Savings Allowance – Additional Rate (Scotland 2026-27)
+description: 'Additional-rate taxpayers (income above £125,140) receive no Personal Savings Allowance. All savings interest
+  is taxable at the additional rate. This rule returns £0 to make the nil entitlement explicit and queryable.
+
+  '
+dsl_source: 'return 0
+
+  '
+ast:
+  node: CONST
+  value: 0
+checksum: 82f934f547e5da82b60c09fa32890153d40d7bfaaff3664fc87d5fbf79e4e217
+citations:
+- label: HMRC – Tax on savings interest
+  url: https://www.gov.uk/apply-tax-free-interest-on-savings
+- label: HMRC – Savings rates and allowances 2026-27
+  url: https://www.gov.uk/government/publications/rates-and-allowances-income-tax/income-tax-rates-and-allowances-current-and-past
+- label: SAIM2050
+  url: https://www.gov.uk/hmrc-internal-manuals/savings-and-investment-manual/saim2050
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

@@ -1,0 +1,41 @@
+rule_id: investment_bond_chargeable_gain
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Investment Bond Chargeable Event Gain (Scotland 2027-28)
+description: 'Computes the chargeable event gain on an onshore or offshore investment bond. The gain is the excess of proceeds
+  received over the total premiums (contributions) paid into the bond, floored at £0 (no negative gains). For top-slicing
+  relief, divide the gain by the number of complete policy years to obtain the annual slice. Input variables: `proceeds` —
+  total amount received (surrender value or policy proceeds); `total_premiums_paid` — total contributions paid into the bond
+  over its life. Returns the chargeable gain in pounds.
+
+  '
+dsl_source: '  return round(max(proceeds - total_premiums_paid, 0), 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: CALL
+    name: max
+    args:
+    - node: SUB
+      args:
+      - node: VAR
+        name: proceeds
+      - node: VAR
+        name: total_premiums_paid
+    - node: CONST
+      value: 0
+  - node: CONST
+    value: 2
+checksum: fd58d3178021a1536ffb0090eb968ccbc92c6c466dc4845f979c741ee44922f4
+citations:
+- label: HMRC — CG57200 Chargeable event gains on life policies
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg57200
+- label: ICTA 1988 s.499 / ITTOIA 2005 Part 4 Chap 9 — Life policy gains
+  url: https://www.legislation.gov.uk/ukpga/2005/5/part/4/chapter/9
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

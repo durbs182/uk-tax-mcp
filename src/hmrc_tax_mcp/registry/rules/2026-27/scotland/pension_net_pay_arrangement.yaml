@@ -1,0 +1,38 @@
+rule_id: pension_net_pay_arrangement
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Pension Net Pay Arrangement — Gross Tax Relief (Scotland 2026-27)
+description: 'Computes the pension tax relief under a net pay arrangement, where the employer deducts the full gross contribution
+  from pay before applying PAYE. The employee automatically receives relief at their marginal rate without needing to claim
+  via Self Assessment. Formula: tax_relief = marginal_rate × gross_contribution. Input variables: `marginal_rate` — employee''s
+  marginal income tax rate (0.20, 0.40, or 0.45); `gross_contribution` — gross pension contribution deducted from gross pay.
+  Returns the total tax relief value in pounds.
+
+  '
+dsl_source: '  return round(marginal_rate * gross_contribution, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: VAR
+      name: marginal_rate
+    - node: VAR
+      name: gross_contribution
+  - node: CONST
+    value: 2
+checksum: ba9ff00a3e8867f8f59efb318a92735025a09eccb0e3b552a4084ce848d56dbd
+citations:
+- label: HMRC — Net pay arrangement
+  url: https://www.gov.uk/guidance/pension-schemes-relief-at-source
+- label: ITEPA 2003 s.193 — Net pay arrangements
+  url: https://www.legislation.gov.uk/ukpga/2003/1/section/193
+- label: PTM044200
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm044200
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

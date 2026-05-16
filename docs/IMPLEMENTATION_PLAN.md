@@ -33,9 +33,9 @@ Legend: ✅ Done · ⬜ Not started · 🔄 In progress
 | # | Task | Status | Notes |
 |---|---|---|---|
 | C1 | Choose hosting provider and provision staging environment | ⬜ | Options: Render / Railway / Fly.io (simple); AWS ECS / Azure Container Apps (scalable); Cloud Run / Azure Functions (serverless) |
-| C2 | Replace `http_dev.py` with production `/v1/` API layer: versioned routes, structured error envelopes, CORS | ⬜ | No dev-only shortcuts; `{"error": {"code": ..., "message": ...}}` envelope |
-| C3 | Expose `/v1/openapi.json` (FastAPI generates automatically) | ⬜ | Enables SDK auto-generation and self-documenting API |
-| C4 | Expand Scotland jurisdiction rules to match rUK breadth for 2026-27 and 2027-28 | ⬜ | Currently 4–9 Scotland rules/year vs. 58–71 rUK; sales blocker for Scottish practices |
+| C2 | Replace `http_dev.py` with production `/v1/` API layer: versioned routes, structured error envelopes, CORS | ✅ | `src/hmrc_tax_mcp/api.py`; routes: `GET /v1/rules`, `GET /v1/rules/{id}`, `POST /v1/rules/{id}/execute`, `/explain`, `/validate`, `GET /v1/snapshots/{year}/{jur}`, `POST /v1/dsl/compile` |
+| C3 | Expose `/v1/openapi.json` (FastAPI generates automatically) | ✅ | Set via `openapi_url="/v1/openapi.json"`; Swagger UI at `/v1/docs` |
+| C4 | Expand Scotland jurisdiction rules to match rUK breadth for 2026-27 and 2027-28 | ✅ | 2026-27: 9→71 rules; 2027-28: 4→72 rules. Script at `scripts/generate_scotland_rules.py`. Hand-crafted: `income_tax_due`, `is_higher_rate_taxpayer`, `income_tax_bands` for both years |
 
 ---
 

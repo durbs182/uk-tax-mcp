@@ -1,0 +1,75 @@
+rule_id: pension_tapered_annual_allowance
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Tapered Annual Allowance (Scotland 2027-28)
+description: 'Computes the effective pension Annual Allowance for high earners subject to the Tapered Annual Allowance (TAA)
+  rules. The taper applies only when BOTH: (1) threshold income exceeds £200,000, AND (2) adjusted income exceeds £260,000.
+  Where both conditions are met, the standard Annual Allowance of £60,000 is reduced by £1 for every £2 of adjusted income
+  above £260,000, subject to a minimum of £10,000 (reached when adjusted income is £360,000 or more). If threshold income
+  is £200,000 or below, the full £60,000 allowance applies regardless of adjusted income. Thresholds and allowances reflect
+  Finance (No. 2) Act 2023 which increased the standard AA from £40,000 to £60,000 and the minimum from £4,000 to £10,000,
+  effective from 6 April 2023. Applies across the UK (pension AA is HMRC-set, not devolved). Input variables: `threshold_income`
+  (adjusted net income excluding employer pension contributions — broadly, total taxable income minus personal pension contributions);
+  `adjusted_income` (threshold income plus all employer pension contributions for the year).
+
+  '
+dsl_source: "  let excess = if threshold_income > 200000 then max(adjusted_income - 260000, 0) else 0\n  let taper_reduction\
+  \ = excess / 2\n  return max(60000 - taper_reduction, 10000)\n"
+ast:
+  node: LET
+  bindings:
+  - - excess
+    - node: IF
+      cond:
+        node: GT
+        args:
+        - node: VAR
+          name: threshold_income
+        - node: CONST
+          value: 200000
+      then:
+        node: CALL
+        name: max
+        args:
+        - node: SUB
+          args:
+          - node: VAR
+            name: adjusted_income
+          - node: CONST
+            value: 260000
+        - node: CONST
+          value: 0
+      else:
+        node: CONST
+        value: 0
+  - - taper_reduction
+    - node: DIV
+      args:
+      - node: VAR
+        name: excess
+      - node: CONST
+        value: 2
+  body:
+    node: CALL
+    name: max
+    args:
+    - node: SUB
+      args:
+      - node: CONST
+        value: 60000
+      - node: VAR
+        name: taper_reduction
+    - node: CONST
+      value: 10000
+checksum: bd02e9092ea5afa549fc6dd898275804ee0aaf20f6ad90677999a929a50bd9cc
+citations:
+- label: HMRC – PTM057200 Tapered annual allowance
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm057200
+- label: 'HMRC – Pension scheme rates: annual allowance'
+  url: https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates
+- label: Finance (No. 2) Act 2023 s.18 – Annual allowance increased to £60,000
+  url: https://www.legislation.gov.uk/ukpga/2023/30/section/18
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

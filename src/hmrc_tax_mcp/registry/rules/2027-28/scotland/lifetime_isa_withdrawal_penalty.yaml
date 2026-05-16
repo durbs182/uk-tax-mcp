@@ -1,0 +1,36 @@
+rule_id: lifetime_isa_withdrawal_penalty
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Lifetime ISA Unauthorised Withdrawal Penalty (Scotland 2027-28)
+description: 'Computes the 25% HMRC withdrawal charge on an unauthorised Lifetime ISA withdrawal. An unauthorised withdrawal
+  occurs when funds are withdrawn before age 60 for a reason other than a first home purchase or terminal illness. The 25%
+  charge on the gross withdrawal amount (which includes the bonus) effectively recovers the 25% bonus AND erodes approximately
+  6.25% of the original contributions. Input variable: `withdrawal_amount` — gross amount withdrawn including bonus. Returns
+  charge in pounds.
+
+  '
+dsl_source: '  return round(withdrawal_amount * 0.25, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: VAR
+      name: withdrawal_amount
+    - node: CONST
+      value: 0.25
+  - node: CONST
+    value: 2
+checksum: fd82a860de80dd5d9d60e9808d14afcff88ba592bce5ace85f7d9920007034dd
+citations:
+- label: HMRC — Lifetime ISA withdrawal charges
+  url: https://www.gov.uk/lifetime-isa#withdrawing-money
+- label: Finance Act 2016 — LISA withdrawal charge
+  url: https://www.legislation.gov.uk/ukpga/2016/24
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

@@ -1,0 +1,49 @@
+rule_id: investment_bond_time_apportionment
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Investment Bond Time Apportionment Relief (Offshore Bonds)
+description: 'Time apportionment relief reduces the chargeable gain on an offshore investment bond for periods when the policyholder
+  was non-UK resident. The gain is multiplied by the ratio of UK-resident years to total years the bond was held.
+
+  '
+dsl_source: 'return round(if total_years > 0 then chargeable_gain * uk_years / total_years else 0, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: IF
+    cond:
+      node: GT
+      args:
+      - node: VAR
+        name: total_years
+      - node: CONST
+        value: 0
+    then:
+      node: DIV
+      args:
+      - node: MUL
+        args:
+        - node: VAR
+          name: chargeable_gain
+        - node: VAR
+          name: uk_years
+      - node: VAR
+        name: total_years
+    else:
+      node: CONST
+      value: 0
+  - node: CONST
+    value: 2
+checksum: 586ff5c6cbc0c4c194531d5c5151e0e3543bab3b9a2869ec67d668e1230c46de
+citations:
+- label: ITTOIA 2005 s.528A
+  url: https://www.legislation.gov.uk/ukpga/2005/5/section/528A
+- label: HMRC IPTM3820
+  url: https://www.gov.uk/hmrc-internal-manuals/insurance-policyholder-taxation-manual/iptm3820
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

@@ -1,0 +1,26 @@
+rule_id: rent_a_room_allowance
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Rent-a-Room Allowance
+description: 'The rent-a-room scheme allows individuals to receive up to £7,500 per year tax-free from renting furnished accommodation
+  in their only or main home. Relevant for retirees letting a room to supplement income.
+
+  '
+dsl_source: 'return 7500
+
+  '
+ast:
+  node: CONST
+  value: 7500
+checksum: 2339246d0244b9b2cdceea64c06b656566e7d61fcbda66898ee256c60e5039ae
+citations:
+- label: ITTOIA 2005 s.784
+  url: https://www.legislation.gov.uk/ukpga/2005/5/section/784
+- label: HMRC HS223
+  url: https://www.gov.uk/government/publications/rent-a-room-for-traders-hs223-self-assessment-helpsheet
+- label: PIM4017
+  url: https://www.gov.uk/hmrc-internal-manuals/property-income-manual/pim4017
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

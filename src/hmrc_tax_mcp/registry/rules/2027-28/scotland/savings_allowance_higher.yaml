@@ -1,0 +1,27 @@
+rule_id: savings_allowance_higher
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Savings Allowance — Higher/Intermediate/Advanced Rate (Scotland 2026-27)
+description: 'Annual tax-free savings allowance for Scottish taxpayers who pay at the intermediate (21%), higher (42%), advanced
+  (45%) or top (48%) rates. All such taxpayers receive £500 under UK-wide personal savings allowance rules. Savings income
+  uses UK rates regardless of Scottish taxpayer status.
+
+  '
+dsl_source: 'return 500
+
+  '
+ast:
+  node: CONST
+  value: 500
+checksum: 3f40c4c688f2ee8b0ba105c433db2277b86930168c39a68d3096bdc7f4aa07a2
+citations:
+- label: HMRC – Tax on savings interest
+  url: https://www.gov.uk/apply-tax-free-interest-on-savings
+- label: ITA 2007 s.12B – Personal savings allowance
+  url: https://www.legislation.gov.uk/ukpga/2007/3/section/12B
+- label: SAIM2050
+  url: https://www.gov.uk/hmrc-internal-manuals/savings-and-investment-manual/saim2050
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

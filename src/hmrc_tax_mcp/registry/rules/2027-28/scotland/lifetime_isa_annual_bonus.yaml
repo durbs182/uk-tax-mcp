@@ -1,0 +1,40 @@
+rule_id: lifetime_isa_annual_bonus
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Lifetime ISA Government Bonus (Scotland 2027-28)
+description: 'Computes the 25% government bonus on Lifetime ISA (LISA) contributions for a tax year. The bonus is 25% of the
+  amount contributed, capped at a maximum contribution of £4,000, giving a maximum annual bonus of £1,000. The LISA must be
+  held until age 60 (or used for a first home purchase) to avoid a withdrawal penalty. Input variable: `contributions` — total
+  LISA contributions in the tax year. Returns bonus in pounds.
+
+  '
+dsl_source: '  return round(min(contributions, 4000) * 0.25, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: CALL
+      name: min
+      args:
+      - node: VAR
+        name: contributions
+      - node: CONST
+        value: 4000
+    - node: CONST
+      value: 0.25
+  - node: CONST
+    value: 2
+checksum: 05897cd8794c4c79b0e4f33f4472d86887d8c4f6ffa60349da3aa006bbaf0a8a
+citations:
+- label: HMRC — Lifetime ISA (LISA)
+  url: https://www.gov.uk/lifetime-isa
+- label: Finance Act 2016 s.5 — Lifetime ISA
+  url: https://www.legislation.gov.uk/ukpga/2016/24/section/5
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

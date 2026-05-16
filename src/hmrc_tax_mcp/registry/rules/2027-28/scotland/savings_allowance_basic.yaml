@@ -1,0 +1,27 @@
+rule_id: savings_allowance_basic
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Savings Allowance — Basic Rate (Scotland 2026-27)
+description: 'Annual tax-free savings allowance for Scottish basic-rate taxpayers (those whose non-savings income falls in
+  the 20% basic band). Savings income is taxed at UK rates regardless of Scottish taxpayer status; the personal savings allowance
+  follows UK-wide rules.
+
+  '
+dsl_source: 'return 1000
+
+  '
+ast:
+  node: CONST
+  value: 1000
+checksum: 6edc553fb96c72c3960906c447e9ab293e57e636b1de465103637755f8632df1
+citations:
+- label: HMRC – Tax on savings interest
+  url: https://www.gov.uk/apply-tax-free-interest-on-savings
+- label: ITA 2007 s.12B – Personal savings allowance
+  url: https://www.legislation.gov.uk/ukpga/2007/3/section/12B
+- label: SAIM2050
+  url: https://www.gov.uk/hmrc-internal-manuals/savings-and-investment-manual/saim2050
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

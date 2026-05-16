@@ -1,0 +1,69 @@
+rule_id: iht_potentially_exempt_transfer
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: IHT Potentially Exempt Transfer (PET) — Tax Due on Death (Scotland 2026-27)
+description: 'Computes IHT due on a Potentially Exempt Transfer (PET) if the donor dies within 7 years. A PET is a gift to
+  an individual that becomes fully exempt if the donor survives 7 years. If death occurs within 7 years, the gift is included
+  in the estate and taxed at 40% on the amount above the remaining nil-rate band, reduced by any taper relief. Input variables:
+  `gift_amount` — value of the PET; `nil_rate_band_remaining` — NRB not already used by the estate; `taper_relief_percentage`
+  — reduction % from `iht_taper_relief` (0-100). Returns IHT due on the PET in pounds.
+
+  '
+dsl_source: "  let gross_tax = round(max(gift_amount - nil_rate_band_remaining, 0) * 0.40, 2)\n  return round(gross_tax *\
+  \ (100 - taper_relief_percentage) / 100, 2)\n"
+ast:
+  node: LET
+  bindings:
+  - - gross_tax
+    - node: CALL
+      name: round
+      args:
+      - node: MUL
+        args:
+        - node: CALL
+          name: max
+          args:
+          - node: SUB
+            args:
+            - node: VAR
+              name: gift_amount
+            - node: VAR
+              name: nil_rate_band_remaining
+          - node: CONST
+            value: 0
+        - node: CONST
+          value: 0.4
+      - node: CONST
+        value: 2
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: DIV
+      args:
+      - node: MUL
+        args:
+        - node: VAR
+          name: gross_tax
+        - node: SUB
+          args:
+          - node: CONST
+            value: 100
+          - node: VAR
+            name: taper_relief_percentage
+      - node: CONST
+        value: 100
+    - node: CONST
+      value: 2
+checksum: 426beb47c865a6b6eebd68dcb87a5ce9443e230268fe6b1a9495ac536e5d5153
+citations:
+- label: HMRC — Potentially exempt transfers
+  url: https://www.gov.uk/inheritance-tax/gifts
+- label: Inheritance Tax Act 1984 s.3A — Potentially exempt transfers
+  url: https://www.legislation.gov.uk/ukpga/1984/51/section/3A
+- label: IHTM04054
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm04054
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

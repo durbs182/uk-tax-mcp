@@ -1,0 +1,35 @@
+rule_id: pension_commencement_excess_lump_sum
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Commencement Excess Lump Sum
+description: 'Tax charge on a pension commencement lump sum that exceeds the Lump Sum Allowance (LSA). The excess is taxed
+  at the individual''s marginal rate. From 2024-25 the LSA replaced the Lifetime Allowance (LTA) charge.
+
+  '
+dsl_source: 'return round(excess_lump_sum * marginal_rate, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: VAR
+      name: excess_lump_sum
+    - node: VAR
+      name: marginal_rate
+  - node: CONST
+    value: 2
+checksum: 87acf2e83a8e1430325e4483ea9c5941349e2e56a6ec158d348f7790d3550c3f
+citations:
+- label: ITEPA 2003 s.636A
+  url: https://www.legislation.gov.uk/ukpga/2003/1/section/636A
+- label: Finance (No.2) Act 2023 Sch.9
+  url: https://www.legislation.gov.uk/ukpga/2023/30/schedule/9
+- label: PTM063200
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm063200
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

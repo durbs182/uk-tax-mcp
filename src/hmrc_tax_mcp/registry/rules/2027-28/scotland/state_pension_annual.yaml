@@ -1,0 +1,25 @@
+rule_id: state_pension_annual
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Full New State Pension (Annual, Scotland 2026-27)
+description: 'The full new State Pension for 2026-27 is £241.30 per week (after the 4.8% triple-lock increase applied from
+  April 2026), equating to £12,547.60 per year (52 weeks). Returns the annual amount. Individuals with incomplete NI records
+  receive a proportional amount.
+
+  '
+dsl_source: 'return 12547.60
+
+  '
+ast:
+  node: CONST
+  value: 12547.6
+checksum: d0a402a33091ef317feda76a6abc33cbd939e0d504d9a0b804e3a92925a3c6b6
+citations:
+- label: DWP – Benefit and pension rates 2026 to 2027
+  url: https://assets.publishing.service.gov.uk/media/69931706ceeaa48d377f6bd5/Benefit-and-pension-rates-2026-2027.pdf
+- label: GOV.UK – New State Pension
+  url: https://www.gov.uk/new-state-pension
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

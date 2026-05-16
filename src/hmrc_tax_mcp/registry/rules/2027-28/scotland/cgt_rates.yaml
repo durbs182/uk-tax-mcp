@@ -1,0 +1,35 @@
+rule_id: cgt_rates
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Capital Gains Tax Rates (Scotland 2026-27)
+description: 'Returns the CGT rate (as a percentage integer) for 2026-27. For higher/additional- rate taxpayers: 24%. For
+  basic-rate taxpayers: 18%. Note: these rates apply to most assets including residential property from 30 October 2024 (rates
+  unified in Autumn Budget 2024). Input variable `is_higher_rate_taxpayer` is a boolean.
+
+  '
+dsl_source: 'return if is_higher_rate_taxpayer then 24 else 18
+
+  '
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: is_higher_rate_taxpayer
+  then:
+    node: CONST
+    value: 24
+  else:
+    node: CONST
+    value: 18
+checksum: 03c10751e2fa1f8ed0d7c29000c7b7c2181fa4bc46da9a2c0af6221e1297bab8
+citations:
+- label: GOV.UK – Capital Gains Tax rates
+  url: https://www.gov.uk/capital-gains-tax/rates
+- label: Autumn Budget 2024 – CGT rate changes
+  url: https://www.gov.uk/government/publications/autumn-budget-2024
+- label: CG10230
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg10230
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

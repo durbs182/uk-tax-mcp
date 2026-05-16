@@ -1,0 +1,34 @@
+rule_id: pension_employer_contribution
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Input Amount Including Employer Contribution
+description: 'Employer pension contributions count toward the Annual Allowance and must be included in the pension input amount
+  (PIA). Employer contributions are not taxed as a benefit in kind. Returns the total PIA as the sum of employee and employer
+  contributions for comparison against the Annual Allowance.
+
+  '
+dsl_source: 'return round(employee_contribution + employer_contribution, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: ADD
+    args:
+    - node: VAR
+      name: employee_contribution
+    - node: VAR
+      name: employer_contribution
+  - node: CONST
+    value: 2
+checksum: 1b5ae5cfee82befd90f12dca10c1ab173d48e3baf7bf8f69fb0281c1374534b7
+citations:
+- label: FA 2004 s.229
+  url: https://www.legislation.gov.uk/ukpga/2004/12/section/229
+- label: HMRC PTM042000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm042000
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

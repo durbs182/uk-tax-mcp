@@ -1,0 +1,36 @@
+rule_id: pension_lsa_remaining
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Pension Lump Sum Allowance — Remaining (Scotland 2026-27)
+description: 'Computes the remaining Pension Lump Sum Allowance (LSA) available for future tax-free pension lump sums. The
+  LSA is £268,275 (Finance Act 2024), representing 25% of the former Lifetime Allowance of £1,073,100. This rule subtracts
+  all previously taken tax-free pension lump sums from the LSA, flooring at zero. The result is used as the `lsa_remaining`
+  input to pension_commencement_lump_sum. Input: `prior_tax_free_cash` — total tax-free pension cash received across all crystallisation
+  events to date (in pounds). Returns the remaining LSA in pounds.
+
+  '
+dsl_source: '  return max(268275 - prior_tax_free_cash, 0)
+
+  '
+ast:
+  node: CALL
+  name: max
+  args:
+  - node: SUB
+    args:
+    - node: CONST
+      value: 268275
+    - node: VAR
+      name: prior_tax_free_cash
+  - node: CONST
+    value: 0
+checksum: 0621e8f93aa52b02348156f28db4c2385c748a102f2233acb3f2cdd243e8dbea
+citations:
+- label: HMRC – PTM063100 Lump Sum Allowance
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm063100
+- label: Finance Act 2024 – Lump Sum Allowance
+  url: https://www.legislation.gov.uk/ukpga/2024/3/section/18
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null

@@ -1,0 +1,25 @@
+rule_id: isa_cgt_due
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: ISA Capital Gains Tax Due — Zero (Scotland 2026-27)
+description: 'Returns zero — confirming that capital gains realised within an Individual Savings Account (ISA) are entirely
+  exempt from UK Capital Gains Tax (CGT). Gains on investments held inside an ISA (stocks, funds, bonds) are not reported
+  to HMRC and do not use the annual CGT exempt amount. This rule is used in composite portfolio tax calculations to exclude
+  ISA gains from the CGT computation. There is no limit on the gain size that can be sheltered. Applies UK-wide. No inputs
+  required.
+
+  '
+dsl_source: '  return 0
+
+  '
+ast:
+  node: CONST
+  value: 0
+checksum: 82f934f547e5da82b60c09fa32890153d40d7bfaaff3664fc87d5fbf79e4e217
+citations:
+- label: 'HMRC – ISAs: how they work (CGT exemption)'
+  url: https://www.gov.uk/individual-savings-accounts/how-isas-work
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null

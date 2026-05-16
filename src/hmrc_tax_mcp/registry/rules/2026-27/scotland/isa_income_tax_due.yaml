@@ -1,0 +1,27 @@
+rule_id: isa_income_tax_due
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: ISA Income Tax Due — Zero (Scotland 2026-27)
+description: 'Returns zero — confirming that income (interest, dividends, rental income) arising within an Individual Savings
+  Account (ISA) is entirely exempt from UK income tax. This rule is used in composite tax calculations to exclude ISA income
+  from the taxable income base. Interest from a cash ISA, dividends from an S&S ISA, and any other income within the ISA wrapper
+  is not reported on a tax return and does not count toward personal allowance tapering or higher-rate thresholds. Applies
+  UK-wide. No inputs required.
+
+  '
+dsl_source: '  return 0
+
+  '
+ast:
+  node: CONST
+  value: 0
+checksum: 82f934f547e5da82b60c09fa32890153d40d7bfaaff3664fc87d5fbf79e4e217
+citations:
+- label: 'HMRC – ISAs: how they work (income tax exemption)'
+  url: https://www.gov.uk/individual-savings-accounts/how-isas-work
+- label: ICTA 1988 / ITTOIA 2005 as amended – ISA income exemption
+  url: https://www.gov.uk/individual-savings-accounts
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null

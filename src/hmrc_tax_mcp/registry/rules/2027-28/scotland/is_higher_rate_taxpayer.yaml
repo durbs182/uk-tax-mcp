@@ -1,0 +1,31 @@
+rule_id: is_higher_rate_taxpayer
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Higher-Rate Taxpayer Test (Scotland 2027-28)
+description: 'Returns true if the individual''s adjusted net income exceeds the Scottish higher-rate threshold of £43,662.
+  In Scotland the higher rate (42%) starts at £43,662 — lower than the rUK threshold of £50,270. Used to determine which Personal
+  Savings Allowance tier applies (Scottish higher/advanced/top rate taxpayers receive £500; basic/starter-rate taxpayers receive
+  £1,000). Input variable `adjusted_net_income` is gross income before the personal allowance deduction (as used in ITTOIA
+  2005 s.58).
+
+  '
+dsl_source: 'return adjusted_net_income > 43662
+
+  '
+ast:
+  node: GT
+  args:
+  - node: VAR
+    name: adjusted_net_income
+  - node: CONST
+    value: 43662
+checksum: f8c7b5b000a90645bee9e1c36ff428f712f69f9ccc278d148c2b45ed695f3391
+citations:
+- label: HMRC – Scottish Income Tax
+  url: https://www.gov.uk/scottish-income-tax
+- label: Scotland Act 2016 s.13 – Scottish rate of income tax
+  url: https://www.legislation.gov.uk/ukpga/2016/11/section/13
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

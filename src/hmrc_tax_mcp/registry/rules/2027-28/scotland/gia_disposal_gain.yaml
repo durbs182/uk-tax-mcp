@@ -1,0 +1,76 @@
+rule_id: gia_disposal_gain
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: GIA Disposal – Capital Gain (Proportional Method, Scotland 2026-27)
+description: 'Calculates the capital gain arising on a disposal from a General Investment Account (GIA) using the proportional
+  method. The gain fraction (market_value - base_cost) / market_value is spread proportionally across every £1 of value, so
+  each withdrawal crystallises a proportionate slice of the embedded gain. If market_value does not exceed base_cost the gain
+  fraction is zero (no gain). The drawn amount is capped at market_value. Input variables: `market_value` (current GIA value,
+  £), `base_cost` (original purchase cost / remaining base cost, £), `amount_drawn` (cash needed from the GIA, £). Returns
+  the capital gain on the disposal (£).
+
+  '
+dsl_source: 'let drawn = min(market_value, amount_drawn)
+
+  let gain_fraction = if market_value > base_cost then (market_value - base_cost) / market_value else 0
+
+  return round(drawn * gain_fraction, 2)
+
+  '
+ast:
+  node: LET
+  bindings:
+  - - drawn
+    - node: CALL
+      name: min
+      args:
+      - node: VAR
+        name: market_value
+      - node: VAR
+        name: amount_drawn
+  - - gain_fraction
+    - node: IF
+      cond:
+        node: GT
+        args:
+        - node: VAR
+          name: market_value
+        - node: VAR
+          name: base_cost
+      then:
+        node: DIV
+        args:
+        - node: SUB
+          args:
+          - node: VAR
+            name: market_value
+          - node: VAR
+            name: base_cost
+        - node: VAR
+          name: market_value
+      else:
+        node: CONST
+        value: 0
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: MUL
+      args:
+      - node: VAR
+        name: drawn
+      - node: VAR
+        name: gain_fraction
+    - node: CONST
+      value: 2
+checksum: bbea96471b082ad1c76b0f10a7aa5c35986f1a7f3cc3c6508fae52e7e7fe4512
+citations:
+- label: HMRC – Capital Gains Tax – shares and investments
+  url: https://www.gov.uk/capital-gains-tax/selling-investments
+- label: HMRC – Matching rules for shares and securities
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg51560
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null
+monetary_output: true

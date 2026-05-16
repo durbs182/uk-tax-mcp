@@ -1,0 +1,219 @@
+rule_id: income_tax_due
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Income Tax Due – Composite (Scotland 2026-27)
+description: 'Calculates the total income tax liability for a Scottish taxpayer for a given adjusted net income, combining
+  the personal allowance taper and the six Scottish rate bands in a single rule. The personal allowance (£12,570) tapers by
+  £1 per £2 above £100,000, reaching £0 at £125,140. The starter_income formula handles both the normal case (PA=12,570, starter
+  band covers 12,570–16,537) and the PA-taper case (PA<12,570, the lost PA income is taxed at the starter rate). Result is
+  rounded to the nearest penny. Input variable `adjusted_net_income` is gross taxable income before the personal allowance.
+
+  '
+dsl_source: "let effective_pa = taper adjusted_net_income:\n  threshold 100000\n  ratio 1 per 2\n  base 12570\nlet starter_income\
+  \ = max(min(adjusted_net_income, 16537) - effective_pa, 0)\nlet basic_income = max(min(adjusted_net_income, 29526) - max(effective_pa,\
+  \ 16537), 0)\nlet intermediate_income = max(min(adjusted_net_income, 43662) - max(effective_pa, 29526), 0)\nlet higher_income\
+  \ = max(min(adjusted_net_income, 75000) - max(effective_pa, 43662), 0)\nlet advanced_income = max(min(adjusted_net_income,\
+  \ 125140) - max(effective_pa, 75000), 0)\nlet top_income = max(adjusted_net_income - 125140, 0)\nreturn round(starter_income\
+  \ * 0.19 + basic_income * 0.20 + intermediate_income * 0.21 + higher_income * 0.42 + advanced_income * 0.45 + top_income\
+  \ * 0.48, 2)\n"
+ast:
+  node: LET
+  bindings:
+  - - effective_pa
+    - node: TAPER
+      args:
+      - node: VAR
+        name: adjusted_net_income
+      threshold:
+        node: CONST
+        value: 100000
+      ratio:
+        node: CONST
+        value: 0.5
+      base:
+        node: CONST
+        value: 12570
+  - - starter_income
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: CALL
+          name: min
+          args:
+          - node: VAR
+            name: adjusted_net_income
+          - node: CONST
+            value: 16537
+        - node: VAR
+          name: effective_pa
+      - node: CONST
+        value: 0
+  - - basic_income
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: CALL
+          name: min
+          args:
+          - node: VAR
+            name: adjusted_net_income
+          - node: CONST
+            value: 29526
+        - node: CALL
+          name: max
+          args:
+          - node: VAR
+            name: effective_pa
+          - node: CONST
+            value: 16537
+      - node: CONST
+        value: 0
+  - - intermediate_income
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: CALL
+          name: min
+          args:
+          - node: VAR
+            name: adjusted_net_income
+          - node: CONST
+            value: 43662
+        - node: CALL
+          name: max
+          args:
+          - node: VAR
+            name: effective_pa
+          - node: CONST
+            value: 29526
+      - node: CONST
+        value: 0
+  - - higher_income
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: CALL
+          name: min
+          args:
+          - node: VAR
+            name: adjusted_net_income
+          - node: CONST
+            value: 75000
+        - node: CALL
+          name: max
+          args:
+          - node: VAR
+            name: effective_pa
+          - node: CONST
+            value: 43662
+      - node: CONST
+        value: 0
+  - - advanced_income
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: CALL
+          name: min
+          args:
+          - node: VAR
+            name: adjusted_net_income
+          - node: CONST
+            value: 125140
+        - node: CALL
+          name: max
+          args:
+          - node: VAR
+            name: effective_pa
+          - node: CONST
+            value: 75000
+      - node: CONST
+        value: 0
+  - - top_income
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: VAR
+          name: adjusted_net_income
+        - node: CONST
+          value: 125140
+      - node: CONST
+        value: 0
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: ADD
+      args:
+      - node: ADD
+        args:
+        - node: ADD
+          args:
+          - node: ADD
+            args:
+            - node: ADD
+              args:
+              - node: MUL
+                args:
+                - node: VAR
+                  name: starter_income
+                - node: CONST
+                  value: 0.19
+              - node: MUL
+                args:
+                - node: VAR
+                  name: basic_income
+                - node: CONST
+                  value: 0.2
+            - node: MUL
+              args:
+              - node: VAR
+                name: intermediate_income
+              - node: CONST
+                value: 0.21
+          - node: MUL
+            args:
+            - node: VAR
+              name: higher_income
+            - node: CONST
+              value: 0.42
+        - node: MUL
+          args:
+          - node: VAR
+            name: advanced_income
+          - node: CONST
+            value: 0.45
+      - node: MUL
+        args:
+        - node: VAR
+          name: top_income
+        - node: CONST
+          value: 0.48
+    - node: CONST
+      value: 2
+checksum: 19f7018b69fecc589cc7d625570ce4e535955568a7f76db10f55f99b0d982f34
+citations:
+- label: HMRC – Scottish Income Tax
+  url: https://www.gov.uk/scottish-income-tax
+- label: Scottish Government – Income Tax 2026-27 rates and bands
+  url: https://www.gov.scot/publications/scottish-income-tax-rates-and-bands/pages/2026-to-27/
+- label: Scotland Act 2016 s.13 – Scottish rate of income tax
+  url: https://www.legislation.gov.uk/ukpga/2016/11/section/13
+- label: ITA 2007 s.35 – Deduction of personal allowance
+  url: https://www.legislation.gov.uk/ukpga/2007/3/section/35
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null
+monetary_output: true

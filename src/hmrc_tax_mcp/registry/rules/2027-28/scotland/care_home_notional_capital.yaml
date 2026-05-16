@@ -1,0 +1,36 @@
+rule_id: care_home_notional_capital
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Care Home Notional Capital — Deprivation of Assets
+description: 'Where a local authority determines that an individual has deliberately deprived themselves of capital to avoid
+  care funding, the disposed asset is treated as notional capital and added to actual capital for means-testing purposes.
+  Returns the total capital assessed (actual + notional) for comparison against the relevant care-home capital threshold.
+
+  '
+dsl_source: 'return round(actual_capital + notional_capital, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: ADD
+    args:
+    - node: VAR
+      name: actual_capital
+    - node: VAR
+      name: notional_capital
+  - node: CONST
+    value: 2
+checksum: 9f8429b8e08ba7b9d0ad395fcb946c18ef9b333f0d5fbdaa3b40df3f98dde0ef
+citations:
+- label: Care Act 2014 s.17
+  url: https://www.legislation.gov.uk/ukpga/2014/23/section/17
+- label: Care and Support (Charging) Regulations 2014 reg.22
+  url: https://www.legislation.gov.uk/uksi/2014/2672/regulation/22
+- label: CRAG guidance Annex E
+  url: https://www.gov.uk/government/publications/charging-for-residential-accommodation-guide
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

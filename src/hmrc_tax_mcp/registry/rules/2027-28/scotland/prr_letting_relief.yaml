@@ -1,0 +1,60 @@
+rule_id: prr_letting_relief
+version: 1.0.1
+tax_year: 2027-28
+jurisdiction: scotland
+title: Letting Relief — PRR Extension for Let Periods (Scotland 2027-28)
+description: 'Computes the Letting Relief available on a capital gain where a former main residence was let out. From 6 April
+  2020, Letting Relief is only available when the owner was in shared occupation of the property with the tenant at the time
+  of letting. When the shared-occupancy condition is met, the relief is capped at the LOWER of: (1) the PRR amount already
+  given (prr_amount); (2) the gain directly attributable to the letting period (letting_gain); (3) the statutory maximum of
+  £40,000. Input variables: `prr_amount` — PRR relief already computed (from private_residence_relief); `letting_gain` — the
+  portion of the total gain that arises from letting periods; `shared_occupancy` — boolean, true if the owner lived alongside
+  the tenant. Returns letting relief in pounds (0 if shared_occupancy is false), rounded to 2dp. Letting Relief is applied
+  after PRR to reduce the remaining chargeable gain.
+
+  '
+dsl_source: '  return if shared_occupancy then round(max(min(prr_amount, min(letting_gain, 40000)), 0), 2) else 0
+
+  '
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: shared_occupancy
+  then:
+    node: CALL
+    name: round
+    args:
+    - node: CALL
+      name: max
+      args:
+      - node: CALL
+        name: min
+        args:
+        - node: VAR
+          name: prr_amount
+        - node: CALL
+          name: min
+          args:
+          - node: VAR
+            name: letting_gain
+          - node: CONST
+            value: 40000
+      - node: CONST
+        value: 0
+    - node: CONST
+      value: 2
+  else:
+    node: CONST
+    value: 0
+checksum: 0840f7a45ae0a946a32eb70f57da5d48498ca554c22a91b2cefe816ae2a093da
+citations:
+- label: HMRC – CG64700 Letting Relief (shared occupancy requirement from April 2020)
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg64700
+- label: Taxation of Chargeable Gains Act 1992 s.223B – Letting relief
+  url: https://www.legislation.gov.uk/ukpga/1992/12/section/223B
+- label: Finance Act 2020 – Restriction of letting relief
+  url: https://www.legislation.gov.uk/ukpga/2020/14
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

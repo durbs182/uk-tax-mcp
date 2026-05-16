@@ -1,0 +1,27 @@
+rule_id: pension_lsa
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Pension Lump Sum Allowance (Scotland 2026-27)
+description: 'The Pension Lump Sum Allowance (LSA) is the total amount of tax-free pension lump sums an individual can take
+  over their lifetime. The LSA for 2026-27 is £268,275 (25% of the former Lifetime Allowance of £1,073,100). This rule returns
+  the allowance amount.
+
+  '
+dsl_source: 'return 268275
+
+  '
+ast:
+  node: CONST
+  value: 268275
+checksum: c361daee91f5d5349240e678b917e2735a9389f468a14c0e61043e850bb80930
+citations:
+- label: HMRC – Pension schemes rates (Lump Sum Allowance)
+  url: https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates
+- label: Finance Act 2024 – Abolition of Lifetime Allowance
+  url: https://www.legislation.gov.uk/ukpga/2024/3/section/18
+- label: PTM063100
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm063100
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null

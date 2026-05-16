@@ -1,0 +1,43 @@
+rule_id: pension_commencement_lump_sum
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Commencement Lump Sum – PCLS (Scotland 2027-28)
+description: 'Computes the Pension Commencement Lump Sum (PCLS) — the tax-free cash entitlement on crystallisation of pension
+  benefits. The PCLS is 25% of the amount being crystallised, subject to an overall lifetime cap of the remaining Lump Sum
+  Allowance (LSA). The LSA is £268,275 (25% of the former Lifetime Allowance of £1,073,100, fixed by Finance Act 2024). Once
+  the LSA is exhausted, no further PCLS can be paid tax-free; any excess is a Pension Commencement Excess Lump Sum (PCELS)
+  and is taxed at the marginal rate. Input variables: `crystallised_amount` — the pension fund amount being crystallised;
+  `lsa_remaining` — the remaining LSA (use pension_lsa_remaining to compute this). Returns the PCLS amount in pounds, rounded
+  to 2 decimal places.
+
+  '
+dsl_source: '  return round(min(crystallised_amount * 0.25, lsa_remaining), 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: CALL
+    name: min
+    args:
+    - node: MUL
+      args:
+      - node: VAR
+        name: crystallised_amount
+      - node: CONST
+        value: 0.25
+    - node: VAR
+      name: lsa_remaining
+  - node: CONST
+    value: 2
+checksum: b5691ad7ee7eb74802bced05ff3fd975fe676b3faaf413a86d5d168bd68b07e5
+citations:
+- label: HMRC – PTM063100 Pension Commencement Lump Sum
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm063100
+- label: Finance Act 2024 – Lump Sum Allowance £268,275
+  url: https://www.legislation.gov.uk/ukpga/2024/3/section/18
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

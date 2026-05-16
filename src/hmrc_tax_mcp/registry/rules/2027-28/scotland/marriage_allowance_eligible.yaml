@@ -1,0 +1,38 @@
+rule_id: marriage_allowance_eligible
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Marriage Allowance Eligibility Test (Scotland 2027-28)
+description: 'Returns true when both Marriage Allowance eligibility conditions are satisfied: (1) the transferor''s income
+  is at or below the Personal Allowance (£12,570), meaning they pay little or no income tax; and (2) the recipient is not
+  a higher-rate or additional-rate taxpayer (i.e. their taxable income does not exceed the basic-rate limit of £50,270). Input
+  variables: `transferor_income` — the transferor''s total annual income (salary, pension, savings, etc.); `recipient_is_higher_rate`
+  — boolean, true if the recipient''s income exceeds £50,270 (use is_higher_rate_taxpayer). Returns false if either condition
+  fails. Both parties must also be married or in a civil partnership; that condition is assumed by the caller.
+
+  '
+dsl_source: '  return transferor_income <= 12570 and not recipient_is_higher_rate
+
+  '
+ast:
+  node: AND
+  args:
+  - node: LTE
+    args:
+    - node: VAR
+      name: transferor_income
+    - node: CONST
+      value: 12570
+  - node: NOT
+    args:
+    - node: VAR
+      name: recipient_is_higher_rate
+checksum: 9e46f3d0807220f2d408e28f00f43899fcc7ab1a970248c4908a419e30c2cad9
+citations:
+- label: 'HMRC – Marriage Allowance: eligibility'
+  url: https://www.gov.uk/marriage-allowance/eligibility
+- label: Income Tax Act 2007 s.55B
+  url: https://www.legislation.gov.uk/ukpga/2007/3/section/55B
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

@@ -1,0 +1,45 @@
+rule_id: iht_rnrb_downsizing_addition
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: IHT RNRB Downsizing Addition (Scotland 2026-27)
+description: 'Computes the Residence Nil Rate Band (RNRB) downsizing addition — RNRB that would otherwise be lost because
+  the deceased downsized or sold their home after 8 July 2015 and therefore does not have a qualifying residential property
+  of sufficient value at death. The addition is capped at the lower of: (1) the amount of RNRB that was lost on downsizing;
+  (2) the value of the qualifying estate assets actually passed to direct descendants. Input variables: `lost_rnrb_amount`
+  — RNRB that would have applied to the former home; `qualifying_estate_value` — net value of estate passing to direct descendants.
+  Returns the downsizing addition in pounds (£0 to £175,000).
+
+  '
+dsl_source: '  return round(min(lost_rnrb_amount, max(qualifying_estate_value, 0)), 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: CALL
+    name: min
+    args:
+    - node: VAR
+      name: lost_rnrb_amount
+    - node: CALL
+      name: max
+      args:
+      - node: VAR
+        name: qualifying_estate_value
+      - node: CONST
+        value: 0
+  - node: CONST
+    value: 2
+checksum: d7deca76a1171a036971d52d4219b96535e92e67d6dccaac48649f1cd2e0fd0f
+citations:
+- label: HMRC — RNRB downsizing addition
+  url: https://www.gov.uk/guidance/inheritance-tax-and-the-residence-nil-rate-band
+- label: Inheritance Tax Act 1984 s.8FA — Downsizing addition
+  url: https://www.legislation.gov.uk/ukpga/1984/51/section/8FA
+- label: IHTM46050
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm46050
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

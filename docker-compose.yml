@@ -1,14 +1,15 @@
 # docker-compose.yml — local development and smoke-testing
 #
-# Runs the HTTP dev wrapper (http_dev.py) on port 8000 using the `dev`
+# Runs the production HTTP API (api.py) on port 8000 using the `dev`
 # Dockerfile stage, which adds FastAPI + uvicorn on top of the production image.
 #
 # Usage:
 #   docker compose up --build
 #   curl http://localhost:8000/health
-#   curl -s -X POST http://localhost:8000/call \
+#   curl http://localhost:8000/v1/rules | jq .
+#   curl -s -X POST http://localhost:8000/v1/rules/<rule_id>/execute \
 #     -H 'Content-Type: application/json' \
-#     -d '{"name":"list_rules","arguments":{}}' | jq .
+#     -d '{"inputs":{}}' | jq .
 
 services:
   uk-tax-mcp:

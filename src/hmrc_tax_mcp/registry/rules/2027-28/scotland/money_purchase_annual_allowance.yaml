@@ -1,0 +1,43 @@
+rule_id: money_purchase_annual_allowance
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Money Purchase Annual Allowance (Scotland 2027-28)
+description: "Computes the effective Annual Allowance for money-purchase (defined-contribution) pension contributions once\
+  \ the Money Purchase Annual Allowance (MPAA) has been, or has not been, triggered. \nThe MPAA is triggered when an individual\
+  \ first flexibly accesses their pension savings — for example by entering flexi-access drawdown (FAD), taking an Uncrystallised\
+  \ Fund Pension Lump Sum (UFPLS), or receiving income from a flexible annuity. Once triggered, the MPAA limits new money-purchase\
+  \ contributions to £10,000 per tax year (2023-24 onwards, up from £4,000). \nWhen MPAA is in force and the individual also\
+  \ has defined-benefit (DB) accrual, an Alternative Annual Allowance of £50,000 (£60,000 − £10,000) applies to DB accrual.\
+  \ That interaction is not computed here; this rule returns only the money-purchase limit. \nIf the MPAA has not been triggered,\
+  \ the standard Annual Allowance of £60,000 (Finance (No. 2) Act 2023) applies to all pension input amounts combined. \n\
+  Input variable: `mpaa_triggered` (boolean — true if the individual has flexibly accessed their pension, false otherwise).\
+  \ Return value: the money-purchase annual allowance in pounds (£10,000 or £60,000). \nApplies across the UK (pension AA\
+  \ is HMRC-set, not devolved). The £10,000 MPAA is unchanged from 2025-26 through 2030-31. "
+dsl_source: '  return if mpaa_triggered then 10000 else 60000
+
+  '
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: mpaa_triggered
+  then:
+    node: CONST
+    value: 10000
+  else:
+    node: CONST
+    value: 60000
+checksum: 18b8339724d68423d7d5a67af697d098f303f039729f9a5814e5383f552a9fec
+citations:
+- label: HMRC – PTM056500 Money Purchase Annual Allowance
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm056500
+- label: 'HMRC – Pension scheme rates: annual allowance'
+  url: https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates
+- label: Finance (No. 2) Act 2023 s.18 – MPAA increased to £10,000
+  url: https://www.legislation.gov.uk/ukpga/2023/30/section/18
+- label: Taxation of Pensions Act 2014 s.22 – Money Purchase Annual Allowance introduced
+  url: https://www.legislation.gov.uk/ukpga/2014/30/section/22
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

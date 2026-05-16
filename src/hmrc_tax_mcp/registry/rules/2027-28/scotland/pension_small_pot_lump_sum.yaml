@@ -1,0 +1,36 @@
+rule_id: pension_small_pot_lump_sum
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Small Pot Lump Sum — Tax-Free Portion (Scotland 2027-28)
+description: 'Computes the tax-free portion (25%) of a small pot lump sum commutation. A small pot lump sum can be paid where
+  a pension pot value does not exceed £10,000. Up to 3 personal pension pots (and unlimited occupational pension pots) can
+  be commuted this way. Crucially, this does NOT trigger the Money Purchase Annual Allowance (MPAA). The remaining 75% of
+  the pot is taxed as pension income at the member''s marginal rate. Input variable: `pot_value` — total value of the small
+  pot. Returns the tax-free lump sum in pounds. The taxable income is pot_value − result.
+
+  '
+dsl_source: '  return round(pot_value * 0.25, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: VAR
+      name: pot_value
+    - node: CONST
+      value: 0.25
+  - node: CONST
+    value: 2
+checksum: 72d098a2dfe618263e3cc1d4a768cb12b9b45765ae499463aee88e7a76589330
+citations:
+- label: HMRC — Small pension pots and lump sums
+  url: https://www.gov.uk/government/publications/pensions-tax-manual/ptm063700
+- label: SI 2006/572 Reg 11 — Small pension rules
+  url: https://www.legislation.gov.uk/uksi/2006/572/regulation/11
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

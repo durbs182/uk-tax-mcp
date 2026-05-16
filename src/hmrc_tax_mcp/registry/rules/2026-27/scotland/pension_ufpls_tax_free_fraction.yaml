@@ -1,0 +1,27 @@
+rule_id: pension_ufpls_tax_free_fraction
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Pension UFPLS Tax-Free Fraction (Scotland 2026-27)
+description: 'For an Uncrystallised Funds Pension Lump Sum (UFPLS), 25% of each payment is tax-free (up to the Lump Sum Allowance
+  remaining). This rule returns the tax-free fraction as a decimal (0.25). Multiply by the UFPLS amount to obtain the tax-free
+  portion.
+
+  '
+dsl_source: 'return 0.25
+
+  '
+ast:
+  node: CONST
+  value: 0.25
+checksum: 1c3603d2400dd746e327e0f9ed8c13f430fbf9aa788e429d06b31fe67fd68baa
+citations:
+- label: HMRC – Tax on your private pension contributions
+  url: https://www.gov.uk/tax-on-pension
+- label: HMRC – Pension schemes rates (UFPLS)
+  url: https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates
+- label: PTM072000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm072000
+provenance: manual
+published_at: '2026-04-06T00:00:00Z'
+reviewed_by: null

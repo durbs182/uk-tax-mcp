@@ -1,0 +1,67 @@
+rule_id: national_insurance_qualifying_years
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: National Insurance Qualifying Years Fraction for State Pension
+description: 'Returns the fraction of the full new State Pension entitlement based on the individual''s NI qualifying years.
+  A minimum of 10 years is required for any entitlement; 35 years gives the full entitlement. Between 10 and 34 years the
+  entitlement is proportional.
+
+  '
+dsl_source: 'let fraction = if qualifying_years >= 35 then 1 else if qualifying_years >= 10 then qualifying_years / 35 else
+  0
+
+  return round(fraction, 4)
+
+  '
+ast:
+  node: LET
+  bindings:
+  - - fraction
+    - node: IF
+      cond:
+        node: GTE
+        args:
+        - node: VAR
+          name: qualifying_years
+        - node: CONST
+          value: 35
+      then:
+        node: CONST
+        value: 1
+      else:
+        node: IF
+        cond:
+          node: GTE
+          args:
+          - node: VAR
+            name: qualifying_years
+          - node: CONST
+            value: 10
+        then:
+          node: DIV
+          args:
+          - node: VAR
+            name: qualifying_years
+          - node: CONST
+            value: 35
+        else:
+          node: CONST
+          value: 0
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: VAR
+      name: fraction
+    - node: CONST
+      value: 4
+checksum: 37d0d23ead6810a4b720ce2c864ada16dfb795597423157df75cf741e08dd3a2
+citations:
+- label: Pensions Act 2014 s.2
+  url: https://www.legislation.gov.uk/ukpga/2014/19/section/2
+- label: HMRC NI38
+  url: https://www.gov.uk/government/publications/national-insurance-contributions-and-your-state-pension
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

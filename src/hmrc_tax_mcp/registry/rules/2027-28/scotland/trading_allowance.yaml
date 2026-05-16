@@ -1,0 +1,24 @@
+rule_id: trading_allowance
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Trading Allowance
+description: 'Individuals can receive up to £1,000 per tax year of trading income tax-free. If total trading income is at
+  or below the allowance there is no tax to pay. Relevant for retirees with small casual income streams.
+
+  '
+dsl_source: 'return 1000
+
+  '
+ast:
+  node: CONST
+  value: 1000
+checksum: 6edc553fb96c72c3960906c447e9ab293e57e636b1de465103637755f8632df1
+citations:
+- label: ITTOIA 2005 s.783A
+  url: https://www.legislation.gov.uk/ukpga/2005/5/section/783A
+- label: Finance Act 2017 s.17
+  url: https://www.legislation.gov.uk/ukpga/2017/10/section/17
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

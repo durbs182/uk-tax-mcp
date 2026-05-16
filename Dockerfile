@@ -54,5 +54,5 @@ USER mcp
 
 # Reset entrypoint so compose can set the full command cleanly.
 ENTRYPOINT []
-CMD ["python", "-m", "uvicorn", "hmrc_tax_mcp.http_dev:app", \
+CMD ["python", "-m", "uvicorn", "hmrc_tax_mcp.api:app", \
      "--host", "0.0.0.0", "--port", "8000"]

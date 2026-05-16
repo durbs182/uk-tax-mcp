@@ -1,0 +1,44 @@
+rule_id: iht_charity_reduced_rate
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: IHT Reduced Rate for Charitable Legacies
+description: 'Where at least 10% of the net estate (after NRB and other reliefs but before the charitable legacy) is left
+  to qualifying charities, IHT on the remainder is charged at 36% instead of 40%. Returns the applicable IHT rate as a decimal.
+
+  '
+dsl_source: 'return if charity_amount >= net_estate * 0.10 then 0.36 else 0.40
+
+  '
+ast:
+  node: IF
+  cond:
+    node: GTE
+    args:
+    - node: VAR
+      name: charity_amount
+    - node: MUL
+      args:
+      - node: VAR
+        name: net_estate
+      - node: CONST
+        value: 0.1
+  then:
+    node: CONST
+    value: 0.36
+  else:
+    node: CONST
+    value: 0.4
+checksum: f8b640c60644cc6f68624774ddeab438eca9b483e3ebbfe2c83f1ad30fa86a7d
+citations:
+- label: IHTA 1984 s.7A
+  url: https://www.legislation.gov.uk/ukpga/1984/51/section/7A
+- label: Finance Act 2012 Sch.33
+  url: https://www.legislation.gov.uk/ukpga/2012/14/schedule/33
+- label: HMRC IHT430
+  url: https://www.gov.uk/government/publications/inheritance-tax-reduced-rate-of-inheritance-tax-iht430
+- label: IHTM45000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm45000
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

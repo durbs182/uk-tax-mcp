@@ -1,0 +1,34 @@
+rule_id: pension_credit_standard_minimum_guarantee
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Pension Credit — Standard Minimum Guarantee (Scotland 2026-27)
+description: 'Returns the Guarantee Credit weekly amount that tops up weekly income to a minimum level for pensioners. The
+  Guarantee Credit is the main element of Pension Credit. If a qualifying person''s weekly income falls below this threshold,
+  Pension Credit tops it up to this level. Amounts: Single £218.15/week; Couple £332.95/week (2025-26). Input variable: `is_couple`
+  — true if applying for a couple, false for single. Returns the weekly minimum guarantee in pounds.
+
+  '
+dsl_source: '  return if is_couple then 332.95 else 218.15
+
+  '
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: is_couple
+  then:
+    node: CONST
+    value: 332.95
+  else:
+    node: CONST
+    value: 218.15
+checksum: 0cabb0667a9caebbab9861d978e958685ac35ef10a79cdd3f6759782375deaeb
+citations:
+- label: HMRC/DWP — Pension Credit overview
+  url: https://www.gov.uk/pension-credit/what-youll-get
+- label: State Pension Credit Act 2002 s.2 — Guarantee Credit
+  url: https://www.legislation.gov.uk/ukpga/2002/16/section/2
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

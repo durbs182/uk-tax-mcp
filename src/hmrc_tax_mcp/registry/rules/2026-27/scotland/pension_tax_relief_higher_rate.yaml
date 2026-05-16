@@ -1,0 +1,43 @@
+rule_id: pension_tax_relief_higher_rate
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: Pension Tax Relief — Additional Higher/Additional Rate Relief (Scotland 2026-27)
+description: 'Computes the additional income tax relief on personal pension contributions for higher-rate or additional-rate
+  taxpayers, claimed via Self Assessment. Basic-rate relief (20%) is automatically added by the pension provider on personal
+  contributions. Higher-rate payers (40%) can claim an additional 20%; additional-rate payers (45%) can claim 25%. Formula:
+  additional relief = (marginal_rate − 0.20) × gross_contribution. Input variables: `marginal_rate` — taxpayer''s marginal
+  rate (e.g. 0.40 or 0.45); `gross_contribution` — gross pension contribution (employee net contribution grossed up by 20%).
+  Returns additional tax relief due in pounds.
+
+  '
+dsl_source: '  return round((marginal_rate - 0.20) * gross_contribution, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: SUB
+      args:
+      - node: VAR
+        name: marginal_rate
+      - node: CONST
+        value: 0.2
+    - node: VAR
+      name: gross_contribution
+  - node: CONST
+    value: 2
+checksum: 5dfa1e96a550664387b3daca3466b3b5aca6300af9d8224e8b16d2eee85a658c
+citations:
+- label: HMRC — Tax relief on pension contributions
+  url: https://www.gov.uk/tax-on-your-private-pension/pension-tax-relief
+- label: ITEPA 2003 s.188 — Employer and employee pension contributions
+  url: https://www.legislation.gov.uk/ukpga/2003/1/section/188
+- label: PTM044000
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm044000
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

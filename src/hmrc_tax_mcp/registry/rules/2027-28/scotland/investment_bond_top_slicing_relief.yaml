@@ -1,0 +1,41 @@
+rule_id: investment_bond_top_slicing_relief
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Investment Bond Top-Slicing Relief (Scotland 2027-28)
+description: 'Computes top-slicing relief on an investment bond chargeable gain. Top-slicing relief reduces the additional
+  income tax due on a chargeable gain by comparing the tax on the full gain with the tax that would be due if the gain were
+  spread equally over the number of complete years the policy was held. Relief = (tax due on full gain − tax due on annual
+  slice) × number of complete policy years. Input variables: `full_tax_due` — income tax due on the total chargeable gain
+  (computed using income tax band rules with gain added to other income); `tax_on_annual_slice` — income tax due on gain ÷
+  policy_years added to other income; `policy_years` — number of complete years the policy was held. Returns relief in pounds.
+
+  '
+dsl_source: '  return round((full_tax_due - tax_on_annual_slice) * policy_years, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: SUB
+      args:
+      - node: VAR
+        name: full_tax_due
+      - node: VAR
+        name: tax_on_annual_slice
+    - node: VAR
+      name: policy_years
+  - node: CONST
+    value: 2
+checksum: 10f31e2eef0f0e06820cccae7578b281f1ca4e7409f4c7077ba2353bd8ecbb48
+citations:
+- label: HMRC — Top slicing relief on life policy gains
+  url: https://www.gov.uk/hmrc-internal-manuals/insurance-policyholder-taxation-manual/iptm3820
+- label: ITTOIA 2005 s.535 — Top-slicing relief
+  url: https://www.legislation.gov.uk/ukpga/2005/5/section/535
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

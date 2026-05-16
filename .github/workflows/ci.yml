@@ -26,7 +26,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -e ".[dev,server]"
+        run: pip install -e ".[dev,server,http]"
 
       - name: Lint
         run: ruff check src tests

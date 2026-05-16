@@ -1,0 +1,94 @@
+rule_id: pension_credit_savings_credit
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Credit — Savings Credit (Scotland 2027-28)
+description: 'Computes the Savings Credit element of Pension Credit. Savings Credit provides a small top-up for pensioners
+  who reached State Pension age before 6 April 2016 and have modest savings or income above the basic State Pension level.
+  The credit is 60p for every £1 of qualifying income above the Savings Credit threshold (£174.49/week single; £277.12/week
+  couple), up to a maximum (£17.29/week single; £19.36/week couple). Not available to those who reached SPA on or after 6
+  April 2016. Input variables: `qualifying_income` — weekly income including state pension; `is_couple` — boolean; `reached_spa_before_2016`
+  — boolean. Returns weekly Savings Credit in pounds.
+
+  '
+dsl_source: "  let threshold = if is_couple then 277.12 else 174.49\n  let max_credit = if is_couple then 19.36 else 17.29\n\
+  \  let raw_credit = if qualifying_income > threshold then round((qualifying_income - threshold) * 0.60, 2) else 0\n  return\
+  \ if reached_spa_before_2016 then min(raw_credit, max_credit) else 0\n"
+ast:
+  node: LET
+  bindings:
+  - - threshold
+    - node: IF
+      cond:
+        node: VAR
+        name: is_couple
+      then:
+        node: CONST
+        value: 277.12
+      else:
+        node: CONST
+        value: 174.49
+  - - max_credit
+    - node: IF
+      cond:
+        node: VAR
+        name: is_couple
+      then:
+        node: CONST
+        value: 19.36
+      else:
+        node: CONST
+        value: 17.29
+  - - raw_credit
+    - node: IF
+      cond:
+        node: GT
+        args:
+        - node: VAR
+          name: qualifying_income
+        - node: VAR
+          name: threshold
+      then:
+        node: CALL
+        name: round
+        args:
+        - node: MUL
+          args:
+          - node: SUB
+            args:
+            - node: VAR
+              name: qualifying_income
+            - node: VAR
+              name: threshold
+          - node: CONST
+            value: 0.6
+        - node: CONST
+          value: 2
+      else:
+        node: CONST
+        value: 0
+  body:
+    node: IF
+    cond:
+      node: VAR
+      name: reached_spa_before_2016
+    then:
+      node: CALL
+      name: min
+      args:
+      - node: VAR
+        name: raw_credit
+      - node: VAR
+        name: max_credit
+    else:
+      node: CONST
+      value: 0
+checksum: 1eb2a14818d7684ca2f6cf3eac1038f6d9b36459fc4f8f96e55b3fa8706e10bb
+citations:
+- label: DWP — Pension Credit Savings Credit
+  url: https://www.gov.uk/pension-credit/what-youll-get
+- label: State Pension Credit Act 2002 s.3 — Savings Credit
+  url: https://www.legislation.gov.uk/ukpga/2002/16/section/3
+provenance: manual
+published_at: '2025-04-06T00:00:00Z'
+reviewed_by: null

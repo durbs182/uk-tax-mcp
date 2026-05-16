@@ -1,0 +1,84 @@
+rule_id: private_residence_relief
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Private Residence Relief — CGT Exemption on Main Home (Scotland 2027-28)
+description: 'Computes the Private Residence Relief (PRR) — the portion of a capital gain on disposal of a residential property
+  that is exempt from CGT due to owner-occupation as the individual''s only or main residence. The exempt fraction is: qualifying
+  months ÷ total months of ownership. Qualifying months = months of actual residence as main home, PLUS the last 9 months
+  of ownership (which always qualify regardless of occupation, reduced from 18 months from 6 April 2020). The exempt fraction
+  is capped at 1 (full relief). Input variables: `gain` — total capital gain before PRR (proceeds minus base cost, in pounds);
+  `residence_months` — months the property was the owner''s main residence; `total_months` — total months of ownership. Returns
+  the PRR amount (exempt gain) in pounds, rounded to 2 decimal places. Letting relief and other further reliefs are computed
+  separately. Note: only one property can qualify as main residence at any time; HMRC can challenge elections where occupation
+  was not genuine.
+
+  '
+dsl_source: "  let qualifying_months = residence_months + min(total_months - residence_months, 9)\n  let prr_fraction = if\
+  \ total_months > 0 then min(qualifying_months / total_months, 1) else 0\n  return round(gain * prr_fraction, 2)\n"
+ast:
+  node: LET
+  bindings:
+  - - qualifying_months
+    - node: ADD
+      args:
+      - node: VAR
+        name: residence_months
+      - node: CALL
+        name: min
+        args:
+        - node: SUB
+          args:
+          - node: VAR
+            name: total_months
+          - node: VAR
+            name: residence_months
+        - node: CONST
+          value: 9
+  - - prr_fraction
+    - node: IF
+      cond:
+        node: GT
+        args:
+        - node: VAR
+          name: total_months
+        - node: CONST
+          value: 0
+      then:
+        node: CALL
+        name: min
+        args:
+        - node: DIV
+          args:
+          - node: VAR
+            name: qualifying_months
+          - node: VAR
+            name: total_months
+        - node: CONST
+          value: 1
+      else:
+        node: CONST
+        value: 0
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: MUL
+      args:
+      - node: VAR
+        name: gain
+      - node: VAR
+        name: prr_fraction
+    - node: CONST
+      value: 2
+checksum: 0c160c63a628617e2b8a3880b197771fe5daab8562e4479ca325c9349e0f1657
+citations:
+- label: HMRC – Tax when you sell your home (PRR)
+  url: https://www.gov.uk/tax-when-you-sell-your-home
+- label: HMRC – CG64200 Private Residence Relief — overview
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg64200
+- label: Taxation of Chargeable Gains Act 1992 s.222 – Private Residence Relief
+  url: https://www.legislation.gov.uk/ukpga/1992/12/section/222
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

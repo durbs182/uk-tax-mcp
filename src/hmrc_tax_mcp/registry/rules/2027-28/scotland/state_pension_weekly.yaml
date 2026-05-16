@@ -1,0 +1,27 @@
+rule_id: state_pension_weekly
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Full New State Pension (Weekly, Scotland 2026-27)
+description: 'Returns the weekly rate of the full new State Pension for 2026-27: £241.30. Derived from the annual amount under
+  the triple-lock guarantee (highest of CPI inflation, average earnings growth, or 2.5%). The full rate requires 35 qualifying
+  National Insurance years; a minimum of 10 years is needed for any State Pension. Weekly rate = annual amount ÷ 52. Applies
+  UK-wide (State Pension rates are DWP-set). Rates for later years are not pre-published; only years with confirmed DWP rates
+  are registered as rules — use state_pension_annual for the corresponding annual figure.
+
+  '
+dsl_source: '  return 241.30
+
+  '
+ast:
+  node: CONST
+  value: 241.3
+checksum: e1b813f934e6c9fdf34cb1545dac924767c729e5f8044b5a722c51b57ebeb93a
+citations:
+- label: DWP – State Pension rates and allowances
+  url: https://www.gov.uk/government/publications/rates-and-allowances-pension-schemes/pension-schemes-rates
+- label: Pensions Act 2014 – New State Pension
+  url: https://www.legislation.gov.uk/ukpga/2014/19/contents
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null

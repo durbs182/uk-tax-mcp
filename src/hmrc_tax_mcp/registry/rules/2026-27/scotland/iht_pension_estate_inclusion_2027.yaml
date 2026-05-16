@@ -1,0 +1,33 @@
+rule_id: iht_pension_estate_inclusion_2027
+version: 1.0.0
+tax_year: 2026-27
+jurisdiction: scotland
+title: IHT Pension Fund Estate Inclusion from April 2027
+description: 'From 6 April 2027, unused pension funds (uncrystallised and remaining drawdown funds) will be brought into the
+  IHT estate of the deceased. Returns the pension fund value to include in the estate when is_2027_or_later is true; returns
+  zero for earlier tax years.
+
+  '
+dsl_source: 'return if is_2027_or_later then pension_fund_value else 0
+
+  '
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: is_2027_or_later
+  then:
+    node: VAR
+    name: pension_fund_value
+  else:
+    node: CONST
+    value: 0
+checksum: 869d7fb08c60763090c2880e3166a8a79f04773affa5487c5d70fd6528e63d2b
+citations:
+- label: FA 2025 (prospective)
+  url: https://www.gov.uk/government/collections/autumn-budget-2024
+- label: HMRC — Inheritance Tax on Pensions consultation
+  url: https://www.gov.uk/government/consultations/inheritance-tax-on-pensions-liability-reporting-and-payment
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

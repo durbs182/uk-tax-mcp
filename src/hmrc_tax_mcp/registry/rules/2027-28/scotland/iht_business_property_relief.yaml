@@ -1,0 +1,37 @@
+rule_id: iht_business_property_relief
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: IHT Business Property Relief
+description: 'Business Property Relief (BPR) reduces the value of qualifying business assets for IHT purposes. 100% relief
+  applies to unquoted trading company shares and sole trader or partnership interests. 50% relief applies to quoted minority
+  shareholdings and land/buildings used by a partnership or controlled company. Pass the appropriate relief_rate (1.0 for
+  100%, 0.5 for 50%).
+
+  '
+dsl_source: 'return round(asset_value * relief_rate, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: MUL
+    args:
+    - node: VAR
+      name: asset_value
+    - node: VAR
+      name: relief_rate
+  - node: CONST
+    value: 2
+checksum: 2ed0974631f532044e5104e2964c43adb16c94f1e8b9bc3a4b30eae46a60e089
+citations:
+- label: IHTA 1984 ss.103-114
+  url: https://www.legislation.gov.uk/ukpga/1984/51/part/V/chapter/I
+- label: HMRC — Business relief for Inheritance Tax
+  url: https://www.gov.uk/business-relief-inheritance-tax
+- label: IHTM17000
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm17000
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

@@ -1,0 +1,45 @@
+rule_id: pension_serious_ill_health_lump_sum
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Pension Serious Ill-Health Lump Sum Tax
+description: 'Tax on a serious ill-health lump sum commutation. If the member is under 75 and their life expectancy is less
+  than one year, the lump sum is tax-free. If the member is 75 or over, it is taxed at their marginal rate.
+
+  '
+dsl_source: 'return round(if age >= 75 then lump_sum_amount * marginal_rate else 0, 2)
+
+  '
+ast:
+  node: CALL
+  name: round
+  args:
+  - node: IF
+    cond:
+      node: GTE
+      args:
+      - node: VAR
+        name: age
+      - node: CONST
+        value: 75
+    then:
+      node: MUL
+      args:
+      - node: VAR
+        name: lump_sum_amount
+      - node: VAR
+        name: marginal_rate
+    else:
+      node: CONST
+      value: 0
+  - node: CONST
+    value: 2
+checksum: bb829aa2dff466f7aab97ef3f123832f2e46cb329561f0b6683e2eb2f1601412
+citations:
+- label: ITEPA 2003 s.637
+  url: https://www.legislation.gov.uk/ukpga/2003/1/section/637
+- label: HMRC PTM063300
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm063300
+provenance: manual
+published_at: '2026-04-04'
+reviewed_by: null

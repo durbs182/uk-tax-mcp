@@ -1,0 +1,71 @@
+rule_id: cgt_due
+version: 1.0.0
+tax_year: 2027-28
+jurisdiction: scotland
+title: Capital Gains Tax Due – Composite (Scotland 2026-27)
+description: 'Calculates Capital Gains Tax due for 2026-27 by applying the annual exempt amount (£3,000) and the appropriate
+  rate in a single rule. Gains up to the exempt amount are tax-free. For higher/additional-rate taxpayers the rate is 24%;
+  for basic-rate taxpayers it is 18% (rates unified in Autumn Budget 2024). Input variables: `capital_gain` (total gain realised,
+  £) and `is_higher_rate_taxpayer` (boolean — use the is_higher_rate_taxpayer rule).
+
+  '
+dsl_source: 'let taxable_gain = max(capital_gain - 3000, 0)
+
+  let rate = if is_higher_rate_taxpayer then 24 else 18
+
+  return round(percent(taxable_gain, rate), 2)
+
+  '
+ast:
+  node: LET
+  bindings:
+  - - taxable_gain
+    - node: CALL
+      name: max
+      args:
+      - node: SUB
+        args:
+        - node: VAR
+          name: capital_gain
+        - node: CONST
+          value: 3000
+      - node: CONST
+        value: 0
+  - - rate
+    - node: IF
+      cond:
+        node: VAR
+        name: is_higher_rate_taxpayer
+      then:
+        node: CONST
+        value: 24
+      else:
+        node: CONST
+        value: 18
+  body:
+    node: CALL
+    name: round
+    args:
+    - node: CALL
+      name: percent
+      args:
+      - node: VAR
+        name: taxable_gain
+      - node: VAR
+        name: rate
+    - node: CONST
+      value: 2
+checksum: 5c23ead756a880f5e46a9767b0f2931fea4c88fc0aa3a06900b6c0c749be0eb2
+citations:
+- label: HMRC – Capital Gains Tax rates and allowances
+  url: https://www.gov.uk/capital-gains-tax/allowances
+- label: Autumn Budget 2024 – CGT rate changes
+  url: https://www.gov.uk/government/publications/autumn-budget-2024
+- label: 'HMRC – Rates and allowances: Capital Gains Tax'
+  url: https://www.gov.uk/government/publications/rates-and-allowances-capital-gains-tax/capital-gains-tax-rates-and-annual-tax-on-enveloped-dwellings
+- label: CG10200
+  url: https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg10200
+provenance: manual
+published_at: '2027-04-06T00:00:00Z'
+reviewed_by: null
+monetary_output: true
