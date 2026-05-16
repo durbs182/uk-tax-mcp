@@ -324,6 +324,81 @@ The following section scores each moat dimension against what actually exists in
 | 5 | Evaluate FCA Supercharged Sandbox application | Regulatory legitimacy |
 | 6 | Investigate MTD ITSA calculation back-end partnership with an existing MTD front-end vendor | MTD API integration |
 
+---
+
+### 6b. Phase Coverage vs. Gap Analysis
+
+*Does the existing Phase A–H roadmap close the gaps identified in section 6a?*
+
+The short answer: **the phases cover the infrastructure and commercial plumbing well, but leave four of the seven moat gaps either entirely absent or only vaguely implied.** The table below gives the full picture.
+
+#### Coverage map
+
+| Gap (from §6a) | Covered by phase? | Assessment |
+|---|---|---|
+| **No Budget tracking / CHANGELOG** | None | ❌ **Not addressed.** Phases A–H say nothing about how rules stay current after a Budget. The highest-priority operational gap has no phase assigned to it. |
+| **Thin Scotland rule coverage** | None | ❌ **Not addressed.** No phase mentions expanding jurisdiction coverage as a commercial priority. |
+| **Citation content validation missing from pipeline** | None | ❌ **Not addressed.** Phase A adds integration tests but does not extend the 6-stage validation pipeline to enforce citation quality. |
+| **No audit-grade trace metadata** | Phase F (partial) | ⚠️ **Partial.** Phase F adds structured logging and observability to the *server*, but does not address adding timestamp/version/input-hash metadata to individual *calculation trace outputs*. Different concern. |
+| **No rendered audit report** | Phase H (partial) | ⚠️ **Partial.** Phase H covers docs and a quickstart but does not call out a calculation report formatter as a deliverable. |
+| **No production HTTP API** | Phases C + E + H (partial) | ⚠️ **Partial.** Phase C deploys the service; Phase E adds auth; Phase H adds docs. Together they imply a production API, but no phase explicitly calls out replacing `http_dev.py` with a versioned, production-grade API layer (`/v1/`). |
+| **No API authentication / key management** | Phase E ✓ · Phase G ✓ | ✅ **Directly addressed.** Phase E: "OAuth2/Clerk/KeyCloak or API keys." Phase G: "Paid API keys / metered billing." Well covered. |
+| **No OpenAPI specification** | Phase H (partial) | ⚠️ **Partial.** "Docs, quickstart, API playground" implies an OpenAPI spec but does not name it as a specific deliverable. |
+| **No SDK or client library** | None | ❌ **Not addressed.** No phase mentions a Python or TypeScript SDK. This is a friction barrier for fintech integration. |
+| **No MCP marketplace / registry listing** | Phase G (wrong type) | ❌ **Not addressed.** Phase G's "Marketplace" refers to a curated paid *rules* marketplace, not listing the server in MCP registries or accountancy software plugin directories. Different thing entirely. |
+| **No response-level "not tax advice" disclaimer** | Notes only | ⚠️ **Implied only.** Notes & Considerations says "include disclaimers" but this is a bullet point, not a phase task. It will not happen unless made explicit. |
+| **No Terms of Service / Privacy Policy** | Phase E ✓ | ✅ **Directly addressed.** Phase E: "Data protection/privacy (GDPR) and terms of service." Covered. |
+| **No HMRC MTD software recognition** | None | ❌ **Not addressed.** No phase mentions applying for or achieving HMRC MTD software recognition — a commercial prerequisite for selling to accountancy practices as MTD-compatible software. |
+| **No FCA engagement / Sandbox application** | None | ❌ **Not addressed.** No phase mentions the FCA Supercharged Sandbox or any other regulatory engagement route. |
+| **No liability cap / indemnification clause** | Phase E (partial) | ⚠️ **Partial.** Phase E covers ToS and GDPR but does not specifically call out a liability cap, indemnification clause, or PI-insurance-compatible disclaimer. These are distinct legal items. |
+| **MTD API integration — zero code** | None | ❌ **Not addressed.** None of phases A–H mention building MTD API connectivity. The nearest is Phase D (persistence) and Phase E (compliance) but neither touches HMRC's transactional API. |
+
+#### Summary
+
+| Status | Count | Gaps |
+|---|---|---|
+| ✅ Directly addressed by a phase | 2 | API auth/keys; Terms of Service |
+| ⚠️ Partially addressed or implied | 6 | Production API; audit trace metadata; audit report; OpenAPI spec; response disclaimer; liability cap |
+| ❌ Not addressed by any phase | 8 | Budget tracking; Scotland coverage; citation validation; SDK; MCP marketplace listing; HMRC MTD recognition; FCA engagement; MTD API integration |
+
+**8 of 16 gaps have no phase at all.** Of the 8 that do, 6 are only partially or implicitly covered. Only 2 gaps — API keys and Terms of Service — are unambiguously handled by existing phases.
+
+#### What the phases do well
+
+Phases A–H are strong on **infrastructure and commercial plumbing**: containerisation, CI/CD, hosting, database, auth, billing, observability, and go-to-market. These are necessary and correctly sequenced. Phases A and B are already complete.
+
+#### What the phases miss
+
+The phases were written from a *SaaS hosting* perspective and do not reflect the *product-specific* moats identified in the gap analysis. Specifically:
+
+1. **No editorial / rule-ops process.** The biggest moat — rule freshness — has no operational owner, no tooling, and no phase. A Budget happens and there is no defined process for detecting it, drafting updates, validating them, and publishing them. This needs to become a named workstream, not an implicit assumption.
+
+2. **No regulatory engagement roadmap.** HMRC software recognition and FCA Sandbox are specific, time-consuming processes that require applications, technical compliance tests, and ongoing reporting. Neither appears anywhere. They cannot be assumed to happen automatically alongside Phase E.
+
+3. **No jurisdiction expansion plan.** Scotland has 4–9 rules vs. rUK's 58–71. No phase targets closing this gap even though Scottish accountancy practices are a material portion of the addressable market.
+
+4. **No distribution strategy beyond the product itself.** Phase H has a landing page and beta programme, but no plan for getting listed in MCP registries, approaching IRIS/TaxCalc/Xero plugin ecosystems, or building an SDK that makes integration trivial for fintech developers.
+
+#### Recommended phase additions
+
+The following tasks should be added to the existing phases or as new phase(s):
+
+| New task | Suggested phase |
+|---|---|
+| Define Budget change management process: RSS monitoring, rule-update workflow, CHANGELOG format | **Phase A** (codebase readiness — this is a process gap, not a feature gap) |
+| Add "not tax advice" disclaimer to all server tool descriptions and HTTP response envelopes | **Phase A** (one-line change; should not wait until Phase E) |
+| Replace `http_dev.py` with a production `/v1/` API layer as an explicit deliverable | **Phase C** |
+| Add OpenAPI spec exposure (`/v1/openapi.json`) as a named deliverable | **Phase C** |
+| Expand Scotland rules to match rUK coverage for 2026-27 | **Phase C** (alongside hosting; rules are the product) |
+| Add citation content validation (Act/section pattern) to Stage 2 of validation pipeline | **Phase D** |
+| Apply for HMRC MTD software recognition | **Phase E** (alongside compliance work; same workstream) |
+| Evaluate FCA Supercharged Sandbox application | **Phase E** |
+| Add liability cap and PI-compatible indemnification language to ToS | **Phase E** |
+| Python SDK (thin wrapper over `/v1/` API) | **Phase H** (go-to-market; reduces integration friction) |
+| List server in MCP registries and approach IRIS/TaxCalc plugin ecosystems | **Phase H** |
+| Budget automation tooling: GOV.UK API watch + rule-impact analysis | **New Phase I — Rule Operations** |
+| MTD ITSA calculation back-end partnership evaluation | **New Phase I** |
+
 ### 7. Target Buyer Personas and Willingness to Pay
 
 **A. Accountancy Practices** *(primary, near-term)*
