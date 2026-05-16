@@ -7,17 +7,20 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from decimal import Decimal
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from pydantic import BaseModel
 
 from hmrc_tax_mcp.ast.canonical import ast_checksum
 from hmrc_tax_mcp.dsl.compiler import CompileError, compile_dsl
 from hmrc_tax_mcp.evaluator import EvaluationError, Evaluator
 from hmrc_tax_mcp.explainer import explain_rule as _explain_rule
+from hmrc_tax_mcp.metrics import RULE_EXECUTION_SECONDS, RULE_EXECUTIONS
 from hmrc_tax_mcp.registry.store import get_rule, get_rule_snapshot, list_rules
 from hmrc_tax_mcp.registry.tax_year import current_tax_year
 from hmrc_tax_mcp.server import _DISCLAIMER
@@ -98,6 +101,30 @@ async def health() -> dict[str, Any]:
     return {"status": "ok"}
 
 
+@app.get("/healthz/live", tags=["observability"])
+async def liveness() -> dict[str, Any]:
+    """Kubernetes liveness probe — confirms the process is running."""
+    return {"status": "ok"}
+
+
+@app.get("/healthz/ready", tags=["observability"])
+async def readiness() -> dict[str, Any]:
+    """Kubernetes readiness probe — confirms the rule registry is populated."""
+    rules = list_rules()
+    if not rules:
+        raise HTTPException(
+            status_code=503,
+            detail={"status": "unavailable", "reason": "rule registry empty"},
+        )
+    return {"status": "ready", "rule_count": len(rules)}
+
+
+@app.get("/metrics", include_in_schema=False)
+async def prometheus_metrics() -> Response:
+    """Prometheus text-format metrics scrape endpoint."""
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
 @app.get("/v1/rules")
 async def list_all_rules() -> dict[str, Any]:
     rules = list_rules()
@@ -151,10 +178,20 @@ async def execute_rule(rule_id: str, req: ExecuteRequest) -> dict[str, Any]:
         raise _err("rule_not_found", f"Rule {rule_id!r} not found", 404)
 
     evaluator = Evaluator(variables=req.inputs, trace=req.trace)
+    _labels = {
+        "rule_id": rule.rule_id,
+        "jurisdiction": rule.jurisdiction,
+        "tax_year": rule.tax_year,
+    }
+    _t0 = time.perf_counter()
     try:
         output = evaluator.eval(rule.ast)
+        RULE_EXECUTIONS.labels(**_labels, status="success").inc()
     except EvaluationError as exc:
+        RULE_EXECUTIONS.labels(**_labels, status="error").inc()
         raise _err("evaluation_error", str(exc), 400) from exc
+    finally:
+        RULE_EXECUTION_SECONDS.labels(**_labels).observe(time.perf_counter() - _t0)
 
     response: dict[str, Any] = {
         "rule_id": rule.rule_id,

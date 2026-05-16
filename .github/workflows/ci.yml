@@ -26,7 +26,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -e ".[dev,server,http]"
+        run: pip install -e ".[dev,server,http]"  # http pulls in prometheus-client
 
       - name: Lint
         run: ruff check src tests

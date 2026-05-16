@@ -71,9 +71,9 @@ Legend: ✅ Done · ⬜ Not started · 🔄 In progress
 |---|---|---|---|
 | F1 | Prometheus metrics or hosted metrics (Datadog, Grafana Cloud) | ⬜ | |
 | F2 | Sentry for error tracking | ⬜ | |
-| F3 | Health checks, readiness/liveness endpoints | ⬜ | `/health` exists in `http_dev.py`; needs to move to production API |
+| F3 | Health checks, readiness/liveness endpoints | ✅ | `GET /health` (backwards-compat) + `GET /healthz/live` (liveness) + `GET /healthz/ready` (readiness, 503 if registry empty); docker-compose healthcheck updated to `/healthz/ready` |
 | F4 | Automated backups for DB and rule registry | ⬜ | |
-| F5 | Instrument per-rule execution metrics: `rule_id`, `jurisdiction`, `tax_year`, latency, error rate | ⬜ | Feeds both SLA monitoring and usage-based billing |
+| F5 | Instrument per-rule execution metrics: `rule_id`, `jurisdiction`, `tax_year`, latency, error rate | ✅ | `src/hmrc_tax_mcp/metrics.py`: `uk_tax_mcp_rule_executions_total` counter + `uk_tax_mcp_rule_execution_seconds` histogram; exposed at `GET /metrics` (Prometheus text format); `prometheus-client>=0.20` added to `http` extras |
 
 ---
 
