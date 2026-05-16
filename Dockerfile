@@ -15,7 +15,7 @@ COPY src/ ./src/
 RUN pip wheel --no-deps --wheel-dir /wheels .
 
 # ── Stage 2: runtime ─────────────────────────────────────────────────────────
-FROM python:3.11-slim
+FROM python:3.11-slim AS runtime
 
 LABEL org.opencontainers.image.title="uk-tax-mcp" \
       org.opencontainers.image.description="Deterministic HMRC tax rule engine — MCP server" \
@@ -42,3 +42,17 @@ USER mcp
 # an MCP client that wraps stdin/stdout. Run via `docker run -i` or an MCP
 # host that manages the subprocess transport.
 ENTRYPOINT ["uk-tax-mcp"]
+
+# ── Stage 3: dev ─────────────────────────────────────────────────────────────
+# Extends runtime with the HTTP dev server (FastAPI + uvicorn).
+# Used by docker-compose for local smoke-testing — not published to the registry.
+FROM runtime AS dev
+
+USER root
+RUN pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29"
+USER mcp
+
+# Reset entrypoint so compose can set the full command cleanly.
+ENTRYPOINT []
+CMD ["python", "-m", "uvicorn", "hmrc_tax_mcp.http_dev:app", \
+     "--host", "0.0.0.0", "--port", "8000"]

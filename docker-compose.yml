@@ -1,10 +1,10 @@
 # docker-compose.yml — local development and smoke-testing
 #
-# Starts the HTTP dev wrapper (http_dev.py) so you can exercise the rule
-# engine via plain HTTP without needing an MCP client.
+# Runs the HTTP dev wrapper (http_dev.py) on port 8000 using the `dev`
+# Dockerfile stage, which adds FastAPI + uvicorn on top of the production image.
 #
 # Usage:
-#   docker compose up
+#   docker compose up --build
 #   curl http://localhost:8000/health
 #   curl -s -X POST http://localhost:8000/call \
 #     -H 'Content-Type: application/json' \
@@ -15,23 +15,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: >
-      python -m uvicorn hmrc_tax_mcp.http_dev:app
-        --host 0.0.0.0
-        --port 8000
+      target: dev
     ports:
       - "8000:8000"
     environment:
       SERVICE_NAME: uk-tax-mcp-dev
       LOG_LEVEL: DEBUG
       LOG_FORMAT: text
-    volumes:
-      # Mount source tree so local edits are reflected without rebuilding
-      - ./src:/app/src:ro
     healthcheck:
       test: ["CMD", "python", "-c",
              "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 10s
