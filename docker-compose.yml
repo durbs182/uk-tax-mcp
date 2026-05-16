@@ -1,0 +1,37 @@
+# docker-compose.yml — local development and smoke-testing
+#
+# Starts the HTTP dev wrapper (http_dev.py) so you can exercise the rule
+# engine via plain HTTP without needing an MCP client.
+#
+# Usage:
+#   docker compose up
+#   curl http://localhost:8000/health
+#   curl -s -X POST http://localhost:8000/call \
+#     -H 'Content-Type: application/json' \
+#     -d '{"name":"list_rules","arguments":{}}' | jq .
+
+services:
+  uk-tax-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      python -m uvicorn hmrc_tax_mcp.http_dev:app
+        --host 0.0.0.0
+        --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      SERVICE_NAME: uk-tax-mcp-dev
+      LOG_LEVEL: DEBUG
+      LOG_FORMAT: text
+    volumes:
+      # Mount source tree so local edits are reflected without rebuilding
+      - ./src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

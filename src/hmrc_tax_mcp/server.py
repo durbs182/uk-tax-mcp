@@ -14,6 +14,7 @@ from decimal import Decimal
 from typing import Any, cast
 
 from hmrc_tax_mcp.ast.canonical import ast_checksum
+from hmrc_tax_mcp.config import configure_logging, get_logger
 from hmrc_tax_mcp.dsl.compiler import CompileError
 from hmrc_tax_mcp.dsl.compiler import compile_dsl as _compile_dsl
 from hmrc_tax_mcp.evaluator import EvaluationError, Evaluator
@@ -508,6 +509,9 @@ def main() -> None:
             "MCP server requires Python >=3.10. "
             "Install with: pip install 'uk-tax-mcp[server]'"
         )
+    configure_logging()
+    log = get_logger(__name__)
+    log.info("Starting uk-tax-mcp server")
     asyncio.run(_run())
 
 
