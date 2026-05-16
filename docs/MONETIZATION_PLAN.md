@@ -14,82 +14,120 @@ Host the uk-tax-mcp project as a reliable, secure, and scalable online MCP (micr
 
 ## Phases & key tasks
 
-### Phase A — Codebase readiness
-- Run and fix tests; add integration tests for rule execution and upload
-- Add configuration for production (logging, metrics, environment variables)
-- Add Dockerfile and a small example compose for local testing
+*Phases A and B are complete. Phases marked ✅ done, 🔄 in progress, ⬜ not started.*
 
-### Phase B — Packaging & CI/CD
-- Build GitHub Actions to run tests, build docker image, run linting
-- Publish images to a registry (GitHub Container Registry, Docker Hub, or private ECR)
+### Phase A — Codebase readiness ✅
+- ~~Run and fix tests; add integration tests for rule execution and upload~~
+- ~~Add configuration for production (logging, metrics, environment variables)~~
+- ~~Add Dockerfile and a small example compose for local testing~~
+- **[Added]** Add `"This is a deterministic calculation, not tax advice"` disclaimer to all MCP tool descriptions and HTTP API response envelopes — must ship before any external user is onboarded
+- **[Added]** Create `RULES_CHANGELOG.md` with a defined entry format: Budget date · affected rule IDs · what changed · HMRC source reference · who updated — establishes the rule ops paper trail from day one
+- **[Added]** Document Budget change process in `CONTRIBUTING.md`: how a rule author detects a relevant Budget announcement, drafts a rule update, runs validation, and gets it merged within 24 hours of HMRC publication
 
-### Phase C — Hosting & infra (options)
+### Phase B — Packaging & CI/CD ✅
+- ~~Build GitHub Actions to run tests, build docker image, run linting~~
+- ~~Publish images to a registry (GitHub Container Registry)~~
+
+### Phase C — Hosting & infra ⬜
 - **Simple/fast:** Render, Railway, or Fly.io for app + Postgres
 - **Scalable:** AWS ECS/Fargate or Azure Container Apps + managed Postgres
 - **Serverless:** Cloud Run (GCP) or Azure Functions for API + Cloud SQL for DB
 
-Choose based on budget and expected load.
+  Choose based on budget and expected load.
 
-### Phase D — Persistence & state
+- **[Added]** Replace `http_dev.py` with a production-grade `/v1/` API layer: versioned routes, structured error envelopes (`{"error": {"code": ..., "message": ...}}`), CORS headers, and no dev-only shortcuts
+- **[Added]** Expose `/v1/openapi.json` — FastAPI generates this automatically; enabling it unlocks SDK auto-generation and makes the API self-documenting for integrators
+- **[Added]** Expand Scotland jurisdiction rule coverage to match rUK breadth for 2026-27 and 2027-28 — Scottish accountancy practices (a material slice of the 35,000-firm TAM) are currently under-served by 4–9 rules vs. 58–71 for rUK
+
+### Phase D — Persistence & state ⬜
 - Use managed Postgres for registry/metadata
 - Use object storage (S3/Blob) for uploaded rule artifacts if needed
+- **[Added]** Extend Stage 2 (Semantic) of the 6-stage validation pipeline to enforce citation content quality: require at least one citation whose `label` matches a known legislative reference pattern (e.g. `ITEPA 2003`, `TCGA 1992`, `IHTA 1984`, `ITA 2007`, `IHTM\d+`) — rejects `"HMRC website"` as a sole citation
+- **[Added]** Add citation URL reachability check as a non-blocking warning in Stage 2: flag (but do not fail) citations whose GOV.UK URLs return non-200 responses, surfacing stale links before they reach production
 
-### Phase E — Security, auth & compliance
+### Phase E — Security, auth & compliance ⬜
 - Add OAuth2/Clerk/KeyCloak or API keys for service access
 - Rate-limiting, input sanitization, and proper sandboxing of rule execution
 - Data protection/privacy (GDPR) and terms of service
+- **[Added]** Terms of Service must include: (a) explicit statement that outputs are deterministic calculations and not professional tax advice under FSMA 2000 or CIOT/ATT frameworks; (b) liability cap at 12 months of fees paid; (c) mutual indemnification clause; (d) acceptable use policy prohibiting use as a sole source for regulatory filings without professional review
+- **[Added]** Apply for HMRC MTD software recognition — required to market the product as MTD-compatible to accountancy practices; involves passing HMRC's technical API compliance tests against the sandbox environment (`test-api.service.hmrc.gov.uk`)
+- **[Added]** Submit an application to the FCA Supercharged Sandbox (Nvidia partnership, cohorts from October 2025) — provides regulatory credibility and potential FCA endorsement that commodity LLMs cannot claim; same workstream as compliance, minimal additional effort
+- **[Added]** Add audit-grade metadata to `trace_execution` responses: ISO 8601 timestamp, `rule_id@version`, SHA-256 hash of inputs, rounding mode applied — makes trace output suitable for client file storage by regulated firms
 
-### Phase F — Observability & reliability
+### Phase F — Observability & reliability ⬜
 - Structured logging (JSON), Prometheus metrics or hosted metrics, and Sentry for errors
 - Health checks, readiness/liveness endpoints, and automated backups
+- **[Added]** Instrument per-rule execution metrics: `rule_id`, `jurisdiction`, `tax_year`, execution latency, and error rate — feeds both SLA monitoring and usage-based billing
 
-### Phase G — Monetization strategies
+### Phase G — Monetization strategies ⬜
 - **SaaS subscription tiers:** Free tier with limits; Pro with higher quotas + SLA
 - **Paid API keys / metered billing:** Requests or compute time per rule execution
 - **Enterprise licensing:** Per-instance deployments (on-prem or VPC peering)
-- **Marketplace:** Curated paid rules or premium rule sets
+- **Rule marketplace:** Curated paid rules or premium rule sets (e.g. specialist pension decumulation, business property relief)
 - **Consulting & priority support**
+- **[Added]** OEM / white-label licensing tier: a calculation engine embed for practice software vendors (IRIS, TaxCalc, Xero) — priced at £50,000–£200,000+/year; this is the most credible path to significant revenue and the exit thesis
 
-### Phase H — Go-to-market
+### Phase H — Go-to-market ⬜
 - Pricing model, landing page, docs, quickstart, API playground
 - Beta program with early customers, gather feedback, iterate
+- **[Added]** Publish a Python SDK (`pip install uk-tax-mcp-client`) — thin wrapper over the `/v1/` REST API; removes the integration friction that is the primary barrier for fintech developers
+- **[Added]** Publish a TypeScript/Node SDK (`npm install uk-tax-mcp`) — same rationale; most fintech front-ends are Node-based
+- **[Added]** List the MCP server in public MCP registries (MCP.so, PulseMCP, Anthropic partner directory) and relevant AI tooling directories
+- **[Added]** Approach IRIS Elements, TaxCalc, and Xero partner programmes with an integration proposal — each accountancy software integration is a distribution channel worth thousands of potential customers
+- **[Added]** Publish worked-example content targeting ICAEW/ACCA audiences: "How a deterministic tax engine reduces PI exposure" — positions the product in the professional accountancy community and drives inbound from the primary buyer persona
+
+### Phase I — Rule operations (new) ⬜
+
+*This phase has no equivalent in the original plan. It addresses the highest-priority operational gap: keeping rules accurate and current without manual heroics after every Budget.*
+
+- Build a Budget monitoring script: subscribe to GOV.UK's publications RSS feed and HMRC email updates; automatically open a GitHub issue listing rule IDs likely affected when a Finance Act, Budget, or HMRC policy update is detected
+- Build a rule-impact analysis tool: given a set of changed thresholds or rates, identify which YAML rules contain those values and flag them for review — reduces the risk of a stale rule surviving a Budget undetected
+- Evaluate MTD ITSA calculation back-end partnership: identify an existing HMRC-recognised MTD front-end vendor (e.g. a smaller practice software firm lacking a strong calculation engine) and propose a white-label calculation API arrangement — avoids building the MTD submission layer from scratch while accessing a ready-made distribution channel
+- Quarterly rule accuracy audit: for each rule, re-verify numeric values against the live HMRC manual and relevant legislation; document the review in `RULES_CHANGELOG.md` — creates a defensible audit trail that supports PI insurance claims and enterprise sales due diligence
 
 ## Operational checklist for launch
+
+**Infrastructure**
 - ✓ CI green, Docker images published
-- ✓ DB provisioned and migrations applied
-- ✓ TLS + domain + DNS ready
-- ✓ Billing integration (Stripe) + invoicing
-- ✓ Monitoring dashboards and alerting (PagerDuty/opsgenie)
+- ⬜ DB provisioned and migrations applied
+- ⬜ TLS + domain + DNS ready
+- ⬜ Production `/v1/` API deployed (not `http_dev.py`)
+- ⬜ Monitoring dashboards and alerting (PagerDuty / Opsgenie)
+
+**Commercial & legal**
+- ⬜ Billing integration (Stripe) + invoicing
+- ⬜ Terms of Service published (with liability cap and "not tax advice" statement)
+- ⬜ Privacy Policy published (GDPR-compliant; stateless processing documented)
+- ⬜ API key system live and tied to Stripe subscription
+
+**Product & compliance**
+- ⬜ "Not tax advice" disclaimer in all server responses
+- ⬜ `RULES_CHANGELOG.md` created and Budget change process documented
+- ⬜ Scotland rule coverage expanded to match rUK for current and next tax year
+- ⬜ HMRC MTD software recognition application submitted
+- ⬜ FCA Supercharged Sandbox application evaluated
 
 ## Immediate next actions (first 2 weeks)
 
-1. **Add Dockerfile and GitHub Actions** (tests→build→publish)
-   - Create Dockerfile for production image
-   - Add GitHub Actions workflow to run tests, lint, build, and publish to registry
+Items 1 and 2 are complete (✅). Remaining priorities reordered by gap-analysis urgency.
 
-2. **Create production configuration and secrets plan**
-   - Define environment variables for logging, metrics, database
-   - Document secrets management strategy
-
-3. **Choose hosting option and spin a staging environment**
-   - Evaluate Render, Railway, Cloud Run, Azure Container Apps, AWS ECS
-   - Create staging deployment for testing
-
-4. **Integrate billing (Stripe sandbox) and API key model**
-   - Create Stripe account and configure test mode
-   - Design pricing tiers (Free, Starter, Pro, Enterprise)
-   - Implement API key generation and subscription management
-
-5. **Add basic usage-based rate limiting and quotas**
-   - Implement per-key quotas and metering
-   - Add rate-limiting middleware
+1. ~~**Add Dockerfile and GitHub Actions** (tests→build→publish)~~ ✅
+2. ~~**Create production configuration and secrets plan**~~ ✅
+3. **Add "not tax advice" disclaimer** — one-line change to each MCP tool description and a response middleware in `http_dev.py`; zero-risk, immediate legal protection before any external user is onboarded
+4. **Create `RULES_CHANGELOG.md` and Budget process doc** — a markdown file and a CONTRIBUTING section; no code required; closes the most damaging perception gap in enterprise due diligence
+5. **Choose hosting and spin staging environment** — evaluate Render / Railway / Cloud Run / AWS ECS; target is a production `/v1/` API, not `http_dev.py`
+6. **Expand Scotland rules for 2026-27** — the upcoming MTD ITSA Phase 1 tax year; Scottish sole traders/landlords are affected from April 2026
+7. **Integrate billing (Stripe sandbox) and API key model** — pricing tiers, key generation, subscription management
+8. **Submit HMRC MTD software recognition application** — begin the technical compliance process; this has a multi-week lead time and must start early
 
 ## Notes & considerations
 
-- **Rule execution safety:** Prioritize safe execution of user-provided rules; consider running rule execution in isolated containers or using time/cpu limits
+- **Rule execution safety:** Prioritise safe execution of user-provided rules; consider running rule execution in isolated containers or using time/cpu limits
 - **Metered billing design:** Monetization choice affects design; metered billing needs reliable metering and observability
-- **Legal/compliance:** UK tax rules may have licensing/accuracy considerations — include disclaimers and terms of service
-- **Stripe integration:** Use Stripe Billing for subscriptions + metered usage; support LLP Pro (company) billing with VAT handling
+- **"Not tax advice" framing is non-negotiable:** UK tax rules may involve licensing/accuracy considerations under FSMA 2000 and CIOT/ATT frameworks. Position as infrastructure (like Stripe Tax or Avalara), not advice. Every external response must carry this framing.
+- **Stripe integration:** Use Stripe Billing for subscriptions + metered usage; support LLP/company billing with Stripe Tax for VAT auto-calculation; mirror invoices in local DB for audit trail
+- **Scotland is a material gap:** 35,000 UK accountancy firms serve both rUK and Scottish clients. Thin Scotland coverage is a sales blocker, not a nice-to-have.
+- **MTD recognition lead time:** HMRC's software recognition process involves technical tests against the HMRC sandbox, then a review period. Budget 6–12 weeks from application to recognition. Start early.
 
 ## Monetization details
 
