@@ -37,7 +37,8 @@ jobs:
       - name: Create backfill branch and open PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Expand RULE_FILES via env so shell metacharacters in input cannot
-          # be injected into the script command itself.
+          # Expand via env to prevent shell injection from workflow_dispatch input.
           RULE_FILES: ${{ inputs.rule_files }}
-        run: python scripts/backfill_rule_review.py $RULE_FILES
+        run: |
+          read -ra rule_files <<< "$RULE_FILES"
+          python scripts/backfill_rule_review.py "${rule_files[@]}"
