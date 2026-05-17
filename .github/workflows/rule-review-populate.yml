@@ -20,8 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          # Need push access; GITHUB_TOKEN is used for authentication.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # PAT required: GITHUB_TOKEN is blocked by enforce_admins branch protection.
+          token: ${{ secrets['Coding-Cli-GH-Admin'] }}
           # Fetch full history so the script can diff against the merge parent.
           fetch-depth: 2
 
@@ -35,7 +35,7 @@ jobs:
 
       - name: Populate review block and update changelog
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets['Coding-Cli-GH-Admin'] }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
         run: python scripts/populate_review_block.py
