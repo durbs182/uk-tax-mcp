@@ -301,7 +301,7 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
                     entry["stale"] = True
                 else:
                     entry["stale"] = False
-        except (urllib.error.URLError, OSError) as exc:
+        except urllib.error.URLError as exc:
             entry["error"] = type(exc).__name__
             entry["error_detail"] = str(exc)
             entry["stale"] = True
