@@ -26,7 +26,10 @@ def _git(*args: str, check: bool = True) -> str:
 
 
 def _gh(*args: str, check: bool = True) -> str:
-    result = subprocess.run(["gh", *args], capture_output=True, text=True, check=check)
+    result = subprocess.run(["gh", *args], capture_output=True, text=True, check=False)
+    if result.returncode != 0 and check:
+        print(f"::error::gh {' '.join(args[:2])} failed: {result.stderr.strip()}", file=sys.stderr)
+        raise subprocess.CalledProcessError(result.returncode, ["gh", *args], result.stdout, result.stderr)
     return result.stdout.strip()
 
 
