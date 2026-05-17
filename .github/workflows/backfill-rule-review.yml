@@ -1,0 +1,44 @@
+name: Backfill Rule Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      rule_files:
+        description: >
+          Space-separated repo-relative paths to rule YAML files to backfill.
+          Example: src/hmrc_tax_mcp/registry/rules/2025-26/ruk/income_tax_bands.yaml
+        required: true
+        type: string
+
+# No concurrency guard — each manual trigger is for a different set of rules.
+
+jobs:
+  backfill:
+    name: Create backfill review PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # create branch and push
+      pull-requests: write  # open the PR
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e ".[dev,server,http]"
+
+      - name: Create backfill branch and open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Expand via env to prevent shell injection from workflow_dispatch input.
+          RULE_FILES: ${{ inputs.rule_files }}
+        run: |
+          read -ra rule_files <<< "$RULE_FILES"
+          python scripts/backfill_rule_review.py "${rule_files[@]}"
