@@ -23,7 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # PAT required: GITHUB_TOKEN cannot create PRs (repo policy).
+          token: ${{ secrets['Coding-Cli-GH-Admin'] }}
           fetch-depth: 0
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -36,7 +37,7 @@ jobs:
 
       - name: Create backfill branch and open PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets['Coding-Cli-GH-Admin'] }}
           # Expand via env to prevent shell injection from workflow_dispatch input.
           RULE_FILES: ${{ inputs.rule_files }}
         run: |
