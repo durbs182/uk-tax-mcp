@@ -1,6 +1,11 @@
-rule_id: rent_a_room_allowance
-tax_year: "2029-30"
-jurisdiction: "rUK"
-inputs:
-  {}
-expected_output: 7500
+examples:
+- description: "Sole letting — full £7,500 exempt amount applies"
+  source: "HMRC HS223 and PIM4010 https://www.gov.uk/hmrc-internal-manuals/property-income-manual/pim4010"
+  inputs:
+    shared_letting: false
+  expected: 7500
+- description: "Shared letting — exempt amount halved to £3,750 (another person lets in same property)"
+  source: "ITTOIA 2005 s.796; HMRC HS223 and PIM4010 https://www.gov.uk/hmrc-internal-manuals/property-income-manual/pim4010"
+  inputs:
+    shared_letting: true
+  expected: 3750
