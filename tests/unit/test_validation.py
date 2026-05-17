@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from hmrc_tax_mcp.registry.store import get_rule, list_rules
 from hmrc_tax_mcp.validation.pipeline import (
