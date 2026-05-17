@@ -53,8 +53,11 @@ class TestInvestmentBondTimeApportionment:
 
 
 class TestRentARoomAllowance:
-    def test_returns_7500(self):
-        assert _eval("rent_a_room_allowance", {}) == Decimal("7500")
+    def test_sole_letting_returns_7500(self):
+        assert _eval("rent_a_room_allowance", {"shared_letting": False}) == Decimal("7500")
+
+    def test_shared_letting_returns_3750(self):
+        assert _eval("rent_a_room_allowance", {"shared_letting": True}) == Decimal("3750")
 
     def test_all_years_same_checksum(self):
         base = get_rule("rent_a_room_allowance", jurisdiction="rUK", tax_year="2025-26")

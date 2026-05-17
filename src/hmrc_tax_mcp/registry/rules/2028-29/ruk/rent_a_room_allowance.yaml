@@ -1,21 +1,35 @@
 rule_id: rent_a_room_allowance
-version: "1.0.0"
+version: "2.0.0"
 tax_year: "2028-29"
 jurisdiction: "rUK"
 title: "Rent-a-Room Allowance"
 description: >
-  The rent-a-room scheme allows individuals to receive up to £7,500 per year tax-free from renting furnished accommodation in their only or main home. Relevant for retirees letting a room to supplement income.
+  Returns the rent-a-room exempt amount for the tax year. The full exempt amount is £7,500
+  where only one person lets accommodation in the property. If another person also lets
+  accommodation in the same residence at any time during the 12-month period, the exempt
+  amount is halved to £3,750 (ITTOIA 2005 s.796). Input variable `shared_letting` is a
+  boolean: true if another person also lets accommodation in the same property during the period.
 dsl_source: |
-  return 7500
-ast: {"node": "CONST", "value": 7500}
-checksum: "2339246d0244b9b2cdceea64c06b656566e7d61fcbda66898ee256c60e5039ae"
+  return if shared_letting then 3750 else 7500
+ast:
+  node: IF
+  cond:
+    node: VAR
+    name: shared_letting
+  then:
+    node: CONST
+    value: 3750
+  else:
+    node: CONST
+    value: 7500
+checksum: "32afaf9615eafd0c03facdfef763b792263f6c22c8c047e05f5982cc22b6a7b6"
 citations:
 - label: "ITTOIA 2005 s.784"
   url: "https://www.legislation.gov.uk/ukpga/2005/5/section/784"
-- label: "HMRC HS223"
+- label: "HMRC HS223 Rent-a-Room helpsheet"
   url: "https://www.gov.uk/government/publications/rent-a-room-for-traders-hs223-self-assessment-helpsheet"
-- label: PIM4010
-  url: https://www.gov.uk/hmrc-internal-manuals/property-income-manual/pim4010
+- label: "PIM4010"
+  url: "https://www.gov.uk/hmrc-internal-manuals/property-income-manual/pim4010"
 provenance: "manual"
-published_at: "2026-04-04"
+published_at: "2026-05-17T00:00:00Z"
 reviewed_by:
