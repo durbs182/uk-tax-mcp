@@ -67,11 +67,27 @@ def main() -> None:
         if failed:
             any_failed = True
 
-        # Collect stale-URL warnings from Stage 2
+        # Collect stale-URL warnings and per-URL diagnostics from Stage 2
         if len(results) > 1 and results[1].passed:
-            for url in results[1].details.get("stale_urls", []):
+            stage2 = results[1]
+            for url in stage2.details.get("stale_urls", []):
                 rule_id = rule_dict.get("rule_id", path.stem)
                 warnings.append(f"`{rule_id}`: GOV.UK URL may be stale — {url}")
+            # Always emit per-URL check results so CI logs show what each URL returned
+            for entry in stage2.details.get("url_checks", []):
+                rule_id = rule_dict.get("rule_id", path.stem)
+                if "error" in entry:
+                    print(
+                        f"::debug::D4 url_check [{rule_id}] {entry['url']} → "
+                        f"{entry['error']}: {entry['error_detail']}",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(
+                        f"::debug::D4 url_check [{rule_id}] {entry['url']} → "
+                        f"HTTP {entry['status']} (final: {entry.get('final_url', entry['url'])})",
+                        file=sys.stderr,
+                    )
 
         rule_id = rule_dict.get("rule_id", path.stem)
         tax_year = rule_dict.get("tax_year", "?")
