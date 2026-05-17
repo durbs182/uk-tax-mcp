@@ -13,16 +13,17 @@ jobs:
     # Skip commits that this workflow itself creates to avoid infinite loops.
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     permissions:
-      contents: write       # push the review-block commit back to main
+      contents: read        # checkout only; push uses the PAT below
       pull-requests: read   # read PR reviews to identify the approver
       actions: read         # look up the validate-rules check run ID
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          # Need push access; GITHUB_TOKEN is used for authentication.
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # Fetch full history so the script can diff against the merge parent.
+          # RULES_BOT_PAT is a fine-grained PAT with "bypass branch protections"
+          # permission. Required because branch protection blocks direct pushes to
+          # main from the default GITHUB_TOKEN (which is not an exempt actor).
+          token: ${{ secrets.RULES_BOT_PAT }}
           fetch-depth: 2
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
