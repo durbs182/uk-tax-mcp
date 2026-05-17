@@ -284,7 +284,7 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
             details={"citation_labels": labels},
         )
 
-    # D4: warn (non-blocking) about GOV.UK citations that return non-200 responses.
+    # D4: block on GOV.UK citations that return non-200 responses.
     stale_urls: list[str] = []
     url_check_log: list[dict[str, Any]] = []  # full per-URL diagnostics for CI debugging
     for cit in citations:
@@ -322,10 +322,20 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
             )
 
     semantic_details: dict[str, Any] = {}
-    if stale_urls:
-        semantic_details["stale_urls"] = stale_urls
     if url_check_log:
         semantic_details["url_checks"] = url_check_log
+
+    if stale_urls:
+        semantic_details["stale_urls"] = stale_urls
+        return ValidationResult(
+            stage=ValidationStage.SEMANTIC,
+            passed=False,
+            message=(
+                f"{len(stale_urls)} GOV.UK citation URL(s) are unreachable or returned "
+                f"a non-200 response. Fix or remove the stale URL(s) before merging."
+            ),
+            details=semantic_details,
+        )
 
     return ValidationResult(
         stage=ValidationStage.SEMANTIC,

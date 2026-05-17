@@ -81,11 +81,11 @@ ast:
 checksum: a4c3bab10f98ec9cd31b2c29ba13e096eff677f6f7b64bfab73b940d28f9e520
 citations:
 - label: HMRC — Carry forward of unused annual allowance
-  url: https://www.gov.uk/guidance/pension-schemes-carry-forward-of-unused-annual-allowance
+  url: https://www.gov.uk/tax-on-your-private-pension/annual-allowance
 - label: Finance Act 2011 Sch 17 — Annual allowance carry forward
   url: https://www.legislation.gov.uk/ukpga/2011/11/schedule/17
 - label: PTM055400
-  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm055400
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm055000
 provenance: manual
 published_at: '2025-04-06T00:00:00Z'
 reviewed_by:

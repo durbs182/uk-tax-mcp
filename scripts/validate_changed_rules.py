@@ -67,15 +67,12 @@ def main() -> None:
         if failed:
             any_failed = True
 
-        # Collect stale-URL warnings and per-URL diagnostics from Stage 2
-        if len(results) > 1 and results[1].passed:
+        # Emit per-URL check results as debug annotations (visible when step debug is on).
+        # Stale URLs are now a stage-2 failure, so any_failed already covers them.
+        if len(results) > 1:
             stage2 = results[1]
-            for url in stage2.details.get("stale_urls", []):
-                rule_id = rule_dict.get("rule_id", path.stem)
-                warnings.append(f"`{rule_id}`: GOV.UK URL may be stale — {url}")
-            # Always emit per-URL check results so CI logs show what each URL returned
+            rule_id = rule_dict.get("rule_id", path.stem)
             for entry in stage2.details.get("url_checks", []):
-                rule_id = rule_dict.get("rule_id", path.stem)
                 if "error" in entry:
                     print(
                         f"::debug::D4 url_check [{rule_id}] {entry['url']} → "
