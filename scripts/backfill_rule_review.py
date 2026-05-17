@@ -47,7 +47,6 @@ def main() -> None:
 
     paths = [Path(p) for p in sys.argv[1:]]
     today = date.today().isoformat()
-    branch = f"backfill/rule-review-{today}"
 
     valid_paths: list[Path] = []
     rule_ids: list[str] = []
@@ -69,6 +68,11 @@ def main() -> None:
             url = cit.get("url", "")
             if url:
                 citation_lines.append(f"- `{rule_id}`: {url}")
+
+    # Build branch name after collecting rule_ids so it includes a slug.
+    # Limit to 50 chars to stay well inside Git's ref length limit.
+    slug = "-".join(rule_ids)[:50].rstrip("-")
+    branch = f"backfill/{today}-{slug}"
 
     if not valid_paths:
         print("No valid rule files to backfill.", file=sys.stderr)
