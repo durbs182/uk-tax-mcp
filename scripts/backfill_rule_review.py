@@ -107,7 +107,7 @@ def main() -> None:
     rule_list = ", ".join(rule_ids)
     commit_msg = f"chore(rules): backfill review — reaffirm values as of {today} for {rule_list}"
     _git("commit", "-m", commit_msg)
-    _git("push", "-u", "origin", branch)
+    _git("push", "--force-with-lease", "-u", "origin", branch)
 
     citation_block = (
         "\n".join(citation_lines)
