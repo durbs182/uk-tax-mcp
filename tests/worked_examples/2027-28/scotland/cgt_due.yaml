@@ -1,0 +1,19 @@
+examples:
+- description: "Gain within the \xA33,000 annual exempt amount -> no CGT"
+  source: HMRC https://www.gov.uk/capital-gains-tax/rates
+  inputs:
+    capital_gain: 2500
+    is_higher_rate_taxpayer: false
+  expected: 0
+- description: "Basic-rate taxpayer with \xA38,000 gain -> \xA3900 CGT after exemption"
+  source: arithmetic from HMRC CGT allowance and 18% basic rate (HMRC https://www.gov.uk/capital-gains-tax/rates)
+  inputs:
+    capital_gain: 8000
+    is_higher_rate_taxpayer: false
+  expected: 900.0
+- description: "Higher-rate taxpayer with \xA310,000 gain -> \xA31,680 CGT after exemption"
+  source: arithmetic from HMRC CGT allowance and 24% higher rate (HMRC https://www.gov.uk/capital-gains-tax/rates)
+  inputs:
+    capital_gain: 10000
+    is_higher_rate_taxpayer: true
+  expected: 1680.0
