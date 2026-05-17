@@ -11,6 +11,7 @@ Usage:
 """
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -150,8 +151,10 @@ See the existing `citations` field in each rule file.
 > authoritative source before approving.
 """
 
+    repo = os.environ.get("GITHUB_REPOSITORY", "")
     pr_url = _gh(
         "pr", "create",
+        *(["--repo", repo] if repo else []),
         "--title", f"chore(rules): backfill review for {rule_list}",
         "--body", body,
         "--base", "main",
