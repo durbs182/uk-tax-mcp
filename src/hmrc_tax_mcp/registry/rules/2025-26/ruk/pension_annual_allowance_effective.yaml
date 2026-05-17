@@ -25,9 +25,9 @@ ast:
 checksum: 7ca9573eb3a6f766767a2e2f746a336b985e54403d66802441f02885264f22a3
 citations:
 - label: HMRC — Annual allowance
-  url: https://www.gov.uk/guidance/pension-schemes-annual-allowance
+  url: https://www.gov.uk/tax-on-your-private-pension/annual-allowance
 - label: HMRC — Money purchase annual allowance
-  url: https://www.gov.uk/guidance/pension-schemes-money-purchase-annual-allowance
+  url: https://www.gov.uk/tax-on-your-private-pension/annual-allowance
 - label: PTM056000
   url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm056000
 provenance: manual

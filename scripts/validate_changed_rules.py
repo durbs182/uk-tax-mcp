@@ -67,11 +67,24 @@ def main() -> None:
         if failed:
             any_failed = True
 
-        # Collect stale-URL warnings from Stage 2
-        if len(results) > 1 and results[1].passed:
-            for url in results[1].details.get("stale_urls", []):
-                rule_id = rule_dict.get("rule_id", path.stem)
-                warnings.append(f"`{rule_id}`: GOV.UK URL may be stale — {url}")
+        # Emit per-URL check results as debug annotations (visible when step debug is on).
+        # Stale URLs are now a stage-2 failure, so any_failed already covers them.
+        if len(results) > 1:
+            stage2 = results[1]
+            rule_id = rule_dict.get("rule_id", path.stem)
+            for entry in stage2.details.get("url_checks", []):
+                if "error" in entry:
+                    print(
+                        f"::debug::D4 url_check [{rule_id}] {entry['url']} → "
+                        f"{entry['error']}: {entry['error_detail']}",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(
+                        f"::debug::D4 url_check [{rule_id}] {entry['url']} → "
+                        f"HTTP {entry['status']} (final: {entry.get('final_url', entry['url'])})",
+                        file=sys.stderr,
+                    )
 
         rule_id = rule_dict.get("rule_id", path.stem)
         tax_year = rule_dict.get("tax_year", "?")

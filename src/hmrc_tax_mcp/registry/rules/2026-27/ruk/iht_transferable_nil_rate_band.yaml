@@ -23,7 +23,7 @@ ast:
 checksum: 73ef739a46130b300a4fe778098ff8057cc4af6e92e51312ffa90d12952ee14b
 citations:
 - label: 'HMRC – Inheritance Tax: transfer unused threshold to surviving spouse'
-  url: https://www.gov.uk/guidance/inheritance-tax-transfer-unused-threshold
+  url: https://www.gov.uk/hmrc-internal-manuals/inheritance-tax-manual/ihtm43001
 - label: Inheritance Tax Act 1984 s.8A – Transfer of unused NRB
   url: https://www.legislation.gov.uk/ukpga/1984/51/section/8A
 - label: IHTM43000

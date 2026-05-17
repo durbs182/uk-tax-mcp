@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from hmrc_tax_mcp.registry.store import get_rule, list_rules
 from hmrc_tax_mcp.validation.pipeline import (
@@ -12,6 +15,24 @@ from hmrc_tax_mcp.validation.pipeline import (
     load_worked_examples,
     validate_rule,
 )
+
+# ---------------------------------------------------------------------------
+# Helpers for mocking the D4 GOV.UK URL check
+# ---------------------------------------------------------------------------
+
+def _mock_urlopen_200(url: str, timeout: int = 5) -> MagicMock:
+    """Return a mock HTTP response with status 200."""
+    resp = MagicMock()
+    resp.status = 200
+    resp.url = url
+    resp.__enter__ = lambda s: s
+    resp.__exit__ = MagicMock(return_value=False)
+    return resp
+
+
+def _mock_urlopen_404(url: str, timeout: int = 5) -> MagicMock:
+    import urllib.error
+    raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)  # type: ignore[arg-type]
 
 WORKED_EXAMPLES_DIR = (
     Path(__file__).parent.parent / "worked_examples" / "2025-26" / "ruk"
@@ -81,6 +102,11 @@ class TestStageSyntax:
 # ---------------------------------------------------------------------------
 
 class TestStageSemantic:
+    @pytest.fixture(autouse=True)
+    def mock_govuk_urls_reachable(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Unit tests must not make real HTTP calls — mock all GOV.UK URLs as reachable."""
+        monkeypatch.setattr("urllib.request.urlopen", _mock_urlopen_200)
+
     def test_valid_rule_passes(self) -> None:
         results = _run("cgt_exempt")
         assert results[1].passed
@@ -137,17 +163,17 @@ class TestStageSemantic:
         results = validate_rule(rule)
         assert results[1].passed
 
-    # D4: stale URL warning (non-blocking)
-    def test_stale_govuk_url_warns_but_passes(self) -> None:
+    # D4: stale URL is now a blocking failure
+    def test_stale_govuk_url_fails_stage2(self) -> None:
         rule = _rule_dict("cgt_exempt")
-        # Use a GOV.UK URL that is unlikely to resolve (deliberately broken path)
         rule["citations"] = [
             {"label": "CG18000", "url": "https://www.gov.uk/this-page-does-not-exist-xyzzy-404"},
         ]
-        results = validate_rule(rule)
-        # Stage should still pass (D4 is non-blocking)
-        assert results[1].passed
-        # But stale_urls should be reported in details
+        # Override the class-level 200 mock: simulate a 404 for this specific test
+        with patch("urllib.request.urlopen", side_effect=_mock_urlopen_404):
+            results = validate_rule(rule)
+        # Stage 2 must fail — stale GOV.UK URLs are now blocking
+        assert not results[1].passed
         stale = results[1].details.get("stale_urls", [])
         assert len(stale) == 1
 

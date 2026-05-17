@@ -28,7 +28,7 @@ ast:
 checksum: 72d098a2dfe618263e3cc1d4a768cb12b9b45765ae499463aee88e7a76589330
 citations:
 - label: HMRC — Small pension pots and lump sums
-  url: https://www.gov.uk/government/publications/pensions-tax-manual/ptm063700
+  url: https://www.gov.uk/hmrc-internal-manuals/pensions-tax-manual/ptm063000
 - label: SI 2006/572 Reg 11 — Small pension rules
   url: https://www.legislation.gov.uk/uksi/2006/572/regulation/11
 provenance: manual

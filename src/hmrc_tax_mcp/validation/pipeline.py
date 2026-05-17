@@ -284,18 +284,29 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
             details={"citation_labels": labels},
         )
 
-    # D4: warn (non-blocking) about GOV.UK citations that return non-200 responses.
+    # D4: block on GOV.UK citations that return non-200 responses.
     stale_urls: list[str] = []
+    url_check_log: list[dict[str, Any]] = []  # full per-URL diagnostics for CI debugging
     for cit in citations:
         url: str = cit.get("url", "")
         if not url.startswith("https://www.gov.uk"):
             continue
+        entry: dict[str, Any] = {"url": url}
         try:
             with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310
+                entry["status"] = resp.status
+                entry["final_url"] = resp.url  # resolved URL after any redirects
                 if resp.status != 200:
                     stale_urls.append(url)
-        except (urllib.error.URLError, OSError):
+                    entry["stale"] = True
+                else:
+                    entry["stale"] = False
+        except urllib.error.URLError as exc:
+            entry["error"] = type(exc).__name__
+            entry["error_detail"] = str(exc)
+            entry["stale"] = True
             stale_urls.append(url)
+        url_check_log.append(entry)
 
     if rule.get("monetary_output"):
         ast = rule.get("ast") or {}
@@ -311,8 +322,20 @@ def _stage_semantic(rule: dict[str, Any]) -> ValidationResult:
             )
 
     semantic_details: dict[str, Any] = {}
+    if url_check_log:
+        semantic_details["url_checks"] = url_check_log
+
     if stale_urls:
         semantic_details["stale_urls"] = stale_urls
+        return ValidationResult(
+            stage=ValidationStage.SEMANTIC,
+            passed=False,
+            message=(
+                f"{len(stale_urls)} GOV.UK citation URL(s) are unreachable or returned "
+                f"a non-200 response. Fix or remove the stale URL(s) before merging."
+            ),
+            details=semantic_details,
+        )
 
     return ValidationResult(
         stage=ValidationStage.SEMANTIC,

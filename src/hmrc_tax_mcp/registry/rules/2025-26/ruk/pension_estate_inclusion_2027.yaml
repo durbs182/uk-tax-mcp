@@ -11,7 +11,7 @@ ast: {"node": "IF", "cond": {"node": "VAR", "name": "is_2027_or_later"}, "then":
 checksum: "01803f4978d5fbc7daf512a4230cdcc8a9384352fcdd9928eb1114919818ff2c"
 citations:
 - label: "FA 2025 (prospective)"
-  url: "https://www.gov.uk/government/collections/autumn-budget-2024"
+  url: "https://www.gov.uk/government/publications/autumn-budget-2024"
 - label: "HMRC — Inheritance Tax on Pensions consultation"
   url: "https://www.gov.uk/government/consultations/inheritance-tax-on-pensions-liability-reporting-and-payment"
 - label: PTM073000
